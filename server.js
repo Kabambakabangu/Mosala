@@ -7,7 +7,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
-/* ---------- Connexion MySQL (Railway) ---------- */
 const pool = mysql.createPool({
   host:     process.env.MYSQLHOST,
   user:     process.env.MYSQLUSER,
@@ -19,9 +18,8 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-/* ---------- Création automatique des tables ---------- */
 async function initDB(){
-  try {
+  try{
     await pool.query(`
       CREATE TABLE IF NOT EXISTS profils (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -69,17 +67,29 @@ async function initDB(){
         commune VARCHAR(120),
         budget VARCHAR(60),
         nombre_personnes INT DEFAULT 1,
+        duree ENUM('courte','longue') DEFAULT 'courte',
+        type_contrat VARCHAR(40) DEFAULT 'mission',
+        contact VARCHAR(60),
         statut ENUM('ouverte','pourvue','fermee') DEFAULT 'ouverte',
         cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS candidatures (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        mission_id INT NOT NULL,
+        profil_id INT NOT NULL,
+        employeur_id VARCHAR(60) NOT NULL,
+        statut ENUM('nouvelle','vue','acceptee','refusee') DEFAULT 'nouvelle',
+        cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
     console.log('✓ Toutes les tables OK');
-  } catch(e){
+  }catch(e){
     console.error('❌ Erreur initDB :', e.message);
   }
 }
 
-/* ---------- Helpers ---------- */
 function badgeRank(b){ return { bronze:0, argent:1, or:2 }[b]; }
 function computeEligible(avis){
   const n = avis.length;
@@ -96,7 +106,6 @@ function cleanComment(txt){
   return t.trim();
 }
 
-/* ---------- Routes API ---------- */
 app.get('/api/health', (req,res) => res.json({ ok:true, ts:Date.now() }));
 
 /* PROFILS */
@@ -123,6 +132,22 @@ app.get('/api/profils/:id', async (req,res) => {
     if (!profils.length) return res.status(404).json({ error:'Profil introuvable' });
     const [avis] = await pool.query(
       'SELECT id, note, commentaire, reponse, employeur_id, cree_le FROM avis WHERE profil_id = ? ORDER BY cree_le DESC',
+      [req.params.id]
+    );
+    res.json({ ...profils[0], avis });
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+/* Profil public (pour QR code) */
+app.get('/api/public/profil/:id', async (req,res) => {
+  try {
+    const [profils] = await pool.query(
+      'SELECT id, nom, metier, commune, description, contact, badge, vitrine_premium, preuve_url FROM profils WHERE id = ?',
+      [req.params.id]
+    );
+    if (!profils.length) return res.status(404).json({ error:'Profil introuvable' });
+    const [avis] = await pool.query(
+      'SELECT note, commentaire, reponse FROM avis WHERE profil_id = ? ORDER BY cree_le DESC',
       [req.params.id]
     );
     res.json({ ...profils[0], avis });
@@ -208,28 +233,62 @@ app.post('/api/employeurs/verifier', async (req,res) => {
 /* MISSIONS */
 app.get('/api/missions', async (req,res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT * FROM missions WHERE statut = "ouverte" ORDER BY cree_le DESC LIMIT 50'
-    );
+    const { duree, commune, q } = req.query;
+    let sql = 'SELECT * FROM missions WHERE statut = "ouverte"';
+    const params = [];
+    if (duree)   { sql += ' AND duree = ?';              params.push(duree); }
+    if (commune) { sql += ' AND commune LIKE ?';         params.push(`%${commune}%`); }
+    if (q)       { sql += ' AND (titre LIKE ? OR description LIKE ?)'; params.push(`%${q}%`, `%${q}%`); }
+    sql += ' ORDER BY cree_le DESC LIMIT 60';
+    const [rows] = await pool.query(sql, params);
     res.json(rows);
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
 app.post('/api/missions', async (req,res) => {
   try {
-    const { employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes } = req.body;
+    const { employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes, duree, type_contrat, contact } = req.body;
     if (!titre) return res.status(400).json({ error: 'Titre requis' });
     const [r] = await pool.query(
-      `INSERT INTO missions (employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO missions (employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes, duree, type_contrat, contact)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [employeur_id||'anon', employeur_type||'particulier', titre,
-       description||'', commune||'', budget||'', nombre_personnes||1]
+       description||'', commune||'', budget||'', nombre_personnes||1,
+       duree||'courte', type_contrat||'mission', contact||'']
     );
     res.json({ id: r.insertId });
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
-/* STATS (pour institutions) */
+/* CANDIDATURES */
+app.post('/api/missions/:id/postuler', async (req,res) => {
+  try {
+    const { profil_id, employeur_id } = req.body;
+    await pool.query(
+      `INSERT INTO candidatures (mission_id, profil_id, employeur_id) VALUES (?, ?, ?)`,
+      [req.params.id, profil_id, employeur_id]
+    );
+    res.json({ ok: true });
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/employeurs/:empId/candidatures', async (req,res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT c.*, m.titre AS mission_titre,
+             p.nom AS profil_nom, p.metier AS profil_metier,
+             p.commune AS profil_commune, p.contact AS profil_contact
+      FROM candidatures c
+      LEFT JOIN missions m ON m.id = c.mission_id
+      LEFT JOIN profils p ON p.id = c.profil_id
+      WHERE c.employeur_id = ?
+      ORDER BY c.cree_le DESC LIMIT 30
+    `, [req.params.empId]);
+    res.json(rows);
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+/* STATS */
 app.get('/api/stats', async (req,res) => {
   try {
     const [parCommune] = await pool.query('SELECT commune, COUNT(*) AS total FROM profils GROUP BY commune ORDER BY total DESC');
@@ -249,13 +308,12 @@ app.get('/api/stats', async (req,res) => {
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
-/* ---------- Frontend ---------- */
+/* Frontend */
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req,res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-/* ---------- Démarrage ---------- */
 const PORT = process.env.PORT || 3000;
 initDB().then(() => {
   app.listen(PORT, () => console.log(`✓ ZUA MOSALA en ligne sur le port ${PORT}`));
