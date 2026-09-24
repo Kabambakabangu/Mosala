@@ -69,9 +69,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
 
 button{background:var(--blue);color:#fff;border:none;padding:11px 16px;border-radius:9px;
   font-weight:600;cursor:pointer;font-size:.85rem;font-family:inherit;
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s,transform .08s}
-button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .15s,transform .08s}
 button:hover{opacity:.94}
 button:active{transform:scale(.98)}
 button.block{width:100%}
@@ -83,6 +82,24 @@ button:disabled{opacity:.4;cursor:not-allowed}
 a{color:var(--blue);text-decoration:none}
 :root[data-theme="dark"] a{color:var(--yellow)}
 a.tile{display:block;text-decoration:none;color:inherit}
+
+/* Icônes calibrées strictes */
+.small svg,.mission-meta svg,.user-chip svg,.step .txt svg,.pillar .txt svg,
+.notif svg,.result .small svg{
+  width:13px !important;height:13px !important;max-width:13px !important;max-height:13px !important;
+  display:inline-block;vertical-align:-2px;margin-right:3px}
+.card h3 > svg,.card h3 svg:first-child{
+  width:16px !important;height:16px !important;max-width:16px !important;max-height:16px !important;
+  margin-right:4px}
+button svg{
+  width:14px !important;height:14px !important;max-width:14px !important;max-height:14px !important;
+  display:inline-block;vertical-align:middle;flex-shrink:0}
+.hdr-btn svg,.back-btn svg{
+  width:16px !important;height:16px !important;max-width:16px !important;max-height:16px !important}
+.choice-btn .ico svg{
+  width:17px !important;height:17px !important;max-width:17px !important;max-height:17px !important}
+.pillar-icon svg{
+  width:22px !important;height:22px !important;max-width:22px !important;max-height:22px !important}
 
 /* Hero */
 .hero{border-radius:16px;overflow:hidden;margin-bottom:14px;
@@ -109,7 +126,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .search-bar{display:flex;gap:6px;background:var(--surface);border:1.5px solid var(--border);
   border-radius:11px;padding:5px 5px 5px 12px;margin-bottom:10px;align-items:center;box-shadow:var(--shadow)}
 .search-bar svg{width:16px;height:16px;stroke:var(--text-soft);fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin:0}
 .search-bar input{border:none;background:transparent;flex:1;padding:6px 0;font-size:.86rem;min-width:0}
 .search-bar input:focus{outline:none}
 .search-bar button{padding:8px 12px;border-radius:7px;font-size:.78rem;flex-shrink:0}
@@ -118,26 +135,11 @@ a.tile{display:block;text-decoration:none;color:inherit}
   border-radius:20px;cursor:pointer;border:1px solid var(--border);font-weight:600;transition:background .15s}
 .search-tag:hover{background:var(--border)}
 
-/* Widget grid */
-.widget-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.widget-item{padding:11px 10px;border-radius:10px;background:var(--light);text-align:center;
-  position:relative;overflow:hidden}
-.widget-item .num{font-size:1.2rem;font-weight:800;color:var(--blue);letter-spacing:-.5px}
-:root[data-theme="dark"] .widget-item .num{color:var(--yellow)}
-.widget-item .lbl{font-size:.68rem;color:var(--text-soft);margin-top:3px;font-weight:600}
-.widget-item::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
-.widget-item.c1::before{background:var(--blue)}
-.widget-item.c2::before{background:var(--yellow)}
-.widget-item.c3::before{background:var(--red)}
-.widget-item.c4::before{background:var(--gold)}
-
 /* Piliers */
 .pillar{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
 .pillar:last-of-type{border-bottom:none}
 .pillar-icon{width:44px;height:44px;border-radius:11px;flex-shrink:0;display:flex;
   align-items:center;justify-content:center;color:#fff}
-.pillar-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;
-  stroke-linecap:round;stroke-linejoin:round}
 .pillar-icon.p1{background:linear-gradient(135deg,#007FFF,#0059b3)}
 .pillar-icon.p2{background:linear-gradient(135deg,#FCD116,#D4A017);color:#1a1a1a}
 .pillar-icon.p3{background:linear-gradient(135deg,#CE1126,#8b0a1a)}
@@ -165,6 +167,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .badge.courte{background:var(--blue);font-size:.58rem}
 .badge.longue{background:var(--red);font-size:.58rem}
 .badge.verifie{background:#16a34a;font-size:.58rem}
+.badge.nonverifie{background:#d97706;font-size:.58rem}
 .stars{color:var(--gold);font-size:.88rem;letter-spacing:.5px}
 .small{font-size:.72rem;color:var(--text-soft);line-height:1.4}
 .principle{background:var(--light);border-left:3px solid var(--yellow);padding:9px 12px;
@@ -173,13 +176,10 @@ a.tile{display:block;text-decoration:none;color:inherit}
 /* Mission */
 .mission{background:var(--surface);border:1px solid var(--border);border-radius:12px;
   padding:12px;margin-bottom:9px;box-shadow:var(--shadow)}
-.mission-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
 .mission-title{font-weight:700;font-size:.88rem;margin:0 0 4px;line-height:1.3;word-wrap:break-word}
 .mission-meta{font-size:.68rem;color:var(--text-soft);display:flex;gap:8px;flex-wrap:wrap;
   margin-top:3px;align-items:center}
 .mission-meta span{display:inline-flex;align-items:center;gap:3px}
-.mission-meta svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
 .mission-desc{font-size:.76rem;color:var(--text-soft);margin:6px 0;line-height:1.45}
 .mission-actions{display:flex;gap:6px;margin-top:8px}
 .mission-actions button{flex:1}
@@ -197,14 +197,12 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .choice-btn .ico{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.18);
   display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .choice-btn.secondary .ico{background:var(--light)}
-.choice-btn .ico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;
-  stroke-linecap:round;stroke-linejoin:round}
 .choice-btn.primary .ico svg{stroke:var(--yellow)}
 .choice-btn .txt{flex:1;min-width:0}
 .choice-btn .txt b{display:block;font-size:.86rem;font-weight:700}
 .choice-btn .txt span{font-size:.72rem;opacity:.75;font-weight:400;display:block;margin-top:2px}
 
-/* Results */
+/* Result */
 .result{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
   border-bottom:1px solid var(--border);gap:10px}
 .result:last-child{border:none}
@@ -215,7 +213,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
   padding:10px 12px;border-radius:11px;margin-bottom:10px;display:flex;align-items:center;
   gap:9px;font-size:.78rem;font-weight:600;box-shadow:0 4px 14px rgba(212,160,23,.3)}
 .notif svg{width:20px;height:20px;stroke:#1a1a1a;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin:0}
 
 /* Star */
 .star-pick span{font-size:1.7rem;cursor:pointer;opacity:.25;transition:opacity .12s;
@@ -247,8 +245,6 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .user-chip{display:inline-flex;align-items:center;gap:6px;background:var(--light);
   padding:5px 10px;border-radius:20px;font-size:.7rem;font-weight:600;color:var(--text-soft);
   margin-bottom:10px}
-.user-chip svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
 
 /* Onboarding */
 .onb-overlay{position:fixed;inset:0;
@@ -286,10 +282,6 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .onb-item-txt{font-size:.84rem;line-height:1.45}
 .onb-item-txt b{display:block;margin-bottom:2px}
 .onb-item-txt span{opacity:.85}
-.onb-badges{display:flex;gap:8px;margin:16px 0;position:relative;z-index:1;flex-wrap:wrap}
-.onb-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
-  border-radius:11px;padding:10px 12px;font-size:.76rem;flex:1;min-width:100px;text-align:center}
-.onb-badge b{display:block;font-size:1rem;color:#FCD116;margin-bottom:3px}
 .onb-bottom{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 26px;
   background:linear-gradient(180deg,transparent 0%,rgba(0,61,128,.4) 100%);z-index:1}
 .onb-dots{display:flex;gap:7px;justify-content:center;margin-bottom:14px}
@@ -300,7 +292,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
   color:#1a1a1a;font-weight:700;border-radius:9px}
 .onb-buttons button.ghost{background:rgba(255,255,255,.15);color:#fff}
 
-/* Tabs espace */
+/* Tabs esp */
 .esp-tabs{display:flex;gap:5px;background:var(--light);padding:4px;border-radius:11px;
   margin-bottom:14px;overflow-x:auto}
 .esp-tab{flex:1;padding:9px 12px;text-align:center;font-weight:600;font-size:.76rem;
@@ -326,7 +318,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
   <button class="hdr-btn" id="userBtn" onclick="nav('/compte')" aria-label="Compte">
     <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>
   </button>
-  <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Thème">
+  <button class="hdr-btn" onclick="toggleTheme()" aria-label="Thème">
     <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
   </button>
   <button class="hdr-btn danger" id="logoutBtn" onclick="deconnexion()" style="display:none" aria-label="Déconnexion">
@@ -337,28 +329,28 @@ a.tile{display:block;text-decoration:none;color:inherit}
 <main id="app"><div class="loader">Chargement…</div></main>
 
 <script>
-/* ========== ICONS ========== */
+/* ============ ICONES ============ */
 const I = {
-  user:  '<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>',
-  brief: '<svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
-  search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
-  pin:   '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>',
-  money: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
-  users: '<svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 20v-2a4 4 0 0 0-3-3.87"/></svg>',
-  send:  '<svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
-  phone: '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7 12.8 12.8 0 0 0 .7 2.8 2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4 12.8 12.8 0 0 0 2.8.7 2 2 0 0 1 1.7 2z"/></svg>',
-  check: '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
-  bell:  '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
-  lock:  '<svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
-  badge: '<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M12 3l8 4v6c0 5-3.5 8-8 8s-8-3-8-8V7l8-4z"/></svg>',
-  edit:  '<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
-  plus:  '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
-  arrow: '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
-  eye:   '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
-  rocket:'<svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2M15 9l6-6M9 15l-4 4M15 9c1-4 4-6 7-6 0 3-2 6-6 7"/></svg>',
+  user:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>',
+  brief: '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
+  search:'<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  pin:   '<svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+  money: '<svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  users: '<svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 20v-2a4 4 0 0 0-3-3.87"/></svg>',
+  send:  '<svg viewBox="0 0 24 24" width="14" height="14" style="display:inline-block;vertical-align:middle"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7 12.8 12.8 0 0 0 .7 2.8 2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4 12.8 12.8 0 0 0 2.8.7 2 2 0 0 1 1.7 2z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M20 6 9 17l-5-5"/></svg>',
+  bell:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+  lock:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  badge: '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M9 12l2 2 4-4M12 3l8 4v6c0 5-3.5 8-8 8s-8-3-8-8V7l8-4z"/></svg>',
+  edit:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+  plus:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M12 5v14M5 12h14"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" width="14" height="14" style="display:inline-block;vertical-align:middle"><path d="m9 6 6 6-6 6"/></svg>',
+  eye:   '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  rocket:'<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2M15 9l6-6M9 15l-4 4M15 9c1-4 4-6 7-6 0 3-2 6-6 7"/></svg>',
 };
 
-/* ========== THEME ========== */
+/* ============ THEME ============ */
 (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('zua_theme')||'light'); })();
 function toggleTheme(){
   const cur = document.documentElement.getAttribute('data-theme')||'light';
@@ -367,7 +359,7 @@ function toggleTheme(){
   localStorage.setItem('zua_theme', nxt);
 }
 
-/* ========== STATE ========== */
+/* ============ STATE ============ */
 const API = '/api';
 let authToken = localStorage.getItem('zua_token') || null;
 let authCompte = null;
@@ -380,7 +372,8 @@ function setToken(t){ authToken=t; if(t) localStorage.setItem('zua_token',t); el
 function updateAuthUI(){
   const logged = !!authToken;
   document.getElementById('logoutBtn').style.display = logged?'flex':'none';
-  document.getElementById('notifBtn').style.display = (logged && authCompte && authCompte.type==='jeune')?'flex':'none';
+  const nb = document.getElementById('notifBtn');
+  if(nb) nb.style.display = (logged && authCompte && authCompte.type==='jeune')?'flex':'none';
 }
 async function chargerCompte(){
   if(!authToken) return null;
@@ -401,22 +394,22 @@ function authHeaders(){
   return authToken ? { 'Content-Type':'application/json','x-auth-token':authToken } : { 'Content-Type':'application/json' };
 }
 
-/* ========== HELPERS ========== */
-const rk = b => ({bronze:0,argent:1,or:2}[b]);
+/* ============ HELPERS ============ */
+const rk = b => ({bronze:0,argent:1,or:2}[b]||0);
 const avg = a => a.length ? a.reduce((s,x)=>s+x.note,0)/a.length : 0;
 const stars = n => { const f=Math.round(n); return "★".repeat(f)+"☆".repeat(5-f); };
 const bLabel = b => ({bronze:"Bronze",argent:"Argent",or:"Or"}[b]);
 const nav = h => location.hash = h;
 const esc = s => String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ========== API ========== */
+/* ============ API ============ */
 async function apiGet(u){ const r=await fetch(API+u,{headers:authToken?{'x-auth-token':authToken}:{}}); if(!r.ok)throw new Error('Erreur '+r.status); return await r.json(); }
 async function apiPost(u,b){ const r=await fetch(API+u,{method:'POST',headers:authHeaders(),body:b?JSON.stringify(b):undefined}); return await r.json(); }
 async function apiPut(u,b){ const r=await fetch(API+u,{method:'PUT',headers:authHeaders(),body:b?JSON.stringify(b):undefined}); return await r.json(); }
 
-/* ========== ROUTER ========== */
+/* ============ ROUTER ============ */
 function parseHash(){ const h=(location.hash.slice(1)||'/'); const [p,q]=h.split('?'); return { segs:p.split('/').filter(Boolean), params:new URLSearchParams(q||'') }; }
-function setHeader(title,crumb,showBack){
+function setHeader(title,showBack){
   document.getElementById('headerTitle').innerHTML = `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
       <path d="M7 11V7a2 2 0 1 1 4 0v4M11 11V5a2 2 0 1 1 4 0v6M15 11V6a2 2 0 1 1 4 0v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-3a2 2 0 1 1 4 0" stroke="#007FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -443,29 +436,22 @@ async function router(){
   }, 8000);
 
   try{
-    /* Onboarding au premier passage du visiteur */
     const seen = localStorage.getItem('zua_onb_seen');
-    if(!seen && segs.length===0){
-      showOnboarding();
-      return;
-    }
+    if(!seen && segs.length===0){ showOnboarding(); return; }
 
-    /* HOME */
     if(segs.length===0){
-      setHeader('ZUA MOSALA','',false);
+      setHeader('ZUA MOSALA',false);
       try{ profiles = await apiGet('/profils'); }catch(e){ profiles=[]; }
       try{ missions = await apiGet('/missions'); }catch(e){ missions=[]; }
       app.innerHTML = pageHome();
       return;
     }
 
-    /* AUTH */
-    if(segs[0]==='auth'){ setHeader('Connexion','',true); app.innerHTML = pageAuth(params.get('redirect')||'/'); return; }
+    if(segs[0]==='auth'){ setHeader('Connexion',true); app.innerHTML = pageAuth(params.get('redirect')||'/'); return; }
 
-    /* NOTIFICATIONS */
     if(segs[0]==='notifications'){
       if(!requireAuth('/notifications')) return;
-      setHeader('Notifications','',true);
+      setHeader('Notifications',true);
       try{ await apiPost('/notifications/marquer-vues'); }catch(e){}
       const list = await apiGet('/notifications');
       notifCount=0; updateNotifBadge();
@@ -473,111 +459,113 @@ async function router(){
       return;
     }
 
-    /* COMPTE */
     if(segs[0]==='compte'){
       if(!requireAuth('/compte')) return;
-      setHeader('Mon compte','',true);
+      setHeader('Mon compte',true);
       app.innerHTML = pageCompte();
       return;
     }
 
-    /* PROFIL PUBLIC */
     if(segs[0]==='p' && segs.length===2){
-      setHeader('Profil public','',true);
+      setHeader('Profil public',true);
       try{ const p = await apiGet('/public/profil/'+segs[1]); app.innerHTML = pageProfilPublic(p); }
       catch(e){ app.innerHTML = `<div class="card"><h3>Profil introuvable</h3></div>`; }
       return;
     }
 
-    /* JEUNE */
+    /* Blocage métier */
+    if(segs[0]==='jeune' && authCompte && authCompte.type==='employeur'){
+      app.innerHTML = `<div class="card"><h3>${I.lock} Accès réservé aux jeunes</h3><p class="small">Ton compte est un compte employeur.</p><a class="tile" href="#/employeur"><button class="block">Aller à l'espace employeur</button></a></div>`;
+      return;
+    }
+    if(segs[0]==='employeur' && authCompte && authCompte.type==='jeune'){
+      app.innerHTML = `<div class="card"><h3>${I.lock} Accès réservé aux employeurs</h3><p class="small">Ton compte est un compte jeune.</p><a class="tile" href="#/jeune/profil"><button class="block">Aller à mon profil</button></a></div>`;
+      return;
+    }
+
     if(segs[0]==='jeune' && segs[1]==='creer'){
       if(!requireAuth('/jeune/creer')) return;
-      if(authCompte && authCompte.type!=='jeune'){ app.innerHTML = `<div class="card"><h3>Réservé aux jeunes</h3><p class="small">Ton compte est un compte employeur.</p></div>`; return; }
       if(authCompte && authCompte.profil_id){ nav('/jeune/profil'); return; }
-      setHeader('Créer mon profil','',true);
+      setHeader('Créer mon profil',true);
       app.innerHTML = pageCreer();
       return;
     }
     if(segs[0]==='jeune' && segs[1]==='profil'){
       if(!requireAuth('/jeune/profil')) return;
       if(!authCompte || !authCompte.profil_id){ nav('/jeune/creer'); return; }
-      setHeader('Mon espace','',true);
+      setHeader('Mon espace',true);
       const p = await apiGet('/profils/'+authCompte.profil_id);
       let cands = [];
       try{ cands = await apiGet('/jeune/candidatures'); }catch(e){}
       app.innerHTML = pageEspaceJeune(p, cands);
-      renderQR(p.id);
+      if(espTab==='badge') renderQR(p.id);
       return;
     }
     if(segs[0]==='jeune' && segs[1]==='vitrine'){
       if(!requireAuth('/jeune/vitrine')) return;
-      setHeader('Booster ma vitrine','',true);
+      setHeader('Booster ma vitrine',true);
       const p = await apiGet('/profils/'+authCompte.profil_id);
       app.innerHTML = pageVitrine(p);
       return;
     }
 
-    /* MISSIONS (public) */
     if(segs[0]==='missions'){
-      setHeader('Offres et missions','',true);
+      setHeader('Offres et missions',true);
       try{ missions = await apiGet('/missions'+(params.get('q')?'?q='+encodeURIComponent(params.get('q')):'')); }catch(e){ missions=[]; }
       app.innerHTML = pageMissions(missions, params);
       return;
     }
 
-    /* EMPLOYEUR */
     if(segs[0]==='employeur' && segs.length===1){
       if(!requireAuth('/employeur')) return;
-      if(authCompte && authCompte.type!=='employeur'){ app.innerHTML = `<div class="card"><h3>Réservé aux employeurs</h3></div>`; return; }
-      setHeader('Espace employeur','',true);
+      setHeader('Espace employeur',true);
       app.innerHTML = pageEmployeur();
       return;
     }
     if(segs[0]==='employeur' && segs[1]==='publier'){
       if(!requireAuth('/employeur/publier')) return;
-      setHeader('Publier une offre','',true);
+      setHeader('Publier une offre',true);
       app.innerHTML = pagePublier();
       return;
     }
     if(segs[0]==='employeur' && segs[1]==='candidatures'){
       if(!requireAuth('/employeur/candidatures')) return;
-      setHeader('Candidatures','',true);
+      setHeader('Candidatures',true);
       const list = await apiGet('/employeurs/candidatures');
       app.innerHTML = pageCandidatures(list);
       return;
     }
     if(segs[0]==='employeur' && segs[1]==='resultats'){
       if(!requireAuth('/employeur/resultats')) return;
-      setHeader('Résultats','',true);
+      setHeader('Résultats',true);
       try{ profiles = await apiGet('/profils'); }catch(e){ profiles=[]; }
       app.innerHTML = pageResultats(params);
       return;
     }
     if(segs[0]==='institution' && segs[1]==='dashboard'){
       if(!requireAuth('/institution/dashboard')) return;
-      setHeader('Rapports institutionnels','',true);
+      setHeader('Rapports institutionnels',true);
       const stats = await apiGet('/stats');
       app.innerHTML = pageStats(stats);
       return;
     }
 
-    /* FICHE PROFIL */
     if(segs[0]==='profil' && segs.length===2){
       if(!requireAuth('/profil/'+segs[1])) return;
-      setHeader('Fiche profil','',true);
+      setHeader('Fiche profil',true);
       const p = await apiGet('/profils/'+segs[1]);
       app.innerHTML = pageFiche(p);
       return;
     }
     if(segs[0]==='profil' && segs[2]==='mission'){
       if(!requireAuth()) return;
-      setHeader('Confirmer la mission','',true);
+      setHeader('Confirmer la mission',true);
       app.innerHTML = pageMission(segs[1]);
       return;
     }
     if(segs[0]==='profil' && segs[2]==='avis'){
       if(!requireAuth()) return;
-      setHeader('Laisser un avis','',true);
+      setHeader('Laisser un avis',true);
       app.innerHTML = pageAvis(segs[1]);
       return;
     }
@@ -589,7 +577,7 @@ async function router(){
 }
 window.addEventListener('hashchange', router);
 
-/* ========== ONBOARDING ========== */
+/* ============ ONBOARDING ============ */
 function showOnboarding(){
   const ov = document.createElement('div');
   ov.className='onb-overlay'; ov.id='onbOverlay';
@@ -616,11 +604,6 @@ function showOnboarding(){
       <div class="onb-deco d1"></div><div class="onb-deco d2"></div>
       <div class="onb-title">La <span>solution</span></div>
       <p class="onb-text">Un portfolio numérique. Un badge vérifié par les employeurs. Un QR code consultable partout.</p>
-      <div class="onb-badges">
-        <div class="onb-badge"><b>Bronze</b>Déclaré</div>
-        <div class="onb-badge"><b>Argent</b>3 avis ≥ 3★</div>
-        <div class="onb-badge"><b>Or</b>5 avis ≥ 4★</div>
-      </div>
     </div>
 
     <div class="onb-slide" data-slide="3">
@@ -674,11 +657,12 @@ function closeOnboarding(goAuth){
   if(goAuth) nav('/auth');
 }
 
-/* ========== PAGE HOME ========== */
+/* ============ HOME ============ */
 function pageHome(){
   const log = !!authToken;
+  const isEmployeur = log && authCompte && authCompte.type === 'employeur';
   return `
-  ${log?`<div class="user-chip">${I.user} Connecté — ${esc(authCompte?authCompte.email:'')}</div>`:''}
+  ${log?`<div class="user-chip">${I.user} Connecté — ${esc(authCompte.email)}</div>`:''}
 
   <div class="hero">
     <div class="hero-top"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
@@ -690,22 +674,28 @@ function pageHome(){
     <div class="hero-footer">Créé pour les jeunes autodidactes de Kinshasa.</div>
   </div>
 
+  ${isEmployeur ? renderHomeEmployeur() : renderHomeJeune()}`
+}
+
+function renderHomeJeune(){
+  const log = !!authToken;
+  const isJeune = log && authCompte && authCompte.type === 'jeune';
+  return `
   <div class="search-bar">
     ${I.search}
-    <input id="homeSearch" placeholder="Métier, commune, mot-clé…" onkeydown="if(event.key==='Enter')doSearch()">
+    <input id="homeSearch" placeholder="Rechercher une offre d'emploi…" onkeydown="if(event.key==='Enter')doSearch()">
     <button onclick="doSearch()">OK</button>
   </div>
   <div class="search-tags">
+    <span class="search-tag" onclick="quickSearch('mariage')">Mariage</span>
     <span class="search-tag" onclick="quickSearch('couture')">Couture</span>
-    <span class="search-tag" onclick="quickSearch('mécanique')">Mécanique</span>
-    <span class="search-tag" onclick="quickSearch('coiffure')">Coiffure</span>
-    <span class="search-tag" onclick="quickSearch('électricité')">Électricité</span>
+    <span class="search-tag" onclick="quickSearch('serveur')">Serveur</span>
     <span class="search-tag" onclick="quickSearch('')">Tout voir</span>
   </div>
 
   <div class="rdc-strip">
     <div class="rdc-flag"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
-    <div>Projet conçu à Kinshasa, en RDC, pour valoriser le talent local.</div>
+    <div>Projet conçu à Kinshasa, en RDC.</div>
   </div>
 
   <div class="card">
@@ -727,57 +717,108 @@ function pageHome(){
     <h3>${I.check} Comment ça marche</h3>
     <div class="pillar">
       <div class="pillar-icon p1">${I.user}</div>
-      <div class="txt"><b>1. Le jeune crée son profil</b><span>Gratuit et sans diplôme.</span></div>
+      <div class="txt"><b>1. Crée ton profil</b><span>Gratuit et sans diplôme.</span></div>
     </div>
     <div class="pillar">
       <div class="pillar-icon p2">${I.badge}</div>
-      <div class="txt"><b>2. L'employeur note</b><span>Après la mission, sur 5 étoiles.</span></div>
+      <div class="txt"><b>2. Travaille et sois noté</b><span>Après la mission, l'employeur note sur 5 étoiles.</span></div>
     </div>
     <div class="pillar">
       <div class="pillar-icon p3">${I.rocket}</div>
-      <div class="txt"><b>3. Le badge se construit</b><span>Bronze → Argent → Or. Jamais acheté.</span></div>
+      <div class="txt"><b>3. Obtiens ton badge</b><span>Bronze → Argent → Or.</span></div>
     </div>
   </div>
 
   <div class="card">
-    <h3>${log?'Mon espace':'Commencer'}</h3>
+    <h3>${isJeune ? 'Mon espace' : 'Commencer'}</h3>
     <div class="choice">
       <a href="#/jeune/profil" onclick="event.preventDefault();demarrerJeune()">
         <div class="choice-btn primary">
           <div class="ico">${I.user}</div>
-          <div class="txt"><b>Je suis autodidacte</b><span>Créer mon profil gratuit</span></div>
-          <div style="opacity:.5">${I.arrow}</div>
-        </div>
-      </a>
-      <a href="#/employeur" onclick="event.preventDefault();demarrerEmployeur()">
-        <div class="choice-btn secondary">
-          <div class="ico">${I.brief}</div>
-          <div class="txt"><b>Je suis employeur</b><span>Recruter ou publier une offre</span></div>
+          <div class="txt"><b>${isJeune ? 'Mon profil autodidacte' : 'Je suis autodidacte'}</b>
+          <span>${isJeune ? 'Voir mes badges et candidatures' : 'Créer mon profil gratuit'}</span></div>
           <div style="opacity:.5">${I.arrow}</div>
         </div>
       </a>
       <a href="#/missions">
         <div class="choice-btn secondary">
           <div class="ico">${I.search}</div>
-          <div class="txt"><b>Voir les offres</b><span>Missions courtes et longs contrats</span></div>
+          <div class="txt"><b>Voir les offres d'emploi</b><span>Missions et emplois</span></div>
           <div style="opacity:.5">${I.arrow}</div>
         </div>
       </a>
+      ${!log ? `
+      <a href="#/auth?redirect=/employeur">
+        <div class="choice-btn secondary">
+          <div class="ico">${I.brief}</div>
+          <div class="txt"><b>Je suis employeur</b><span>Recruter ou publier une offre</span></div>
+          <div style="opacity:.5">${I.arrow}</div>
+        </div>
+      </a>` : ''}
     </div>
   </div>`;
 }
-function doSearch(){ const q=document.getElementById('homeSearch').value.trim(); nav('/missions'+(q?'?q='+encodeURIComponent(q):'')); }
-function quickSearch(q){ const i=document.getElementById('homeSearch'); if(i) i.value=q; nav('/missions'+(q?'?q='+encodeURIComponent(q):'')); }
-function demarrerJeune(){ if(!authToken) nav('/auth?redirect=/jeune/creer'); else if(authCompte && authCompte.profil_id) nav('/jeune/profil'); else nav('/jeune/creer'); }
-function demarrerEmployeur(){ if(!authToken) nav('/auth?redirect=/employeur'); else nav('/employeur'); }
 
-/* ========== PAGE AUTH ========== */
+function renderHomeEmployeur(){
+  const isVerified = !!(authCompte && authCompte.employeur_id);
+  const cat = (authCompte && authCompte.employeur_categorie) || 'particulier';
+  return `
+  <div class="search-bar">
+    ${I.search}
+    <input id="homeSearch" placeholder="Chercher un talent (métier, commune…)" onkeydown="if(event.key==='Enter')doSearchEmployeur()">
+    <button onclick="doSearchEmployeur()">OK</button>
+  </div>
+  <div class="search-tags">
+    <span class="search-tag" onclick="quickSearchEmployeur('couture')">Couture</span>
+    <span class="search-tag" onclick="quickSearchEmployeur('mécanique')">Mécanique</span>
+    <span class="search-tag" onclick="quickSearchEmployeur('coiffure')">Coiffure</span>
+  </div>
+
+  <div class="card">
+    <h3>${I.brief} Tableau de bord</h3>
+    <p class="small">Catégorie : <b>${esc(cat)}</b> ${isVerified?'<span class="badge verifie">VÉRIFIÉ</span>':'<span class="badge nonverifie">NON VÉRIFIÉ</span>'}</p>
+    ${!isVerified?`
+      <div class="principle">Vérifie ton profil employeur pour publier et noter.</div>
+      <a class="tile" href="#/employeur"><button class="block">Vérifier mon profil</button></a>
+    `:`
+      <a class="tile" href="#/employeur/publier" style="margin-bottom:8px"><button class="gold block">${I.plus} Publier une offre</button></a>
+      <a class="tile" href="#/employeur/candidatures"><button class="secondary block">${I.bell} Voir les candidatures</button></a>
+    `}
+  </div>
+
+  <div class="card">
+    <h3>${I.search} Chercher un talent</h3>
+    <label>Métier</label>
+    <input id="empSearchMetier" placeholder="Ex: couture, mécanique...">
+    <label>Commune</label>
+    <input id="empSearchCommune" placeholder="Ex: Matete, Gombe...">
+    <button class="block" style="margin-top:12px" onclick="lancerRechercheTalent()">${I.search} Rechercher</button>
+  </div>`;
+}
+
+function doSearch(){ const q=document.getElementById('homeSearch').value.trim(); nav('/missions'+(q?'?q='+encodeURIComponent(q):'')); }
+function quickSearch(q){ const i=document.getElementById('homeSearch'); if(i) i.value=q; doSearch(); }
+function doSearchEmployeur(){ const q=document.getElementById('homeSearch').value.trim(); nav('/employeur/resultats?metier='+encodeURIComponent(q)); }
+function quickSearchEmployeur(q){ const i=document.getElementById('homeSearch'); if(i) i.value=q; doSearchEmployeur(); }
+function lancerRechercheTalent(){
+  const m=encodeURIComponent(document.getElementById('empSearchMetier').value.trim());
+  const c=encodeURIComponent(document.getElementById('empSearchCommune').value.trim());
+  nav('/employeur/resultats?metier='+m+'&commune='+c);
+}
+function demarrerJeune(){
+  if(!authToken) nav('/auth?redirect=/jeune/creer');
+  else if(authCompte && authCompte.profil_id) nav('/jeune/profil');
+  else if(authCompte && authCompte.type !== 'jeune'){ alert('Ton compte est un compte employeur.'); return; }
+  else nav('/jeune/creer');
+}
+
+/* ============ AUTH ============ */
 function pageAuth(redirect){
   return `
   <div class="auth-wrap">
     <div class="card">
       <h3 style="justify-content:center;margin-bottom:6px">${I.lock} Connexion à ZUA MOSALA</h3>
-      <p class="small" style="text-align:center;margin:0 0 16px">Crée un compte ou connecte-toi pour continuer.</p>
+      <p class="small" style="text-align:center;margin:0 0 16px">Crée un compte ou connecte-toi.</p>
       <div class="auth-tabs">
         <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Connexion</div>
         <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Inscription</div>
@@ -797,10 +838,19 @@ function renderAuthForm(tab){
   if(tab==='signup'){
     f.innerHTML = `
       <label>Je suis</label>
-      <select id="a-type">
+      <select id="a-type" onchange="onAuthTypeChange()">
         <option value="jeune">Un jeune autodidacte</option>
         <option value="employeur">Un employeur / recruteur</option>
       </select>
+      <div id="catWrap" style="display:none">
+        <label>Type d'employeur</label>
+        <select id="a-cat">
+          <option value="particulier">Particulier (SMS)</option>
+          <option value="entreprise">Entreprise (RCCM)</option>
+          <option value="soustraitance">Sous-traitance (RCCM)</option>
+          <option value="institution">Institution / ONG</option>
+        </select>
+      </div>
       <label>Email</label>
       <input id="a-email" type="email" placeholder="ton@email.com" autocomplete="email">
       <label>Mot de passe (6 caractères min.)</label>
@@ -817,18 +867,25 @@ function renderAuthForm(tab){
       <p class="small" style="text-align:center;margin-top:10px">Pas de compte ? <a href="javascript:void(0)" onclick="switchAuthTab('signup')">Inscris-toi</a></p>`;
   }
 }
+function onAuthTypeChange(){
+  const t = document.getElementById('a-type').value;
+  document.getElementById('catWrap').style.display = t==='employeur'?'block':'none';
+}
 async function inscription(btn){
   const email = document.getElementById('a-email').value.trim();
   const pwd = document.getElementById('a-password').value;
   const type = document.getElementById('a-type').value;
+  const cat = document.getElementById('a-cat')?.value || null;
   if(!email || !pwd){ alert('Remplis tous les champs'); return; }
   btn.disabled=true; btn.textContent='Création…';
-  const data = await apiPost('/auth/inscription',{email,password:pwd,type});
+  const data = await apiPost('/auth/inscription',{email,password:pwd,type,employeur_categorie:cat});
   if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Créer mon compte'; return; }
   setToken(data.token);
   await chargerCompte();
-  const r = document.getElementById('authRedirect').value||'/';
-  nav(r);
+  const r = document.getElementById('authRedirect').value;
+  if(r && r !== '/') nav(r);
+  else if(authCompte && authCompte.type === 'employeur') nav('/employeur');
+  else nav('/jeune/creer');
 }
 async function connexion(btn){
   const email = document.getElementById('a-email').value.trim();
@@ -839,11 +896,14 @@ async function connexion(btn){
   if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Se connecter'; return; }
   setToken(data.token);
   await chargerCompte();
-  const r = document.getElementById('authRedirect').value||'/';
-  nav(r);
+  const r = document.getElementById('authRedirect').value;
+  if(r && r !== '/') nav(r);
+  else if(authCompte && authCompte.type === 'employeur') nav('/employeur');
+  else if(authCompte && authCompte.profil_id) nav('/jeune/profil');
+  else nav('/jeune/creer');
 }
 
-/* ========== COMPTE ========== */
+/* ============ COMPTE ============ */
 function pageCompte(){
   const c = authCompte||{};
   return `
@@ -861,19 +921,19 @@ function pageCompte(){
     <div class="choice">
       ${c.type==='jeune'?`
         <a href="#/jeune/profil"><div class="choice-btn secondary"><div class="ico">${I.user}</div><div class="txt"><b>Mon profil jeune</b><span>Badges, avis, QR code</span></div></div></a>`:`
-        <a href="#/employeur"><div class="choice-btn secondary"><div class="ico">${I.brief}</div><div class="txt"><b>Espace employeur</b><span>Recruter, publier, voir candidatures</span></div></div></a>`}
+        <a href="#/employeur"><div class="choice-btn secondary"><div class="ico">${I.brief}</div><div class="txt"><b>Espace employeur</b><span>Recruter, publier, candidatures</span></div></div></a>`}
     </div>
   </div>`;
 }
 
-/* ========== NOTIFICATIONS ========== */
+/* ============ NOTIFICATIONS ============ */
 function pageNotifications(list){
   const items = (list||[]).length ? list.map(n=>`
     <div class="card">
       <div style="display:flex;gap:10px;align-items:flex-start">
         <div style="width:32px;height:32px;border-radius:9px;background:var(--light);
-          display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <span style="color:var(--blue)">${I.bell}</span>
+          display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue)">
+          ${I.bell}
         </div>
         <div style="flex:1;min-width:0">
           <b style="font-size:.85rem">${esc(n.titre||'')}</b>
@@ -886,12 +946,12 @@ function pageNotifications(list){
   return `<div class="card"><h3>${I.bell} Notifications</h3></div>${items}`;
 }
 
-/* ========== CREER PROFIL ========== */
+/* ============ CREER PROFIL ============ */
 function pageCreer(){
   return `
   <div class="card">
     <h3>${I.user} Créer mon profil</h3>
-    <p class="small">Pas besoin de diplôme. Décris juste ce que tu sais faire.</p>
+    <p class="small">Pas besoin de diplôme.</p>
     <label>Nom complet</label><input id="f-nom" placeholder="Ex: Fiston K.">
     <label>Métier</label><input id="f-metier" placeholder="Ex: soudure, coiffure, mécanique...">
     <label>Commune</label><input id="f-commune" placeholder="Ex: Matete, Masina, Gombe...">
@@ -899,7 +959,7 @@ function pageCreer(){
     <label>Contact (téléphone / WhatsApp)</label><input id="f-contact" placeholder="+243 ...">
     <div class="checkline">
       <input type="checkbox" id="f-consent">
-      <label class="consent" for="f-consent" style="margin:0">J'accepte que mon contact et mes réalisations soient utilisés pour ce service, conformément aux règles de protection des données personnelles en RDC.</label>
+      <label class="consent" for="f-consent" style="margin:0">J'accepte que mon contact et mes réalisations soient utilisés, conformément aux règles de protection des données personnelles en RDC.</label>
     </div>
     <button class="block" style="margin-top:14px" onclick="creerProfil(this)">Créer mon profil — gratuit</button>
   </div>`;
@@ -922,9 +982,10 @@ async function creerProfil(btn){
   nav('/jeune/profil');
 }
 
-/* ========== ESPACE JEUNE (avec onglets) ========== */
+/* ============ ESPACE JEUNE ============ */
 function pageEspaceJeune(p, cands){
   const avis = p.avis||[];
+  const isPremium = p.vitrine_premium == 1;
   const avisHtml = avis.map(a=>`
     <div class="avisItem">
       <div class="stars">${stars(a.note)}</div>
@@ -944,12 +1005,15 @@ function pageEspaceJeune(p, cands){
 
   return `
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div style="min-width:0">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="min-width:0;flex:1">
         <h3 style="margin:0">${esc(p.nom)}</h3>
         <div class="small">${esc(p.metier)} · ${esc(p.commune)}</div>
       </div>
-      <span class="badge ${p.badge}">${bLabel(p.badge)}</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+        <span class="badge ${p.badge}">${bLabel(p.badge)}</span>
+        ${isPremium ? '<span class="badge premium">PREMIUM</span>' : ''}
+      </div>
     </div>
     <div class="stars" style="margin-top:8px">${avis.length?stars(avg(avis))+' ('+avis.length+' avis)':'Pas encore d\'avis'}</div>
     <div class="small" style="margin-top:5px">${I.phone} ${esc(p.contact||'')}</div>
@@ -970,7 +1034,7 @@ function pageEspaceJeune(p, cands){
     <div class="card">
       <h3>${I.brief} Actions rapides</h3>
       <a class="tile" href="#/missions" style="margin-bottom:8px"><button class="gold block">${I.search} Voir les offres d'emploi</button></a>
-      <a class="tile" href="#/jeune/vitrine"><button class="secondary block">${p.vitrine_premium?'Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
+      <a class="tile" href="#/jeune/vitrine"><button class="secondary block">${isPremium?'Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
     </div>
     <div class="card">
       <h3>${I.bell} Avis reçus</h3>
@@ -988,10 +1052,8 @@ function pageEspaceJeune(p, cands){
       <h3>${I.badge} Mon portfolio public</h3>
       <p class="small">Scanne ce QR code ou partage le lien :</p>
       <div id="qr"></div>
-      <div class="small" style="text-align:center;word-break:break-all">
-        ${location.origin}/#/p/${p.id}
-      </div>
-      <div class="principle">Le badge repose uniquement sur la preuve terrain. Aucun diplôme requis. Aucun paiement pour être certifié.</div>
+      <div class="small" style="text-align:center;word-break:break-all">${location.origin}/#/p/${p.id}</div>
+      <div class="principle">Le badge repose uniquement sur la preuve terrain. Jamais acheté.</div>
     </div>`:''}`;
 }
 function setEspTab(t){ espTab=t; router(); }
@@ -1013,31 +1075,42 @@ async function repondreAvis(avisId){
   router();
 }
 
-/* ========== VITRINE ========== */
+/* ============ VITRINE ============ */
 function pageVitrine(p){
+  const isPremium = p.vitrine_premium == 1;
   return `
   <div class="card">
     <h3>${I.badge} Booster ma vitrine</h3>
-    <p class="small">Met ton profil en avant dans une section « Sponsorisé ».</p>
+    <p class="small">Met ton profil en avant. Aucun badge n'est acheté — seule la visibilité est payante.</p>
     <label>Moyen de paiement</label>
     <select id="v-moyen"><option>Mobile Money (Airtel / Orange)</option><option>Carte virtuelle</option><option>Visa / Mastercard</option></select>
     <label>Numéro ou référence</label>
     <input id="v-ref" placeholder="Ex: +243 9...">
-    <button class="block" style="margin-top:14px" onclick="payerVitrine(this)" ${p.vitrine_premium?'disabled':''}>${p.vitrine_premium?'Vitrine active':'Payer 2,5 $ — 30 jours'}</button>
+    <button class="block" style="margin-top:14px" onclick="payerVitrine(this)" ${isPremium?'disabled':''}>${isPremium?'Vitrine active':'Payer 2,5 $ — 30 jours'}</button>
   </div>`;
 }
 async function payerVitrine(btn){
   const ref = document.getElementById('v-ref').value.trim();
   if(!ref){ alert('Renseigne une référence.'); return; }
+  if(!authCompte || !authCompte.profil_id){ alert('Profil introuvable. Reconnecte-toi.'); return; }
   btn.disabled=true; btn.textContent='Activation…';
-  await apiPut('/profils/'+authCompte.profil_id+'/premium');
-  alert('Vitrine activée pour 30 jours.');
-  nav('/jeune/profil');
+  try {
+    const r = await fetch(API+'/profils/'+authCompte.profil_id+'/premium', { method:'PUT', headers: authHeaders() });
+    const data = await r.json();
+    if(!r.ok || data.error){ alert('Erreur : ' + (data.error || 'Impossible d\'activer')); btn.disabled=false; btn.textContent='Réessayer'; return; }
+    alert('Vitrine activée pour 30 jours.');
+    await chargerCompte();
+    router();
+  } catch(e){
+    alert('Erreur réseau : ' + e.message);
+    btn.disabled=false; btn.textContent='Réessayer';
+  }
 }
 
-/* ========== PROFIL PUBLIC ========== */
+/* ============ PROFIL PUBLIC ============ */
 function pageProfilPublic(p){
   const a = p.avis||[];
+  const isPremium = p.vitrine_premium == 1;
   const h = a.slice(0,5).map(x=>`<div class="avisItem"><div class="stars">${stars(x.note)}</div><div style="margin-top:4px">${esc(x.commentaire||'')}</div>${x.reponse?`<div class="reponse"><b>Réponse :</b> ${esc(x.reponse)}</div>`:''}</div>`).join('')||'<p class="small">Pas encore d\'avis.</p>';
   return `
   <div class="hero" style="margin-bottom:12px">
@@ -1049,7 +1122,10 @@ function pageProfilPublic(p){
     </div>
   </div>
   <div class="card">
-    <div style="margin-bottom:8px"><span class="badge ${p.badge}" style="font-size:.8rem;padding:5px 12px">${bLabel(p.badge)}</span></div>
+    <div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <span class="badge ${p.badge}" style="font-size:.8rem;padding:5px 12px">${bLabel(p.badge)}</span>
+      ${isPremium ? '<span class="badge premium">PREMIUM</span>' : ''}
+    </div>
     <p class="small" style="margin:0 0 10px">${esc(p.description||'')}</p>
     ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:''}
     <div class="stars" style="font-size:1rem">${a.length?stars(avg(a))+' ('+a.length+' avis)':'Pas encore d\'avis'}</div>
@@ -1060,7 +1136,7 @@ function pageProfilPublic(p){
   </div>`;
 }
 
-/* ========== MISSIONS ========== */
+/* ============ MISSIONS ============ */
 function pageMissions(list, params){
   const q = (params&&params.get('q'))||'';
   const f = (list||[]).filter(m=>!q||(m.titre||'').toLowerCase().includes(q.toLowerCase())||(m.description||'').toLowerCase().includes(q.toLowerCase()));
@@ -1105,10 +1181,10 @@ async function postuler(missionId){
   if(!authCompte.profil_id){ alert('Crée d\'abord ton profil.'); nav('/jeune/creer'); return; }
   const data = await apiPost('/missions/'+missionId+'/postuler');
   if(data.error){ alert(data.error); return; }
-  alert('Candidature envoyée. L\'employeur recevra une notification.');
+  alert('Candidature envoyée.');
 }
 
-/* ========== PUBLIER OFFRE ========== */
+/* ============ PUBLIER OFFRE ============ */
 function pagePublier(){
   const cat = (authCompte && authCompte.employeur_categorie)||'particulier';
   const isVerified = !!(authCompte && authCompte.employeur_id);
@@ -1116,10 +1192,10 @@ function pagePublier(){
   return `
   <div class="card">
     <h3>${I.plus} Publier une offre</h3>
-    <p class="small">Type d'employeur : <b>${esc(cat)}</b>${isVerified?' <span class="badge verifie">Vérifié</span>':''}</p>
-    ${!isVerified?`<div class="principle">Vérifie ton profil employeur d'abord (RCCM ou SMS) pour publier.</div>`:''}
-    <label>Titre de l'offre</label><input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage">
-    <label>Description</label><textarea id="mi-desc" rows="3" placeholder="Détails, horaires, lieu..."></textarea>
+    <p class="small">Type : <b>${esc(cat)}</b> ${isVerified?'<span class="badge verifie">VÉRIFIÉ</span>':'<span class="badge nonverifie">NON VÉRIFIÉ</span>'}</p>
+    ${!isVerified?`<div class="principle">Vérifie ton profil employeur d'abord.</div>`:''}
+    <label>Titre</label><input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage">
+    <label>Description</label><textarea id="mi-desc" rows="3"></textarea>
     <label>Type de contrat</label>
     <select id="mi-type">
       <option value="mission">Mission ponctuelle</option>
@@ -1130,7 +1206,7 @@ function pagePublier(){
       <option value="courte">Courte (1-3 jours)</option>
       ${canPublishLong?`<option value="longue">Longue durée</option>`:''}
     </select>
-    ${!canPublishLong?`<div class="small" style="margin-top:6px;color:var(--text-soft)">Les offres longue durée sont réservées aux entreprises vérifiées RCCM.</div>`:''}
+    ${!canPublishLong?`<div class="small" style="margin-top:6px">Les offres longues sont réservées aux entreprises vérifiées RCCM.</div>`:''}
     <label>Commune</label><input id="mi-commune" placeholder="Ex: Gombe">
     <label>Budget / salaire</label><input id="mi-budget" placeholder="Ex: 20 $/jour, 250 $/mois...">
     <label>Nombre de personnes</label><input id="mi-nb" type="number" min="1" value="1">
@@ -1157,7 +1233,7 @@ async function publier(btn){
   nav('/missions');
 }
 
-/* ========== CANDIDATURES (employeur) ========== */
+/* ============ CANDIDATURES EMPLOYEUR ============ */
 function pageCandidatures(list){
   const newCount = (list||[]).filter(c=>c.statut==='nouvelle').length;
   const items = (list||[]).length ? list.map(c=>`
@@ -1170,30 +1246,28 @@ function pageCandidatures(list){
       <div class="small" style="margin-top:5px">Pour : <b>${esc(c.mission_titre||'—')}</b></div>
       <div class="small" style="margin-top:3px">${I.phone} ${esc(c.profil_contact||'—')}</div>
       <div style="margin-top:9px;display:flex;gap:6px">
-        <button class="gold" style="flex:1" onclick="acceptCand(${c.id})">Accepter</button>
-        <button class="secondary" style="flex:1" onclick="refuseCand(${c.id})">Refuser</button>
+        <button class="gold" style="flex:1" onclick="alert('Acceptée. Le jeune sera notifié.')">Accepter</button>
+        <button class="secondary" style="flex:1" onclick="alert('Refusée.')">Refuser</button>
       </div>
     </div>`).join('') : '<div class="card"><p class="small">Aucune candidature.</p></div>';
   return `
   ${newCount>0?`<div class="notif">${I.bell}<div>${newCount} nouvelle(s) candidature(s).</div></div>`:''}
   ${items}`;
 }
-function acceptCand(id){ alert('Candidature acceptée.'); }
-function refuseCand(id){ alert('Candidature refusée.'); }
 
-/* ========== EMPLOYEUR (accueil avec vérification) ========== */
+/* ============ EMPLOYEUR ACCUEIL ============ */
 function pageEmployeur(){
   const cat = (authCompte && authCompte.employeur_categorie)||'particulier';
   const isVerified = !!(authCompte && authCompte.employeur_id);
   return `
   <div class="card">
     <h3>${I.brief} Espace employeur</h3>
-    <p class="small">Catégorie : <b>${esc(cat)}</b>${isVerified?' <span class="badge verifie">Vérifié</span>':''}</p>
+    <p class="small">Catégorie : <b>${esc(cat)}</b> ${isVerified?'<span class="badge verifie">VÉRIFIÉ</span>':'<span class="badge nonverifie">NON VÉRIFIÉ</span>'}</p>
     ${!isVerified?`
       <label>${cat==='particulier'?'Ton numéro (SMS)':'Numéro RCCM'}</label>
       <input id="verif-ref" placeholder="${cat==='particulier'?'+243 9...':'CD/KNG/RCCM/...'}">
       <button class="secondary block" style="margin-top:10px" onclick="verifierEmployeur(this)">Vérifier mon profil</button>
-      <div class="principle">Seuls les employeurs vérifiés peuvent publier des offres et noter des jeunes.</div>
+      <div class="principle">Seuls les employeurs vérifiés peuvent publier et noter.</div>
     `:`
       <a class="tile" href="#/employeur/publier"><button class="gold block" style="margin-bottom:8px">${I.plus} Publier une offre</button></a>
       <a class="tile" href="#/employeur/candidatures"><button class="secondary block" style="margin-bottom:8px">${I.bell} Voir candidatures</button></a>
@@ -1222,7 +1296,7 @@ function rechercheEmployeur(){
   nav('/employeur/resultats?metier='+m+'&commune='+c);
 }
 
-/* ========== RESULTATS ========== */
+/* ============ RESULTATS ============ */
 function pageResultats(params){
   const metier = (params.get('metier')||'').toLowerCase();
   const commune = (params.get('commune')||'').toLowerCase();
@@ -1233,23 +1307,28 @@ function pageResultats(params){
     <div class="result">
       <a href="#/profil/${p.id}">
         <b>${esc(p.nom)}</b> <span class="badge ${p.badge}">${bLabel(p.badge)}</span>
+        ${p.vitrine_premium==1?' <span class="badge premium">PREMIUM</span>':''}
         <div class="small" style="margin-top:3px">${esc(p.metier)} · ${esc(p.commune)} · ${p.nb_avis>0?stars(parseFloat(p.moyenne))+' ('+p.nb_avis+')':'aucun avis'}</div>
       </a>
     </div>`).join('') : '<p class="small">Aucun profil.</p>';
   return `<div class="card"><h3>${I.search} Résultats</h3><p class="small" style="margin-bottom:10px">Classement par mérite uniquement.</p>${listHtml}</div>`;
 }
 
-/* ========== FICHE PROFIL ========== */
+/* ============ FICHE PROFIL ============ */
 function pageFiche(p){
   if(!p || p.error) return `<div class="card"><p>Profil introuvable.</p></div>`;
   const a = (p.avis||[]).slice(0,5);
   const ah = a.map(x=>`<div class="avisItem"><div class="stars">${stars(x.note)}</div><div style="margin-top:4px">${esc(x.commentaire||'')}</div>${x.reponse?`<div class="reponse"><b>Réponse :</b> ${esc(x.reponse)}</div>`:''}</div>`).join('')||'<p class="small">Pas encore d\'avis.</p>';
-  const dejaNote = (p.avis||[]).some(x=>x.employeur_id === authCompte?.employeur_id);
+  const dejaNote = (p.avis||[]).some(x=>x.employeur_id === (authCompte?.employeur_id));
+  const isPremium = p.vitrine_premium == 1;
   return `
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div style="min-width:0"><h3 style="margin:0">${esc(p.nom)}</h3><div class="small">${esc(p.metier)} · ${esc(p.commune)}</div></div>
-      <span class="badge ${p.badge}">${bLabel(p.badge)}</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="min-width:0;flex:1"><h3 style="margin:0">${esc(p.nom)}</h3><div class="small">${esc(p.metier)} · ${esc(p.commune)}</div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+        <span class="badge ${p.badge}">${bLabel(p.badge)}</span>
+        ${isPremium?'<span class="badge premium">PREMIUM</span>':''}
+      </div>
     </div>
     <p class="small" style="margin:12px 0">${esc(p.description||'')}</p>
     ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:''}
@@ -1265,7 +1344,7 @@ function pageFiche(p){
   </div>`;
 }
 
-/* ========== MISSION ========== */
+/* ============ MISSION ============ */
 function pageMission(id){
   return `
   <div class="card">
@@ -1281,7 +1360,7 @@ function confirmerMission(id){
   nav('/profil/'+id+'/avis');
 }
 
-/* ========== AVIS ========== */
+/* ============ AVIS ============ */
 let noteChoisie = 0;
 function pageAvis(id){
   noteChoisie = 0;
@@ -1305,7 +1384,7 @@ async function validerAvis(id, btn){
   nav('/profil/'+id);
 }
 
-/* ========== STATS ========== */
+/* ============ STATS ============ */
 function pageStats(s){
   if(!s||s.error) return `<div class="card"><p>Erreur.</p></div>`;
   const c = (s.par_commune||[]).map(x=>`<div class="result"><span>${esc(x.commune||'—')}</span><b>${x.total}</b></div>`).join('')||'<p class="small">Aucune donnée.</p>';
@@ -1325,7 +1404,7 @@ function pageStats(s){
   <div class="card"><h4>Répartition des badges</h4>${b}</div>`;
 }
 
-/* ========== NOTIF BADGE ========== */
+/* ============ NOTIF BADGE ============ */
 async function checkNotif(){
   if(!authToken || !authCompte || authCompte.type!=='jeune') return;
   try{
@@ -1339,7 +1418,7 @@ function updateNotifBadge(){
   if(dot) dot.style.display = notifCount>0?'block':'none';
 }
 
-/* ========== INIT ========== */
+/* ============ INIT ============ */
 (async function init(){
   await chargerCompte();
   updateAuthUI();
