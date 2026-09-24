@@ -223,7 +223,6 @@ async function router(){
   app.innerHTML=`<div class="loader">Chargement…</div>`;
   updateThemeBtn();
 
-  // Filet de sécurité : 8 secondes max
   const timeoutId = setTimeout(()=>{
     if(app.innerHTML.includes("Chargement")){
       app.innerHTML=`<div class="card">
@@ -339,7 +338,7 @@ function pageHome(){
   const dejaInscrit = !!monProfilId;
   return `
   <div class="hero">
-    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1591035897819-f4bdf739f446?w=800&q=80');">
+    <div class="hero-img" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Kinshasa_2003.jpg/1280px-Kinshasa_2003.jpg');">
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <h1>ZUA <span>MOSALA</span></h1>
@@ -358,7 +357,7 @@ function pageHome(){
   </div>
 
   <div class="card photo-block">
-    <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&q=80" alt="Jeune artisan au travail">
+    <img src="https://images.pexels.com/photos/30754257/pexels-photo-30754257.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Scène de rue à Kinshasa">
     <div class="photo-body">
       <h3 style="margin:0 0 6px">Le talent est partout. La preuve nulle part.</h3>
       <p class="small" style="margin:0">
@@ -371,15 +370,15 @@ function pageHome(){
   <div class="card">
     <h3 style="margin-top:0">Comment ça marche</h3>
     <div class="pillar">
-      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=200&q=80" alt="Jeune autodidacte">
+      <img src="https://images.pexels.com/photos/18457118/pexels-photo-18457118.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Portrait d'un homme à Kinshasa">
       <div class="txt"><b>1. Le jeune crée son profil</b><span>Nom, métier, commune, réalisations concrètes. Gratuit.</span></div>
     </div>
     <div class="pillar">
-      <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&q=80" alt="Employeur">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Kinshasa_2003.jpg/400px-Kinshasa_2003.jpg" alt="Employeur">
       <div class="txt"><b>2. L'employeur recrute et note</b><span>Après la mission, il donne une note sur 5 étoiles et un commentaire.</span></div>
     </div>
     <div class="pillar">
-      <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&q=80" alt="Badge vérifié">
+      <img src="https://images.pexels.com/photos/30754257/pexels-photo-30754257.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Badge vérifié">
       <div class="txt"><b>3. Le badge se construit</b><span>Bronze (déclaré), Argent (3 avis ≥3★), Or (5 avis ≥4★). Impossible à acheter.</span></div>
     </div>
     <div class="principle">Le badge repose uniquement sur la preuve terrain. Aucun diplôme requis. Aucun paiement pour être certifié.</div>
@@ -387,10 +386,10 @@ function pageHome(){
 
   <div class="card photo-block" style="padding:0">
     <div class="photo-grid">
-      <img src="https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?w=400&q=80" alt="Coiffure">
-      <img src="https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=400&q=80" alt="Couture">
-      <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" alt="Mécanique">
-      <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&q=80" alt="Électricité">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/March%C3%A9_Central_de_Kinshasa.jpg/600px-March%C3%A9_Central_de_Kinshasa.jpg" alt="Marché central de Kinshasa">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Atelier_de_menuiserie_%C3%A0_Kinshasa.jpg/600px-Atelier_de_menuiserie_%C3%A0_Kinshasa.jpg" alt="Atelier de menuiserie">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Kinshasa_Street_Scene.jpg/600px-Kinshasa_Street_Scene.jpg" alt="Scène de rue à Kinshasa">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Atelier_de_menuiserie_%C3%A0_Kinshasa.jpg/600px-Atelier_de_menuiserie_%C3%A0_Kinshasa.jpg" alt="Artisan congolais">
     </div>
     <div class="photo-body">
       <h3 style="margin:0 0 6px">Des métiers, pas des diplômes.</h3>
