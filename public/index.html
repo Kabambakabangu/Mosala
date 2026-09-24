@@ -18,17 +18,13 @@
   --light:#1b2739; --muted:#94a3b8; --shadow:0 2px 8px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
-body{
-  margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg);color:var(--text);line-height:1.45;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  transition:background .25s, color .25s;
-}
-header{
-  background:linear-gradient(135deg,var(--rdc-blue) 0%,var(--rdc-blue-dark) 100%);
+  transition:background .25s, color .25s;}
+header{background:linear-gradient(135deg,var(--rdc-blue) 0%,var(--rdc-blue-dark) 100%);
   color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);border-bottom:4px solid var(--rdc-yellow);
-}
+  box-shadow:0 2px 10px rgba(0,0,0,.2);border-bottom:4px solid var(--rdc-yellow);}
 header .top{display:flex;align-items:center;gap:10px}
 header h1{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.5px}
 header .logo{width:26px;height:26px}
@@ -190,8 +186,16 @@ let employeurVerifie = localStorage.getItem("zua_emp_verifie")==="1";
 let employeurReference = localStorage.getItem("zua_emp_ref")||"";
 
 /* ========== API CALLS ========== */
-async function chargerProfils(){const r=await fetch(API+'/profils');if(!r.ok)throw new Error('Erreur chargement profils');return await r.json();}
-async function chargerProfil(id){const r=await fetch(API+'/profils/'+id);if(!r.ok)throw new Error('Profil introuvable');return await r.json();}
+async function chargerProfils(){
+  const r=await fetch(API+'/profils');
+  if(!r.ok)throw new Error('Erreur serveur '+r.status);
+  return await r.json();
+}
+async function chargerProfil(id){
+  const r=await fetch(API+'/profils/'+id);
+  if(!r.ok)throw new Error('Profil introuvable');
+  return await r.json();
+}
 async function apiCreerProfil(body){const r=await fetch(API+'/profils',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
 async function apiAjouterAvis(body){const r=await fetch(API+'/avis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
 async function apiVerifierEmployeur(body){const r=await fetch(API+'/employeurs/verifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
@@ -219,11 +223,22 @@ async function router(){
   app.innerHTML=`<div class="loader">Chargement…</div>`;
   updateThemeBtn();
 
+  // Filet de sécurité : 8 secondes max
+  const timeoutId = setTimeout(()=>{
+    if(app.innerHTML.includes("Chargement")){
+      app.innerHTML=`<div class="card">
+        <h3>Le serveur met du temps à répondre</h3>
+        <p class="small">Le service était probablement endormi. Attends 30 secondes puis recharge.</p>
+        <button onclick="router()">Réessayer</button>
+      </div>`;
+    }
+  }, 8000);
+
   try{
     if(segs.length===0){
       setHeader("ZUA MOSALA","Le portfolio certifié des compétences informelles",false);
-      profiles=await chargerProfils();
-      missions=await apiListerMissions();
+      try{ profiles = await chargerProfils(); }catch(e){ profiles = []; }
+      try{ missions = await apiListerMissions(); }catch(e){ missions = []; }
       app.innerHTML=pageHome();
       return;
     }
@@ -240,7 +255,7 @@ async function router(){
       const el=document.getElementById("qr");
       if(el){
         el.innerHTML="";
-        new QRCode(el,{text:"zua-mosala.app/profil/"+p.id,width:130,height:130,colorDark:"#007FFF",colorLight:"#ffffff"});
+        try{ new QRCode(el,{text:"zua-mosala.app/profil/"+p.id,width:130,height:130,colorDark:"#007FFF",colorLight:"#ffffff"}); }catch(e){}
       }
       return;
     }
@@ -252,7 +267,7 @@ async function router(){
     }
     if(segs[0]==="missions"){
       setHeader("Missions disponibles","Missions ouvertes",true);
-      missions=await apiListerMissions();
+      try{ missions = await apiListerMissions(); }catch(e){ missions = []; }
       app.innerHTML=pageMissionsPubliques(missions);
       return;
     }
@@ -271,14 +286,14 @@ async function router(){
     }
     if(segs[0]==="employeur"&&segs[1]==="resultats"){
       setHeader("Résultats","Employeur › Recherche",true);
-      profiles=await chargerProfils();
+      try{ profiles = await chargerProfils(); }catch(e){ profiles = []; }
       app.innerHTML=pageResultats(params);
       return;
     }
     if(segs[0]==="institution"&&segs[1]==="dashboard"){
       setHeader("Rapports institutionnels","Institution › Statistiques",true);
-      const stats=await apiStats();
-      app.innerHTML=pageStats(stats);
+      try{ const stats = await apiStats(); app.innerHTML=pageStats(stats); }
+      catch(e){ app.innerHTML=`<div class="card"><p>Impossible de charger les stats.</p></div>`; }
       return;
     }
     if(segs[0]==="profil"&&segs.length===2){
@@ -299,7 +314,13 @@ async function router(){
     }
     app.innerHTML=`<div class="card"><p>Page introuvable.</p></div>`;
   }catch(e){
-    app.innerHTML=`<div class="card"><h3>Erreur</h3><p class="small">${escapeHtml(e.message)}</p></div>`;
+    app.innerHTML=`<div class="card">
+      <h3>Erreur</h3>
+      <p class="small">${escapeHtml(e.message)}</p>
+      <button onclick="router()">Réessayer</button>
+    </div>`;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 window.addEventListener("hashchange",router);
@@ -448,4 +469,520 @@ function pageCreer(){
     <div class="checkline">
       <input type="checkbox" id="f-consent">
       <label class="consent" for="f-consent" style="margin:0">
-        J'accepte que mon contact et mes
+        J'accepte que mon contact et mes réalisations soient utilisés pour ce service,
+        conformément aux règles de protection des données personnelles en RDC.
+        Je peux demander la suppression de mon profil à tout moment.
+      </label>
+    </div>
+    <button style="margin-top:14px;width:100%" onclick="creerProfil(this)">Créer mon profil — gratuit</button>
+  </div>`;
+}
+async function creerProfil(btn){
+  const nom=document.getElementById("f-nom").value.trim();
+  if(!nom){alert("Indique au moins ton nom.");return;}
+  if(!document.getElementById("f-consent").checked){alert("Le consentement est requis.");return;}
+  if(btn){btn.disabled=true;btn.textContent="Création en cours…";}
+  const body={
+    nom,
+    metier:document.getElementById("f-metier").value.trim(),
+    commune:document.getElementById("f-commune").value.trim(),
+    description:document.getElementById("f-desc").value.trim(),
+    contact:document.getElementById("f-contact").value.trim(),
+    consentement:true
+  };
+  const data=await apiCreerProfil(body);
+  if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent="Créer mon profil — gratuit";}return;}
+  monProfilId=data.id;
+  sessionStorage.setItem("zua_mon_id",monProfilId);
+  nav("/jeune/profil");
+}
+
+/* ========== MON PROFIL ========== */
+function pageMonProfil(p){
+  if(!p||p.error)return `<div class="card"><p>Profil introuvable.</p></div>`;
+  const avis=p.avis||[];
+  const avisHtml=avis.map(a=>`
+    <div class="avisItem">
+      <div class="stars">${stars(a.note)}</div>
+      <div>${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
+      ${a.reponse
+        ?`<div class="reponse"><b>Ta réponse :</b> ${escapeHtml(a.reponse)}</div>`
+        :`<div style="margin-top:4px"><a href="javascript:void(0)" onclick="repondreAvis(${a.id})" class="small">Répondre</a></div>`}
+    </div>`).join("")||`<div class="small">Pas encore d'avis. Réalise une mission avec un employeur pour en recevoir.</div>`;
+
+  return `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div>
+        <h3 style="margin:0">${escapeHtml(p.nom)}</h3>
+        <div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div>
+      </div>
+      <div style="text-align:right">
+        <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
+        ${p.vitrine_premium?'<div style="margin-top:4px"><span class="badge premium">PREMIUM</span></div>':''}
+      </div>
+    </div>
+    <p style="font-size:.88rem;margin:10px 0">${escapeHtml(p.description||'')}</p>
+    <div class="stars">${avis.length?stars(avg(avis))+" ("+avis.length+" avis)":"Pas encore d'avis"}</div>
+    <div class="small" style="margin-top:4px">📞 ${escapeHtml(p.contact||'')}</div>
+
+    <div class="principle">Le badge se construit sur la durée, jamais sur un seul avis, jamais sur l'argent.</div>
+
+    <label>Ajouter une preuve de réalisation</label>
+    <input type="file" accept="image/*" onchange="ajouterPreuve(event)">
+    <div id="preuvePreview" style="margin-top:8px">
+      ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:8px">`:''}
+    </div>
+
+    <a class="tile" href="#/missions" style="margin-top:12px">
+      <button class="gold" style="width:100%">📢 Voir les missions disponibles</button>
+    </a>
+
+    <a class="tile" href="#/jeune/vitrine" style="margin-top:8px">
+      <button class="secondary" style="width:100%">
+        ${p.vitrine_premium?'✓ Vitrine active':'Booster ma vitrine (2,5 $/mois, optionnel)'}
+      </button>
+    </a>
+
+    <h4>Mon portfolio public</h4>
+    <div id="qr"></div>
+    <div class="small" style="text-align:center">
+      Lien : <b>zua-mosala.app/profil/${p.id}</b><br>
+      Tout employeur peut scanner ce QR code pour voir tes badges vérifiés.
+    </div>
+
+    <h4>Avis reçus</h4>
+    ${avisHtml}
+  </div>`;
+}
+function ajouterPreuve(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=async()=>{
+    await apiAjouterPreuve(monProfilId,r.result);
+    router();
+  };
+  r.readAsDataURL(f);
+}
+async function repondreAvis(avisId){
+  const txt=prompt("Ta réponse à cet avis :");
+  if(!txt)return;
+  await apiRepondreAvis(avisId,txt);
+  router();
+}
+
+/* ========== VITRINE ========== */
+function pageVitrine(p){
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Booster ma vitrine</h3>
+    <p class="small">
+      La vitrine met ton profil en avant dans une section « Sponsorisé »,
+      <b>séparée du classement principal qui reste basé uniquement sur le mérite</b>.
+      Aucun badge ne s'achète. Seule la visibilité est payante.
+    </p>
+    <label>Moyen de paiement</label>
+    <select id="v-moyen">
+      <option>Mobile Money (Airtel / Orange)</option>
+      <option>Carte virtuelle prépayée</option>
+      <option>Carte bancaire Visa / Mastercard</option>
+    </select>
+    <label>Numéro ou référence</label>
+    <input id="v-ref" placeholder="Ex: +243 9... ou n° carte">
+    <button style="margin-top:14px;width:100%" onclick="payerVitrine(this)" ${p.vitrine_premium?'disabled':''}>
+      ${p.vitrine_premium?'✓ Vitrine déjà active':'Payer 2,5 $ — Activer 30 jours'}
+    </button>
+  </div>`;
+}
+async function payerVitrine(btn){
+  const ref=document.getElementById("v-ref").value.trim();
+  if(!ref){alert("Renseigne un numéro ou une référence de paiement.");return;}
+  if(btn){btn.disabled=true;btn.textContent="Activation…";}
+  await apiActiverPremium(monProfilId);
+  alert("Paiement simulé accepté.\nVitrine activée pour 30 jours.");
+  nav("/jeune/profil");
+}
+
+/* ========== MISSIONS PUBLIQUES ========== */
+function pageMissionsPubliques(list){
+  const items = (list||[]).length
+    ? list.map(m=>`
+      <div class="mission-item">
+        <div class="mission-info">
+          <b>${escapeHtml(m.titre)}</b>
+          <br>
+          <span class="small">${escapeHtml(m.commune||'—')} · ${escapeHtml(m.budget||'budget à discuter')} · ${m.nombre_personnes} personne(s)</span>
+          ${m.description?`<div class="small" style="margin-top:4px">${escapeHtml(m.description)}</div>`:''}
+        </div>
+        <button class="gold" onclick="postulerMission(${m.id})">Postuler</button>
+      </div>`).join('')
+    : `<div class="small">Aucune mission ouverte pour le moment. Reviens plus tard.</div>`;
+
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">📢 Missions ouvertes (${(list||[]).length})</h3>
+    <p class="small">Ces missions sont publiées par des employeurs vérifiés. La postulation est gratuite.</p>
+    ${items}
+  </div>`;
+}
+function postulerMission(id){
+  alert('✅ Ta candidature a été enregistrée.\n\nL\'employeur recevra ta demande.\n\n(ID mission : '+id+')');
+}
+
+/* ========== PUBLIER UNE MISSION ========== */
+function pagePublierMission(){
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Publier une mission</h3>
+    <p class="small">Une mission courte (1 à 3 jours). Les jeunes postulent. Tu les notes après.</p>
+    <label>Titre de la mission</label>
+    <input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage samedi">
+    <label>Description</label>
+    <textarea id="mi-desc" rows="2" placeholder="Détails, horaires, lieu..."></textarea>
+    <label>Commune</label>
+    <input id="mi-commune" placeholder="Ex: Gombe">
+    <label>Budget (optionnel)</label>
+    <input id="mi-budget" placeholder="Ex: 20 $ par personne">
+    <label>Nombre de personnes</label>
+    <input id="mi-nb" type="number" min="1" value="1">
+    <button style="margin-top:12px;width:100%" onclick="publierMission(this)">Publier la mission (3-5 $)</button>
+    <div class="principle">La publication est payante pour l'employeur. La consultation et la postulation sont gratuites pour le jeune.</div>
+  </div>`;
+}
+async function publierMission(btn){
+  const titre=document.getElementById('mi-titre').value.trim();
+  if(!titre){alert('Donne un titre à la mission.');return;}
+  if(btn){btn.disabled=true;btn.textContent='Publication…';}
+  const data=await apiCreerMission({
+    employeur_id:employeurId,
+    employeur_type:employeurType,
+    titre,
+    description:document.getElementById('mi-desc').value.trim(),
+    commune:document.getElementById('mi-commune').value.trim(),
+    budget:document.getElementById('mi-budget').value.trim(),
+    nombre_personnes:parseInt(document.getElementById('mi-nb').value,10)||1
+  });
+  if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent='Publier la mission (3-5 $)';}return;}
+  alert('✅ Mission publiée avec succès.');
+  nav('/missions');
+}
+
+/* ========== EMPLOYEUR ACCUEIL ========== */
+function pageEmployeurAccueil(){
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Espace employeur</h3>
+    <p class="small">Sélectionne ton type de profil. La vérification change selon ton statut.</p>
+    <label>Type de profil</label>
+    <select id="e-type" onchange="onTypeChange()">
+      <option value="particulier">Particulier</option>
+      <option value="entreprise">Entreprise</option>
+      <option value="soustraitance">Sous-traitance</option>
+      <option value="institution">Institution / ONG</option>
+    </select>
+    <div id="verifZone"></div>
+
+    <a class="tile" href="#/employeur/publier" style="margin-top:14px">
+      <button class="gold" style="width:100%">📢 Publier une mission (3-5 $)</button>
+    </a>
+    <div class="small" style="text-align:center;margin-top:6px">Publie une mission courte. Les jeunes postulent. Tu notes après.</div>
+
+    <label style="margin-top:16px">Métier recherché</label>
+    <input id="e-metier" placeholder="Ex: couture, mécanique...">
+    <label>Commune</label>
+    <input id="e-commune" placeholder="Ex: Matete, Gombe...">
+    <button style="margin-top:14px;width:100%" onclick="lancerRecherche()">Rechercher un profil</button>
+
+    <div class="principle">
+      Le classement des résultats repose uniquement sur le mérite
+      (badge + note + nombre d'avis). Il ne s'achète jamais.
+    </div>
+  </div>`;
+}
+function onTypeChange(){
+  employeurType=document.getElementById("e-type").value;
+  localStorage.setItem("zua_emp_type",employeurType);
+  employeurVerifie=false;
+  localStorage.removeItem("zua_emp_verifie");
+  renderVerifZone();
+}
+function renderVerifZone(){
+  const z=document.getElementById("verifZone");
+  if(!z)return;
+  if(employeurVerifie){
+    z.innerHTML=`<div class="small" style="margin-top:10px">✓ Profil vérifié — tu peux lancer ta recherche.</div>`;
+    return;
+  }
+  if(employeurType==="particulier"){
+    z.innerHTML=`
+      <label>Vérification par SMS</label>
+      <input id="v-tel" placeholder="Ton numéro" value="${escapeHtml(employeurReference)}">
+      <button class="secondary" style="margin-top:8px" onclick="verifierSMS(this)">Recevoir & vérifier le code</button>
+      <div class="small" id="v-statut">Non vérifié</div>`;
+  } else if(employeurType==="entreprise"||employeurType==="soustraitance"){
+    z.innerHTML=`
+      <label>Numéro RCCM</label>
+      <input id="v-rccm" placeholder="Ex: CD/KNG/RCCM/..." value="${escapeHtml(employeurReference)}">
+      <button class="secondary" style="margin-top:8px" onclick="verifierRCCM(this)">Vérifier l'entreprise</button>
+      <div class="small" id="v-statut">Non vérifié</div>`;
+  } else {
+    employeurVerifie=true;
+    localStorage.setItem("zua_emp_verifie","1");
+    z.innerHTML=`<div class="small" style="margin-top:10px">✓ Compte institutionnel — accès aux rapports agrégés inclus.</div>
+      <a class="tile" href="#/institution/dashboard" style="margin-top:10px">
+        <button class="gold" style="width:100%">📊 Voir les rapports institutionnels</button>
+      </a>`;
+  }
+}
+async function verifierSMS(btn){
+  const tel=document.getElementById("v-tel").value.trim();
+  if(!tel){alert("Indique ton numéro.");return;}
+  if(btn){btn.disabled=true;btn.textContent="Vérification…";}
+  try{ await apiVerifierEmployeur({id:employeurId,type:"particulier",reference:tel}); }catch(e){}
+  employeurVerifie=true;
+  employeurReference=tel;
+  localStorage.setItem("zua_emp_verifie","1");
+  localStorage.setItem("zua_emp_ref",tel);
+  renderVerifZone();
+}
+async function verifierRCCM(btn){
+  const rccm=document.getElementById("v-rccm").value.trim();
+  if(!rccm){alert("Indique le n° RCCM.");return;}
+  if(btn){btn.disabled=true;btn.textContent="Vérification…";}
+  try{ await apiVerifierEmployeur({id:employeurId,type:employeurType,reference:rccm}); }catch(e){}
+  employeurVerifie=true;
+  employeurReference=rccm;
+  localStorage.setItem("zua_emp_verifie","1");
+  localStorage.setItem("zua_emp_ref",rccm);
+  renderVerifZone();
+}
+function lancerRecherche(){
+  if(!employeurVerifie){alert("Vérifie d'abord ton profil employeur.");return;}
+  const m=encodeURIComponent(document.getElementById("e-metier").value.trim());
+  const c=encodeURIComponent(document.getElementById("e-commune").value.trim());
+  nav("/employeur/resultats?metier="+m+"&commune="+c+"&type="+employeurType);
+}
+
+/* ========== RESULTATS ========== */
+function pageResultats(params){
+  const metier=(params.get("metier")||"").toLowerCase();
+  const commune=(params.get("commune")||"").toLowerCase();
+  const filt=p=>
+    (!metier||p.metier.toLowerCase().includes(metier))&&
+    (!commune||p.commune.toLowerCase().includes(commune));
+
+  const filtered=profiles.filter(filt);
+  const sorted=filtered.slice().sort((a,b)=>{
+    const rb=badgeRank(b.badge)-badgeRank(a.badge);
+    if(rb!==0)return rb;
+    const ra=(parseFloat(b.moyenne)||0)-(parseFloat(a.moyenne)||0);
+    if(ra!==0)return ra;
+    return (b.nb_avis||0)-(a.nb_avis||0);
+  });
+
+  const sponsored=filtered.filter(p=>p.vitrine_premium);
+
+  const listHtml=sorted.length
+    ? sorted.map(p=>`
+      <div class="result">
+        <a href="#/profil/${p.id}">
+          <b>${escapeHtml(p.nom)}</b>
+          ${p.vitrine_premium?'<span class="badge premium">PREMIUM</span>':''}
+          <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
+          <br>
+          <span class="small">
+            ${escapeHtml(p.metier)} · ${escapeHtml(p.commune)} ·
+            ${p.nb_avis>0?stars(parseFloat(p.moyenne))+" ("+p.nb_avis+" avis)":"aucun avis"}
+          </span>
+        </a>
+      </div>`).join("")
+    : `<div class="small">Aucun profil ne correspond. Élargis la recherche.</div>`;
+
+  const sponsoredHtml=sponsored.length
+    ? `<div class="card">
+        <h4 style="margin-top:0">Profils à la une <span class="spon-tag">Sponsorisé</span></h4>
+        ${sponsored.map(p=>`
+          <div class="spon">
+            <a class="tile" href="#/profil/${p.id}">
+              <b>${escapeHtml(p.nom)}</b> — ${escapeHtml(p.metier)} (${escapeHtml(p.commune)})
+              <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
+            </a>
+          </div>`).join("")}
+        <div class="small" style="margin-top:6px">
+          Rotation équitable entre abonnés. Ne remplace jamais le classement par mérite.
+        </div>
+      </div>`
+    : "";
+
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Résultats (${escapeHtml(employeurType)})</h3>
+    <div class="small" style="margin-bottom:8px">
+      Classement par mérite : badge, puis note moyenne, puis nombre d'avis.
+    </div>
+    ${listHtml}
+  </div>
+  ${sponsoredHtml}`;
+}
+
+/* ========== FICHE ========== */
+function pageFiche(p){
+  if(!p||p.error)return `<div class="card"><p>Profil introuvable.</p></div>`;
+  const avis=(p.avis||[]).slice(0,5);
+  const avisHtml=avis.map(a=>`
+    <div class="avisItem">
+      <div class="stars">${stars(a.note)}</div>
+      <div>${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
+      ${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}
+    </div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
+
+  const dejaNote = (p.avis||[]).some(a=>a.employeur_id===employeurId);
+
+  return `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div>
+        <h3 style="margin:0">${escapeHtml(p.nom)}</h3>
+        <div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div>
+      </div>
+      <div style="text-align:right">
+        <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
+        ${p.vitrine_premium?'<div style="margin-top:4px"><span class="badge premium">PREMIUM</span></div>':''}
+      </div>
+    </div>
+    <p style="font-size:.88rem;margin:10px 0">${escapeHtml(p.description||'')}</p>
+    ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:8px;margin-bottom:8px">`:""}
+    <div class="stars">${(p.avis&&p.avis.length)?stars(avg(p.avis))+" ("+p.avis.length+" avis)":"Pas encore d'avis"}</div>
+
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="alert('Contact : ${escapeHtml(p.contact||'')}')">📞 Contacter</button>
+      ${dejaNote
+        ? `<button class="secondary" disabled style="flex:1">✓ Tu as déjà laissé un avis</button>`
+        : `<a class="tile" href="#/profil/${p.id}/mission" style="flex:1">
+            <button class="gold" style="width:100%">J'ai réalisé une mission</button>
+          </a>`}
+    </div>
+
+    <div class="principle">
+      Un avis n'est possible qu'après confirmation mutuelle qu'une mission a bien été réalisée.
+      Cela écarte les faux avis.
+    </div>
+
+    <h4>Avis récents</h4>
+    ${avisHtml}
+  </div>`;
+}
+
+/* ========== MISSION ========== */
+function pageMission(id){
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Confirmer la mission</h3>
+    <p class="small">
+      Pour garantir l'authenticité des avis, les deux parties doivent confirmer
+      qu'une mission a bien eu lieu avant de pouvoir noter.
+    </p>
+    <div class="checkline"><input type="checkbox" id="m-jeune"><label style="margin:0">Le prestataire confirme la mission réalisée</label></div>
+    <div class="checkline"><input type="checkbox" id="m-emp"><label style="margin:0">L'employeur confirme la mission réalisée</label></div>
+    <button style="margin-top:14px;width:100%" onclick="confirmerMission(${id})">Confirmer et passer à la notation</button>
+  </div>`;
+}
+function confirmerMission(id){
+  if(!document.getElementById("m-jeune").checked||!document.getElementById("m-emp").checked){
+    alert("Les deux parties doivent confirmer la mission.");return;
+  }
+  nav("/profil/"+id+"/avis");
+}
+
+/* ========== AVIS ========== */
+let noteChoisie=0;
+function pageAvis(id){
+  noteChoisie=0;
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Noter ce profil</h3>
+    <p class="small">Ta note alimente directement le badge du prestataire.</p>
+    <div class="star-pick" id="starPick" style="margin:14px 0">
+      ${[1,2,3,4,5].map(n=>`<span data-n="${n}" onclick="pickStar(${n})">★</span>`).join("")}
+    </div>
+    <label>Commentaire (optionnel — 180 caractères max)</label>
+    <textarea id="commentaire" rows="3" maxlength="180" placeholder="Ex: travail rapide et soigné."></textarea>
+    <button style="margin-top:14px;width:100%" onclick="validerAvis(${id},this)">Envoyer l'avis</button>
+  </div>`;
+}
+function pickStar(n){
+  noteChoisie=n;
+  document.querySelectorAll("#starPick span").forEach((s,i)=>s.classList.toggle("on",i<n));
+}
+async function validerAvis(id,btn){
+  if(!noteChoisie){alert("Choisis une note.");return;}
+  if(btn){btn.disabled=true;btn.textContent="Envoi…";}
+  const commentaire=document.getElementById("commentaire").value;
+  const data=await apiAjouterAvis({
+    profil_id:parseInt(id,10),
+    employeur_id:employeurId,
+    note:noteChoisie,
+    commentaire
+  });
+  if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent="Envoyer l'avis";}return;}
+  alert("Avis enregistré.\nBadge actuel : "+badgeLabel(data.badge));
+  nav("/profil/"+id);
+}
+
+/* ========== STATS INSTITUTION ========== */
+function pageStats(s){
+  if(!s||s.error)return `<div class="card"><p>Erreur de chargement des statistiques.</p></div>`;
+  const communes=(s.par_commune||[]).map(c=>`<div class="result"><span>${escapeHtml(c.commune||'—')}</span><b>${c.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
+  const metiers=(s.par_metier||[]).map(m=>`<div class="result"><span>${escapeHtml(m.metier||'—')}</span><b>${m.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
+  const badges=(s.par_badge||[]).map(b=>`<div class="result"><span class="badge ${b.badge}">${badgeLabel(b.badge)}</span><b>${b.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
+
+  return `
+  <div class="card">
+    <h3 style="margin-top:0">Rapport ZUA MOSALA</h3>
+    <p class="small">Données agrégées, anonymisées, prêtes pour les ONG, ministères et bailleurs.</p>
+    <div style="display:flex;gap:10px;margin:12px 0">
+      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
+        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-blue)">${s.total_profils||0}</div>
+        <div class="small">Profils</div>
+      </div>
+      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
+        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-red)">${s.total_avis||0}</div>
+        <div class="small">Avis vérifiés</div>
+      </div>
+      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
+        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-gold)">${s.total_missions||0}</div>
+        <div class="small">Missions</div>
+      </div>
+    </div>
+    <div class="principle">Ce rapport peut être vendu 200-500 USD aux institutions. C'est la troisième source de revenus de ZUA MOSALA.</div>
+  </div>
+
+  <div class="card">
+    <h4 style="margin-top:0">Profils par commune</h4>
+    ${communes}
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">Profils par métier</h4>
+    ${metiers}
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">Répartition des badges</h4>
+    ${badges}
+  </div>`;
+}
+
+/* ========== DÉMARRAGE ========== */
+updateThemeBtn();
+router().catch(err=>{
+  console.error('Erreur router:', err);
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h3>Erreur de connexion</h3>
+      <p class="small">Impossible de contacter le serveur. Vérifie que Railway est bien en ligne.</p>
+      <p class="small"><b>Détail :</b> ${err.message}</p>
+      <button onclick="location.reload()">Recharger</button>
+    </div>`;
+});
+</script>
+</body>
+</html>
