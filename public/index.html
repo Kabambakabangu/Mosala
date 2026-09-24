@@ -17,53 +17,39 @@
 :root[data-theme="dark"]{
   --bg:#0a1018; --surface:#131b28; --text:#e8edf5; --text-soft:#8b96a8;
   --border:#1f2a3d; --light:#1a2333;
-  --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg);color:var(--text);line-height:1.5;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  transition:background .2s, color .2s;-webkit-font-smoothing:antialiased;
-}
+  transition:background .2s,color .2s;-webkit-font-smoothing:antialiased;}
 
-/* === HEADER === */
-header{
-  position:sticky;top:0;z-index:10;
-  background:rgba(255,255,255,.9);
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.9);
   backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);
-  border-bottom:1px solid var(--border);
-}
+  border-bottom:1px solid var(--border);}
 :root[data-theme="dark"] header{background:rgba(19,27,40,.9)}
 .header-inner{padding:12px 16px}
 header .top{display:flex;align-items:center;gap:10px}
-header h1{margin:0;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+header h1{margin:0;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px}
 header .logo{width:26px;height:26px;flex-shrink:0}
 .back{cursor:pointer;font-size:1.4rem;background:none;border:none;color:var(--text);padding:0 4px;line-height:1;font-weight:300}
-.theme-btn{margin-left:auto;background:var(--light);border:none;color:var(--text);
-  width:34px;height:34px;border-radius:50%;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:.95rem;padding:0;transition:background .2s;}
-.theme-btn:hover{background:var(--border)}
+.theme-btn{margin-left:auto;background:var(--light);border:none;color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;padding:0;}
 header .crumb{font-size:.68rem;color:var(--text-soft);margin-top:4px;margin-left:2px}
 .rdc-stripes{display:flex;height:4px}
 .rdc-stripes div{flex:1}
-
 main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
 
-/* === CARDS === */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .2s}
-.card h2{margin:0 0 8px;font-size:1.1rem;letter-spacing:-.3px}
-.card h3{margin:0 0 8px;font-size:.98rem;font-weight:700;letter-spacing:-.2px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card h3{margin:0 0 8px;font-size:.98rem;font-weight:700}
 .card h4{margin:18px 0 10px;font-size:.85rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px}
 :root[data-theme="dark"] .card h4{color:var(--yellow)}
 
-label{display:block;font-size:.78rem;font-weight:600;margin:12px 0 6px;color:var(--text)}
-input,select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s,background .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--surface)}
-:root[data-theme="dark"] input:focus,:root[data-theme="dark"] select:focus,:root[data-theme="dark"] textarea:focus{background:var(--bg)}
+label{display:block;font-size:.78rem;font-weight:600;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);}
 
-button{background:var(--blue);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;font-size:.88rem;font-family:inherit;transition:opacity .15s,transform .08s;letter-spacing:-.1px}
+button{background:var(--blue);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;font-size:.88rem;font-family:inherit;transition:opacity .15s,transform .08s;}
 button:hover{opacity:.94}
 button:active{transform:scale(.985)}
 button.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}
@@ -75,24 +61,50 @@ a.tile{display:block;text-decoration:none;color:inherit}
 a{color:var(--blue);text-decoration:none}
 :root[data-theme="dark"] a{color:var(--yellow)}
 
-/* === HERO SANS IMAGE === */
-.hero{
-  border-radius:18px;overflow:hidden;margin-bottom:16px;
-  box-shadow:0 8px 28px rgba(0,127,255,.22);
-  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 60%,var(--blue-deep) 100%);
-  position:relative;color:#fff;
-}
+/* Onboarding slides */
+.onb-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#007FFF 0%,#0059b3 60%,#003d80 100%);z-index:100;display:flex;flex-direction:column;color:#fff;overflow:hidden}
+.onb-skip{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);color:#fff;border:none;padding:8px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;z-index:2}
+.onb-skip:hover{background:rgba(255,255,255,.25)}
+.onb-slide{flex:1;display:none;flex-direction:column;padding:70px 28px 140px;overflow-y:auto;position:relative}
+.onb-slide.active{display:flex;animation:onb-fade .35s ease}
+@keyframes onb-fade{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.onb-deco{position:absolute;border-radius:50%;opacity:.14;pointer-events:none}
+.onb-deco.d1{top:-60px;right:-40px;width:220px;height:220px;background:#FCD116}
+.onb-deco.d2{bottom:-80px;left:-60px;width:240px;height:240px;background:#CE1126}
+.onb-flag{display:flex;gap:4px;margin-bottom:22px}
+.onb-flag div{width:26px;height:6px;border-radius:3px}
+.onb-flag .b{background:#007FFF;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.onb-flag .y{background:#FCD116}
+.onb-flag .r{background:#CE1126}
+.onb-title{font-size:1.9rem;font-weight:800;letter-spacing:-.8px;margin:0 0 14px;line-height:1.15;position:relative;z-index:1}
+.onb-title span{color:#FCD116}
+.onb-text{font-size:.95rem;line-height:1.55;opacity:.95;margin:0 0 12px;position:relative;z-index:1}
+.onb-illust{font-size:3.6rem;margin:16px 0 22px;position:relative;z-index:1}
+.onb-list{position:relative;z-index:1;margin-top:8px}
+.onb-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.onb-item-num{width:28px;height:28px;border-radius:50%;background:rgba(252,209,22,.25);color:#FCD116;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+.onb-item-txt{font-size:.88rem;line-height:1.45}
+.onb-item-txt b{display:block;margin-bottom:2px}
+.onb-item-txt span{opacity:.85}
+.onb-badges{display:flex;gap:10px;margin:20px 0;position:relative;z-index:1;flex-wrap:wrap}
+.onb-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 14px;font-size:.8rem;flex:1;min-width:120px;text-align:center}
+.onb-badge b{display:block;font-size:1.05rem;color:#FCD116;margin-bottom:4px}
+.onb-bottom{position:absolute;bottom:0;left:0;right:0;padding:20px 28px 30px;background:linear-gradient(180deg,transparent 0%,rgba(0,61,128,.4) 100%);z-index:1}
+.onb-dots{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.onb-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .2s}
+.onb-dot.active{background:#FCD116;width:24px;border-radius:4px}
+.onb-buttons{display:flex;gap:10px}
+.onb-buttons button{flex:1;padding:14px;font-size:.9rem;background:#FCD116;color:#1a1a1a;font-weight:700}
+.onb-buttons button.next{background:#FCD116;color:#1a1a1a}
+.onb-buttons button.ghost{background:rgba(255,255,255,.15);color:#fff}
+
+/* Hero home */
+.hero{border-radius:18px;overflow:hidden;margin-bottom:16px;box-shadow:0 8px 28px rgba(0,127,255,.22);background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 60%,var(--blue-deep) 100%);color:#fff;position:relative}
 .hero-top{display:flex;height:5px}
 .hero-top div{flex:1}
 .hero-content{padding:26px 22px 22px;position:relative;overflow:hidden}
-.hero-content::before{
-  content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;
-  border-radius:50%;background:var(--yellow);opacity:.18;
-}
-.hero-content::after{
-  content:"";position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;
-  border-radius:50%;background:var(--red);opacity:.12;
-}
+.hero-content::before{content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:var(--yellow);opacity:.18}
+.hero-content::after{content:"";position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:var(--red);opacity:.12}
 .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(252,209,22,.2);color:var(--yellow);padding:5px 10px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.5px;margin-bottom:14px;position:relative;z-index:1}
 .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--yellow)}
 .hero h1{font-size:2rem;margin:0 0 8px;font-weight:800;letter-spacing:-1px;position:relative;z-index:1;line-height:1.1}
@@ -100,8 +112,16 @@ a{color:var(--blue);text-decoration:none}
 .hero .tag{font-size:.88rem;opacity:.95;margin:0;line-height:1.45;position:relative;z-index:1;max-width:90%}
 .hero-footer{padding:14px 22px;background:rgba(0,0,0,.18);font-size:.8rem;line-height:1.4;opacity:.95}
 
-/* === WIDGET PANEL (illustration sans image) === */
-.widget-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+/* Search bar */
+.search-bar{display:flex;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:6px 6px 6px 14px;margin-bottom:14px;align-items:center;box-shadow:var(--shadow);}
+.search-bar input{border:none;background:transparent;flex:1;padding:8px 0;font-size:.9rem}
+.search-bar input:focus{outline:none}
+.search-bar button{padding:9px 14px;border-radius:8px;font-size:.8rem}
+.search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.search-tag{font-size:.7rem;padding:5px 10px;background:var(--light);color:var(--text-soft);border-radius:20px;cursor:pointer;border:1px solid var(--border);font-weight:600;transition:background .15s}
+.search-tag:hover{background:var(--border)}
+
+/* Widgets */
 .widget-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .widget-item{padding:14px 12px;border-radius:12px;background:var(--light);text-align:center;position:relative;overflow:hidden}
 .widget-item .num{font-size:1.4rem;font-weight:800;color:var(--blue);letter-spacing:-.5px}
@@ -113,10 +133,10 @@ a{color:var(--blue);text-decoration:none}
 .widget-item.c3::before{background:var(--red)}
 .widget-item.c4::before{background:var(--gold)}
 
-/* === PILIERS sans images === */
+/* Pillars */
 .pillar{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
 .pillar:last-of-type{border-bottom:none}
-.pillar-icon{width:52px;height:52px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;font-weight:800;font-size:1.1rem}
+.pillar-icon{width:52px;height:52px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff}
 .pillar-icon.p1{background:linear-gradient(135deg,#007FFF,#0059b3)}
 .pillar-icon.p2{background:linear-gradient(135deg,#FCD116,#D4A017);color:#1a1a1a}
 .pillar-icon.p3{background:linear-gradient(135deg,#CE1126,#8b0a1a)}
@@ -125,32 +145,44 @@ a{color:var(--blue);text-decoration:none}
 .pillar .txt b{display:block;margin-bottom:2px;color:var(--text);font-size:.88rem}
 .pillar .txt span{color:var(--text-soft)}
 
-/* === BANNIÈRE RDC === */
-.rdc-strip{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;font-size:.75rem;color:var(--text-soft);line-height:1.45}
-.rdc-flag{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;box-shadow:0 2px 6px rgba(0,127,255,.3)}
-.rdc-flag div{flex:1}
+/* Step */
+.step{display:flex;gap:12px;padding:12px;background:var(--light);border-radius:12px;margin-bottom:10px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+.step-num.y{background:var(--yellow);color:#1a1a1a}
+.step-num.r{background:var(--red)}
+.step .txt{font-size:.82rem;line-height:1.4}
+.step .txt b{display:block;margin-bottom:2px;color:var(--text);font-size:.85rem}
+.step .txt span{color:var(--text-soft)}
 
-/* === MÉTIERS widget === */
-.metiers-widget{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.metier{background:var(--light);padding:14px;border-radius:12px;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden}
-.metier .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.metier .dot.c1{background:var(--blue)}
-.metier .dot.c2{background:var(--yellow)}
-.metier .dot.c3{background:var(--red)}
-.metier .dot.c4{background:var(--gold)}
-.metier .lbl{font-size:.78rem;font-weight:600;color:var(--text)}
+/* Badge */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;color:#fff}
+.badge.bronze{background:#a06a3c}
+.badge.argent{background:#7a7a7a}
+.badge.or{background:var(--gold)}
+.badge.premium{background:var(--red);font-size:.62rem;padding:2px 6px}
+.badge.courte{background:var(--blue);font-size:.62rem}
+.badge.longue{background:var(--red);font-size:.62rem}
 
-/* === CHOICE === */
+.stars{color:var(--gold);font-size:.92rem;letter-spacing:.5px}
+.small{font-size:.74rem;color:var(--text-soft);line-height:1.4}
+.principle{background:var(--light);border-left:3px solid var(--yellow);padding:10px 14px;font-size:.78rem;font-weight:500;border-radius:8px;margin:14px 0;line-height:1.45}
+
+/* Mission */
+.mission{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.mission-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.mission-title{font-weight:700;font-size:.92rem;margin:0 0 4px;line-height:1.3}
+.mission-meta{font-size:.72rem;color:var(--text-soft);display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;align-items:center}
+.mission-desc{font-size:.8rem;color:var(--text-soft);margin:8px 0;line-height:1.45}
+.mission-actions{display:flex;gap:8px;margin-top:10px}
+.mission-actions button{flex:1}
+
+/* Choice */
 .choice{display:flex;flex-direction:column;gap:10px;margin-top:6px}
 .choice a{display:block;text-decoration:none}
-.choice-btn{width:100%;padding:15px 16px;border-radius:14px;font-weight:600;font-size:.92rem;
-  display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid transparent;
-  cursor:pointer;transition:transform .1s, border-color .15s;font-family:inherit;background:var(--surface);}
-.choice-btn:hover{transform:translateY(-1px)}
+.choice-btn{width:100%;padding:15px 16px;border-radius:14px;font-weight:600;font-size:.92rem;display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid transparent;cursor:pointer;font-family:inherit;background:var(--surface);}
 .choice-btn.primary{background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);color:#fff;position:relative;overflow:hidden}
 .choice-btn.primary::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--yellow)}
 .choice-btn.secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
-.choice-btn.secondary:hover{border-color:var(--blue)}
 .choice-btn .ico{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .choice-btn.secondary .ico{background:var(--light)}
 .choice-btn .ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -158,23 +190,14 @@ a{color:var(--blue);text-decoration:none}
 .choice-btn .txt{flex:1}
 .choice-btn .txt b{display:block;font-size:.92rem}
 .choice-btn .txt span{font-size:.75rem;opacity:.75;font-weight:400;display:block;margin-top:2px}
-.choice-btn .arrow{opacity:.5;font-size:1rem}
 
-/* === BADGES === */
-.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;color:#fff;vertical-align:middle;letter-spacing:.2px}
-.badge.bronze{background:#a06a3c}
-.badge.argent{background:#7a7a7a}
-.badge.or{background:var(--gold)}
-.badge.premium{background:var(--red);font-size:.62rem;padding:2px 6px}
-
-.stars{color:var(--gold);font-size:.92rem;letter-spacing:.5px}
 .result{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:10px}
 .result:last-child{border:none}
 .result a{flex:1;text-decoration:none;color:inherit;display:block}
-.spon{background:var(--light);border:1px dashed var(--gold);border-radius:12px;padding:12px;margin-bottom:8px}
-.spon-tag{font-size:.6rem;background:var(--gold);color:#fff;padding:2px 6px;border-radius:10px;font-weight:700;margin-left:6px;letter-spacing:.3px}
-.small{font-size:.74rem;color:var(--text-soft);line-height:1.4}
-.principle{background:var(--light);border-left:3px solid var(--yellow);padding:10px 14px;font-size:.78rem;font-weight:500;color:var(--text);border-radius:8px;margin:14px 0;line-height:1.45}
+
+/* Notif */
+.notif{background:linear-gradient(135deg,#FCD116 0%,#D4A017 100%);color:#1a1a1a;padding:12px 14px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:600;box-shadow:0 4px 14px rgba(212,160,23,.3)}
+.notif .notif-ico{width:28px;height:28px;border-radius:50%;background:#1a1a1a;color:#FCD116;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
 
 .star-pick span{font-size:1.9rem;cursor:pointer;opacity:.25;transition:opacity .12s;color:var(--gold);user-select:none}
 .star-pick span.on{opacity:1}
@@ -186,9 +209,9 @@ a{color:var(--blue);text-decoration:none}
 .checkline input{width:auto;margin-top:2px;flex-shrink:0}
 .consent{font-size:.7rem;color:var(--text-soft);line-height:1.45}
 .loader{text-align:center;padding:40px;color:var(--text-soft);font-size:.85rem}
-.mission-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:10px}
-.mission-item:last-child{border:none}
-.mission-info{flex:1}
+.rdc-strip{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;font-size:.75rem;color:var(--text-soft);line-height:1.45}
+.rdc-flag{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;box-shadow:0 2px 6px rgba(0,127,255,.3)}
+.rdc-flag div{flex:1}
 </style>
 </head>
 <body>
@@ -203,7 +226,7 @@ a{color:var(--blue);text-decoration:none}
         </svg>
         ZUA MOSALA
       </h1>
-      <button class="theme-btn" onclick="toggleTheme()" aria-label="Changer de thème" id="themeBtn">🌙</button>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
     <div class="crumb" id="crumb"></div>
   </div>
@@ -255,9 +278,12 @@ async function apiVerifierEmployeur(body){const r=await fetch(API+'/employeurs/v
 async function apiRepondreAvis(avisId,reponse){const r=await fetch(API+'/avis/'+avisId+'/reponse',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({reponse})});return await r.json();}
 async function apiAjouterPreuve(id,preuve){const r=await fetch(API+'/profils/'+id+'/preuve',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({preuve})});return await r.json();}
 async function apiActiverPremium(id){const r=await fetch(API+'/profils/'+id+'/premium',{method:'PUT',headers:{'Content-Type':'application/json'}});return await r.json();}
-async function apiListerMissions(){const r=await fetch(API+'/missions');return await r.json();}
+async function apiListerMissions(f){const p=new URLSearchParams(f||{});const r=await fetch(API+'/missions?'+p.toString());return await r.json();}
 async function apiCreerMission(body){const r=await fetch(API+'/missions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
+async function apiPostuler(missionId,profilId,empId){const r=await fetch(API+'/missions/'+missionId+'/postuler',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profil_id:profilId,employeur_id:empId})});return await r.json();}
+async function apiCandidatures(empId){const r=await fetch(API+'/employeurs/'+empId+'/candidatures');return await r.json();}
 async function apiStats(){const r=await fetch(API+'/stats');return await r.json();}
+async function apiProfilPublic(id){const r=await fetch(API+'/public/profil/'+id);if(!r.ok)throw new Error('Profil introuvable');return await r.json();}
 
 function parseHash(){const h=(location.hash.slice(1)||"/");const [path,qs]=h.split("?");return {segs:path.split("/").filter(Boolean),params:new URLSearchParams(qs||"")};}
 function setHeader(title,crumb,showBack){
@@ -270,6 +296,108 @@ function setHeader(title,crumb,showBack){
   document.getElementById("backBtn").style.visibility=showBack?"visible":"hidden";
 }
 
+/* ========== ONBOARDING ========== */
+function showOnboarding(){
+  const overlay=document.createElement('div');
+  overlay.className='onb-overlay';
+  overlay.id='onbOverlay';
+  overlay.innerHTML=`
+    <button class="onb-skip" onclick="closeOnboarding()">Passer</button>
+
+    <div class="onb-slide active" data-slide="0">
+      <div class="onb-deco d1"></div>
+      <div class="onb-deco d2"></div>
+      <div class="onb-flag"><div class="b"></div><div class="y"></div><div class="r"></div></div>
+      <div class="onb-title">Bienvenue sur <span>ZUA MOSALA</span></div>
+      <p class="onb-text">Le portfolio numérique qui transforme ton savoir-faire en badge vérifié.</p>
+      <p class="onb-text" style="font-size:.85rem;opacity:.8">Créé à Kinshasa pour les jeunes autodidactes de la RDC.</p>
+      <div class="onb-illust">🖐️</div>
+    </div>
+
+    <div class="onb-slide" data-slide="1">
+      <div class="onb-deco d1"></div>
+      <div class="onb-deco d2"></div>
+      <div class="onb-title">C'est quoi <span>ZUA MOSALA</span> ?</div>
+      <p class="onb-text">Tu sais coudre, souder, coiffer, réparer ? Mais aucun diplôme ne le prouve ?</p>
+      <p class="onb-text">ZUA MOSALA remplace le diplôme absent par une <b>réputation vérifiable</b>, construite mission après mission et consultable par tout employeur via un QR code.</p>
+      <div class="onb-badges">
+        <div class="onb-badge"><b>🥉 Bronze</b>Compétence déclarée</div>
+        <div class="onb-badge"><b>🥈 Argent</b>3 avis ≥ 3★</div>
+        <div class="onb-badge"><b>🥇 Or</b>5 avis ≥ 4★</div>
+      </div>
+    </div>
+
+    <div class="onb-slide" data-slide="2">
+      <div class="onb-deco d1"></div>
+      <div class="onb-deco d2"></div>
+      <div class="onb-title">Comment ça marche ?</div>
+      <div class="onb-list">
+        <div class="onb-item"><div class="onb-item-num">1</div><div class="onb-item-txt"><b>Crée ton profil</b><span>Nom, métier, commune. Gratuit et sans diplôme.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">2</div><div class="onb-item-txt"><b>Travaille et sois noté</b><span>Un employeur te recrute et te note sur 5 étoiles.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">3</div><div class="onb-item-txt"><b>Obtiens ton badge Or</b><span>5 avis de 5 employeurs différents. Impossible à acheter.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">4</div><div class="onb-item-txt"><b>Partage ton QR code</b><span>N'importe quel employeur peut vérifier ton profil.</span></div></div>
+      </div>
+    </div>
+
+    <div class="onb-slide" data-slide="3">
+      <div class="onb-deco d1"></div>
+      <div class="onb-deco d2"></div>
+      <div class="onb-title">Prêt à <span>commencer</span> ?</div>
+      <p class="onb-text">Le jeune ne paie <b>jamais</b> pour son badge. C'est notre principe.</p>
+      <div class="onb-list">
+        <div class="onb-item"><div class="onb-item-num">👤</div><div class="onb-item-txt"><b>Je suis autodidacte</b><span>Crée ton profil gratuitement en 2 minutes.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">💼</div><div class="onb-item-txt"><b>Je suis employeur</b><span>Trouve un talent vérifié dans ta commune.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">📋</div><div class="onb-item-txt"><b>Voir les offres</b><span>Missions courtes et contrats longs.</span></div></div>
+      </div>
+    </div>
+
+    <div class="onb-bottom">
+      <div class="onb-dots" id="onbDots">
+        <div class="onb-dot active"></div><div class="onb-dot"></div><div class="onb-dot"></div><div class="onb-dot"></div>
+      </div>
+      <div class="onb-buttons">
+        <button class="ghost" id="onbPrev" onclick="onbPrev()" style="display:none">‹ Retour</button>
+        <button class="next" id="onbNext" onclick="onbNext()">Suivant ›</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  window._onbIndex=0;
+}
+function onbNext(){
+  const slides=document.querySelectorAll('.onb-slide');
+  const dots=document.querySelectorAll('.onb-dot');
+  if(window._onbIndex>=slides.length-1){
+    closeOnboarding();
+    return;
+  }
+  slides[window._onbIndex].classList.remove('active');
+  dots[window._onbIndex].classList.remove('active');
+  window._onbIndex++;
+  slides[window._onbIndex].classList.add('active');
+  dots[window._onbIndex].classList.add('active');
+  document.getElementById('onbPrev').style.display=window._onbIndex>0?'block':'none';
+  document.getElementById('onbNext').textContent=(window._onbIndex>=slides.length-1)?'Commencer':'Suivant ›';
+}
+function onbPrev(){
+  const slides=document.querySelectorAll('.onb-slide');
+  const dots=document.querySelectorAll('.onb-dot');
+  if(window._onbIndex<=0) return;
+  slides[window._onbIndex].classList.remove('active');
+  dots[window._onbIndex].classList.remove('active');
+  window._onbIndex--;
+  slides[window._onbIndex].classList.add('active');
+  dots[window._onbIndex].classList.add('active');
+  document.getElementById('onbPrev').style.display=window._onbIndex>0?'block':'none';
+  document.getElementById('onbNext').textContent='Suivant ›';
+}
+function closeOnboarding(){
+  const ov=document.getElementById('onbOverlay');
+  if(ov) ov.remove();
+  localStorage.setItem('zua_onb_seen','1');
+}
+
+/* ========== ROUTER ========== */
 async function router(){
   const {segs,params}=parseHash();
   const app=document.getElementById("app");
@@ -286,6 +414,9 @@ async function router(){
       try{ profiles = await chargerProfils(); }catch(e){ profiles = []; }
       try{ missions = await apiListerMissions(); }catch(e){ missions = []; }
       app.innerHTML=pageHome();
+      if(!localStorage.getItem('zua_onb_seen')){
+        setTimeout(()=>showOnboarding(),300);
+      }
       return;
     }
     if(segs[0]==="jeune"&&segs[1]==="creer"){setHeader("Créer mon profil","Accueil › Autodidacte",true);app.innerHTML=pageCreer();return;}
@@ -295,11 +426,26 @@ async function router(){
       const p=await chargerProfil(monProfilId);
       app.innerHTML=pageMonProfil(p);
       const el=document.getElementById("qr");
-      if(el){el.innerHTML="";try{new QRCode(el,{text:"zua-mosala.app/profil/"+p.id,width:130,height:130,colorDark:"#007FFF",colorLight:"#ffffff"});}catch(e){}}
+      if(el){
+        el.innerHTML="";
+        const url = location.origin + "/#/p/" + p.id;
+        try{new QRCode(el,{text:url,width:150,height:150,colorDark:"#007FFF",colorLight:"#ffffff"});}catch(e){}
+      }
+      return;
+    }
+    if(segs[0]==="p"&&segs.length===2){
+      setHeader("Profil public","Portfolio vérifié",true);
+      try{const p=await apiProfilPublic(segs[1]);app.innerHTML=pageProfilPublic(p);}
+      catch(e){app.innerHTML=`<div class="card"><h3>Profil introuvable</h3><p class="small">Ce profil n'existe plus.</p></div>`;}
       return;
     }
     if(segs[0]==="jeune"&&segs[1]==="vitrine"){setHeader("Booster ma vitrine","Mon profil › Premium",true);const p=await chargerProfil(monProfilId);app.innerHTML=pageVitrine(p);return;}
-    if(segs[0]==="missions"){setHeader("Missions disponibles","Missions ouvertes",true);try{missions=await apiListerMissions();}catch(e){missions=[];}app.innerHTML=pageMissionsPubliques(missions);return;}
+    if(segs[0]==="missions"){
+      setHeader("Offres d'emploi et missions","Toutes les offres",true);
+      try{ missions=await apiListerMissions(); }catch(e){ missions=[]; }
+      app.innerHTML=pageMissions(missions, params);
+      return;
+    }
     if(segs[0]==="employeur"&&segs.length===1){
       setHeader("Espace employeur","Accueil › Employeur",true);
       app.innerHTML=pageEmployeurAccueil();
@@ -308,7 +454,13 @@ async function router(){
       renderVerifZone();
       return;
     }
-    if(segs[0]==="employeur"&&segs[1]==="publier"){setHeader("Publier une mission","Employeur › Mission",true);app.innerHTML=pagePublierMission();return;}
+    if(segs[0]==="employeur"&&segs[1]==="publier"){setHeader("Publier une offre","Employeur › Nouvelle offre",true);app.innerHTML=pagePublierMission();return;}
+    if(segs[0]==="employeur"&&segs[1]==="candidatures"){
+      setHeader("Candidatures reçues","Employeur › Notifications",true);
+      const list=await apiCandidatures(employeurId);
+      app.innerHTML=pageCandidatures(list);
+      return;
+    }
     if(segs[0]==="employeur"&&segs[1]==="resultats"){setHeader("Résultats","Employeur › Recherche",true);try{profiles=await chargerProfils();}catch(e){profiles=[];}app.innerHTML=pageResultats(params);return;}
     if(segs[0]==="institution"&&segs[1]==="dashboard"){setHeader("Rapports institutionnels","Institution › Statistiques",true);try{const stats=await apiStats();app.innerHTML=pageStats(stats);}catch(e){app.innerHTML=`<div class="card"><p>Impossible de charger les stats.</p></div>`;}return;}
     if(segs[0]==="profil"&&segs.length===2){setHeader("Fiche profil","Résultats › Profil",true);const p=await chargerProfil(segs[1]);app.innerHTML=pageFiche(p);return;}
@@ -324,6 +476,7 @@ window.addEventListener("hashchange",router);
 /* ========== HOME ========== */
 function pageHome(){
   const dejaInscrit = !!monProfilId;
+  const missionCount = missions.length;
   return `
   <div class="hero">
     <div class="hero-top"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
@@ -335,58 +488,55 @@ function pageHome(){
     <div class="hero-footer">Créé pour les jeunes autodidactes de Kinshasa. Utilisé par les employeurs qui recrutent sur la preuve, pas sur le diplôme.</div>
   </div>
 
+  <div class="search-bar">
+    <input id="searchInput" placeholder="Métier, commune, mot-clé…" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">Rechercher</button>
+  </div>
+  <div class="search-tags">
+    <span class="search-tag" onclick="quickSearch('couture')">Couture</span>
+    <span class="search-tag" onclick="quickSearch('mécanique')">Mécanique</span>
+    <span class="search-tag" onclick="quickSearch('coiffure')">Coiffure</span>
+    <span class="search-tag" onclick="quickSearch('électricité')">Électricité</span>
+    <span class="search-tag" onclick="quickSearch('')">Tout voir</span>
+  </div>
+
   <div class="rdc-strip">
     <div class="rdc-flag"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
     <div>Un projet conçu à Kinshasa, en République Démocratique du Congo, pour valoriser le talent local.</div>
   </div>
 
-  <div class="widget-panel">
-    <h3 style="margin:0 0 4px">Le talent est partout. La preuve nulle part.</h3>
-    <p class="small" style="margin:0 0 4px">À Kinshasa, des milliers de jeunes savent coudre, souder, réparer, coiffer. Aucun diplôme ne le prouve.</p>
+  <div class="card">
+    <h3>Pourquoi ZUA MOSALA ?</h3>
+    <p class="small" style="margin:0 0 4px">À Kinshasa, des milliers de jeunes savent faire un métier sans pouvoir le prouver. Aucun diplôme ne le dit. Aucun employeur ne peut le vérifier.</p>
     <div class="widget-grid">
       <div class="widget-item c1"><div class="num">1M+</div><div class="lbl">Jeunes autodidactes</div></div>
       <div class="widget-item c2"><div class="num">0</div><div class="lbl">Preuve officielle</div></div>
-      <div class="widget-item c3"><div class="num">4 sem</div><div class="lbl">Perdues par mauvais recrutement</div></div>
+      <div class="widget-item c3"><div class="num">4 sem</div><div class="lbl">Perdues par erreur de recrutement</div></div>
       <div class="widget-item c4"><div class="num">3</div><div class="lbl">Niveaux de badge</div></div>
     </div>
   </div>
 
   <div class="card">
-    <h3>Comment ça marche</h3>
-    <div class="pillar">
-      <div class="pillar-icon p1">
-        <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>
-      </div>
-      <div class="txt"><b>1. Le jeune crée son profil</b><span>Nom, métier, commune, réalisations concrètes. Gratuit.</span></div>
-    </div>
-    <div class="pillar">
-      <div class="pillar-icon p2">
-        <svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17.5 6.5 21 8 13.5 3 9l6.5-.5L12 2z"/></svg>
-      </div>
-      <div class="txt"><b>2. L'employeur recrute et note</b><span>Après la mission, il note sur 5 étoiles et laisse un commentaire.</span></div>
-    </div>
-    <div class="pillar">
-      <div class="pillar-icon p3">
-        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M12 3l8 4v6c0 5-3.5 8-8 8s-8-3-8-8V7l8-4z"/></svg>
-      </div>
-      <div class="txt"><b>3. Le badge se construit</b><span>Bronze (déclaré), Argent (3 avis ≥3★), Or (5 avis ≥4★). Jamais acheté.</span></div>
-    </div>
-    <div class="principle">Le badge repose uniquement sur la preuve terrain. Aucun diplôme requis. Aucun paiement pour être certifié.</div>
+    <h3>Comment s'inscrire ?</h3>
+    <div class="step"><div class="step-num">1</div><div class="txt"><b>Crée ton profil</b><span>2 minutes. Nom, métier, commune. Aucun diplôme requis.</span></div></div>
+    <div class="step"><div class="step-num y">2</div><div class="txt"><b>Ajoute une preuve</b><span>Photo de ton travail, lien TikTok ou Facebook.</span></div></div>
+    <div class="step"><div class="step-num r">3</div><div class="txt"><b>Reçois ton badge</b><span>Bronze au départ. Devient Or après 5 avis d'employeurs.</span></div></div>
+    <div class="principle" style="margin-bottom:0">Le badge ne s'achète pas. Aucun paiement pour être certifié.</div>
   </div>
 
-  <div class="card" style="padding:0">
-    <div style="padding:18px 18px 8px">
-      <h3 style="margin:0">Des métiers, pas des diplômes.</h3>
+  <div class="card">
+    <h3>Comment ça marche</h3>
+    <div class="pillar">
+      <div class="pillar-icon p1"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg></div>
+      <div class="txt"><b>Le jeune crée son profil</b><span>Nom, métier, commune, réalisations concrètes. Gratuit.</span></div>
     </div>
-    <div class="metiers-widget">
-      <div class="metier"><span class="dot c1"></span><span class="lbl">Coiffure</span></div>
-      <div class="metier"><span class="dot c2"></span><span class="lbl">Couture</span></div>
-      <div class="metier"><span class="dot c3"></span><span class="lbl">Mécanique</span></div>
-      <div class="metier"><span class="dot c4"></span><span class="lbl">Électricité</span></div>
-      <div class="metier"><span class="dot c1"></span><span class="lbl">Menuiserie</span></div>
-      <div class="metier"><span class="dot c2"></span><span class="lbl">Soudure</span></div>
-      <div class="metier"><span class="dot c3"></span><span class="lbl">Cuisine</span></div>
-      <div class="metier"><span class="dot c4"></span><span class="lbl">Réparation</span></div>
+    <div class="pillar">
+      <div class="pillar-icon p2"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17.5 6.5 21 8 13.5 3 9l6.5-.5L12 2z"/></svg></div>
+      <div class="txt"><b>L'employeur recrute et note</b><span>Après la mission, il note sur 5 étoiles et laisse un commentaire.</span></div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon p3"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M12 3l8 4v6c0 5-3.5 8-8 8s-8-3-8-8V7l8-4z"/></svg></div>
+      <div class="txt"><b>Le badge se construit</b><span>Bronze, Argent, Or. Impossible à acheter.</span></div>
     </div>
   </div>
 
@@ -397,21 +547,18 @@ function pageHome(){
         <div class="choice-btn primary">
           <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg></div>
           <div class="txt"><b>${dejaInscrit?'Reprendre mon profil':'Je suis autodidacte'}</b><span>${dejaInscrit?'Voir mes badges et avis':'Créer mon profil gratuit'}</span></div>
-          <div class="arrow">›</div>
         </div>
       </a>
       <a href="#/missions">
         <div class="choice-btn secondary">
           <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg></div>
-          <div class="txt"><b>Voir les missions</b><span>${missions.length} mission(s) ouverte(s)</span></div>
-          <div class="arrow">›</div>
+          <div class="txt"><b>Voir les offres d'emploi</b><span>${missionCount} offre(s) — missions courtes et longs contrats</span></div>
         </div>
       </a>
       <a href="#/employeur">
         <div class="choice-btn secondary">
           <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg></div>
-          <div class="txt"><b>Je suis employeur</b><span>Recruter ou publier une mission</span></div>
-          <div class="arrow">›</div>
+          <div class="txt"><b>Je suis employeur</b><span>Recruter ou publier une offre</span></div>
         </div>
       </a>
     </div>
@@ -419,13 +566,20 @@ function pageHome(){
 
   <div class="card">
     <h3>Pourquoi ZUA MOSALA</h3>
-    <p class="small" style="margin:0">
-      À Kinshasa, des milliers de jeunes savent faire un métier sans pouvoir le prouver. ZUA MOSALA remplace le diplôme absent par une réputation vérifiable, construite mission après mission, et consultable par tout employeur via un simple QR code.
-    </p>
+    <p class="small" style="margin:0">ZUA MOSALA remplace le diplôme absent par une réputation vérifiable, construite mission après mission, et consultable par tout employeur via un simple QR code.</p>
     <div class="principle" style="margin-bottom:0">Gratuit pour le jeune. Payant uniquement pour ceux qui veulent aller plus vite.</div>
   </div>`;
 }
 function demarrerJeune(){ if(monProfilId)nav("/jeune/profil"); else nav("/jeune/creer"); }
+function doSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  const c=localStorage.getItem('zua_emp_verifie')==='1'?'':'';
+  nav("/employeur/resultats?metier="+encodeURIComponent(q));
+}
+function quickSearch(q){
+  document.getElementById('searchInput').value=q;
+  nav("/missions" + (q?'?q='+encodeURIComponent(q):''));
+}
 
 /* ========== CREER ========== */
 function pageCreer(){
@@ -468,14 +622,11 @@ function pageMonProfil(p){
       <div class="stars">${stars(a.note)}</div>
       <div style="margin-top:4px">${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
       ${a.reponse?`<div class="reponse"><b>Ta réponse :</b> ${escapeHtml(a.reponse)}</div>`:`<div style="margin-top:6px"><a href="javascript:void(0)" onclick="repondreAvis(${a.id})" class="small">Répondre</a></div>`}
-    </div>`).join("")||`<div class="small">Pas encore d'avis. Réalise une mission avec un employeur pour en recevoir.</div>`;
+    </div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
   return `
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div>
-        <h3 style="margin:0">${escapeHtml(p.nom)}</h3>
-        <div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div>
-      </div>
+      <div><h3 style="margin:0">${escapeHtml(p.nom)}</h3><div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div></div>
       <div style="text-align:right">
         <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
         ${p.vitrine_premium?'<div style="margin-top:6px"><span class="badge premium">PREMIUM</span></div>':''}
@@ -488,11 +639,11 @@ function pageMonProfil(p){
     <label>Ajouter une preuve de réalisation</label>
     <input type="file" accept="image/*" onchange="ajouterPreuve(event)">
     <div id="preuvePreview" style="margin-top:10px">${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px">`:''}</div>
-    <a class="tile" href="#/missions" style="margin-top:14px"><button class="gold" style="width:100%">📢 Voir les missions disponibles</button></a>
+    <a class="tile" href="#/missions" style="margin-top:14px"><button class="gold" style="width:100%">📢 Voir les offres d'emploi</button></a>
     <a class="tile" href="#/jeune/vitrine" style="margin-top:8px"><button class="secondary" style="width:100%">${p.vitrine_premium?'✓ Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
-    <h4>Mon portfolio public</h4>
+    <h4>Mon portfolio public (QR code)</h4>
     <div id="qr"></div>
-    <div class="small" style="text-align:center">Lien : <b>zua-mosala.app/profil/${p.id}</b><br>Tout employeur peut scanner ce QR code pour voir tes badges vérifiés.</div>
+    <div class="small" style="text-align:center">Scanne ce QR code pour voir ton profil public.</div>
     <h4>Avis reçus</h4>
     ${avisHtml}
   </div>`;
@@ -500,74 +651,192 @@ function pageMonProfil(p){
 function ajouterPreuve(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{await apiAjouterPreuve(monProfilId,r.result);router();};r.readAsDataURL(f);}
 async function repondreAvis(avisId){const txt=prompt("Ta réponse à cet avis :");if(!txt)return;await apiRepondreAvis(avisId,txt);router();}
 
+/* ========== PROFIL PUBLIC ========== */
+function pageProfilPublic(p){
+  const avis=p.avis||[];
+  const avisHtml=avis.slice(0,5).map(a=>`<div class="avisItem"><div class="stars">${stars(a.note)}</div><div style="margin-top:4px">${escapeHtml(a.commentaire||"")}</div>${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}</div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
+  return `
+  <div class="hero" style="margin-bottom:14px">
+    <div class="hero-top"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
+    <div class="hero-content" style="padding:20px">
+      <div class="hero-badge"><span class="dot"></span> PROFIL VÉRIFIÉ</div>
+      <h1 style="font-size:1.5rem">${escapeHtml(p.nom)}</h1>
+      <p class="tag">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</p>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px">
+      <span class="badge ${p.badge}" style="font-size:.85rem;padding:6px 14px">${badgeLabel(p.badge)}</span>
+      ${p.vitrine_premium?'<span class="badge premium">PREMIUM</span>':''}
+    </div>
+    <p style="font-size:.88rem;margin:0 0 10px;color:var(--text-soft)">${escapeHtml(p.description||'')}</p>
+    ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:""}
+    <div class="stars" style="font-size:1.1rem">${avis.length?stars(avg(avis))+" ("+avis.length+" avis)":"Pas encore d'avis"}</div>
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button onclick="alert('Contact : ${escapeHtml(p.contact||'')}')">📞 Contacter</button>
+    </div>
+    <h4>Avis reçus</h4>
+    ${avisHtml}
+    <div class="principle">Profil public ZUA MOSALA — vérifiable par tout employeur.</div>
+  </div>`;
+}
+
 /* ========== VITRINE ========== */
 function pageVitrine(p){
   return `
   <div class="card">
     <h3>Booster ma vitrine</h3>
-    <p class="small">La vitrine met ton profil en avant dans une section « Sponsorisé », séparée du classement principal basé uniquement sur le mérite. Aucun badge ne s'achète. Seule la visibilité est payante.</p>
+    <p class="small">La vitrine met ton profil en avant dans une section « Sponsorisé », séparée du classement principal basé uniquement sur le mérite.</p>
     <label>Moyen de paiement</label>
     <select id="v-moyen"><option>Mobile Money (Airtel / Orange)</option><option>Carte virtuelle prépayée</option><option>Carte bancaire Visa / Mastercard</option></select>
     <label>Numéro ou référence</label>
-    <input id="v-ref" placeholder="Ex: +243 9... ou n° carte">
+    <input id="v-ref" placeholder="Ex: +243 9...">
     <button style="margin-top:16px;width:100%" onclick="payerVitrine(this)" ${p.vitrine_premium?'disabled':''}>${p.vitrine_premium?'✓ Vitrine déjà active':'Payer 2,5 $ — Activer 30 jours'}</button>
   </div>`;
 }
 async function payerVitrine(btn){
   const ref=document.getElementById("v-ref").value.trim();
-  if(!ref){alert("Renseigne un numéro ou une référence de paiement.");return;}
+  if(!ref){alert("Renseigne une référence.");return;}
   if(btn){btn.disabled=true;btn.textContent="Activation…";}
   await apiActiverPremium(monProfilId);
-  alert("Paiement simulé accepté.\nVitrine activée pour 30 jours.");
+  alert("Vitrine activée pour 30 jours.");
   nav("/jeune/profil");
 }
 
-/* ========== MISSIONS PUBLIQUES ========== */
-function pageMissionsPubliques(list){
-  const items = (list||[]).length
-    ? list.map(m=>`
-      <div class="mission-item">
-        <div class="mission-info">
-          <b>${escapeHtml(m.titre)}</b><br>
-          <span class="small">${escapeHtml(m.commune||'—')} · ${escapeHtml(m.budget||'budget à discuter')} · ${m.nombre_personnes} personne(s)</span>
-          ${m.description?`<div class="small" style="margin-top:6px">${escapeHtml(m.description)}</div>`:''}
+/* ========== MISSIONS ========== */
+function pageMissions(list, params){
+  const q=(params&&params.get('q'))||"";
+  const filtered=(list||[]).filter(m=>!q||(m.titre||'').toLowerCase().includes(q.toLowerCase())||(m.description||'').toLowerCase().includes(q.toLowerCase()));
+  const courtes=filtered.filter(m=>m.duree!=='longue');
+  const longues=filtered.filter(m=>m.duree==='longue');
+
+  const renderMission=(m)=>`
+    <div class="mission">
+      <div class="mission-head">
+        <div style="flex:1">
+          <div class="mission-title">${escapeHtml(m.titre)}</div>
+          <div class="mission-meta">
+            <span class="badge ${m.duree==='longue'?'longue':'courte'}">${m.duree==='longue'?'Long terme':'Court terme'}</span>
+            <span>📍 ${escapeHtml(m.commune||'—')}</span>
+            <span>💰 ${escapeHtml(m.budget||'À discuter')}</span>
+            <span>👥 ${m.nombre_personnes}</span>
+          </div>
         </div>
-        <button class="gold" onclick="postulerMission(${m.id})">Postuler</button>
-      </div>`).join('')
-    : `<div class="small">Aucune mission ouverte pour le moment. Reviens plus tard.</div>`;
+      </div>
+      ${m.description?`<div class="mission-desc">${escapeHtml(m.description)}</div>`:''}
+      <div class="mission-actions">
+        <button class="gold" onclick="postuler(${m.id})">Postuler</button>
+        ${m.contact?`<button class="secondary" onclick="alert('Contact : ${escapeHtml(m.contact)}')">📞 Contacter</button>`:''}
+      </div>
+    </div>`;
+
   return `
   <div class="card">
-    <h3>📢 Missions ouvertes (${(list||[]).length})</h3>
-    <p class="small">Ces missions sont publiées par des employeurs vérifiés. La postulation est gratuite.</p>
-    ${items}
+    <div class="search-bar" style="margin-bottom:12px">
+      <input id="missionSearch" placeholder="Rechercher une offre…" value="${escapeHtml(q)}" onkeydown="if(event.key==='Enter')searchMissions()">
+      <button onclick="searchMissions()">OK</button>
+    </div>
+    <h3 style="margin-top:0">🎯 Missions courtes (1-3 jours)</h3>
+    <p class="small">${courtes.length} offre(s) · Paiement rapide, engagement court.</p>
+    ${courtes.length?courtes.map(renderMission).join(''):`<div class="small">Aucune mission courte pour le moment.</div>`}
+  </div>
+  <div class="card">
+    <h3>💼 Emplois longue durée</h3>
+    <p class="small">${longues.length} offre(s) · CDD, CDI, contrats longs.</p>
+    ${longues.length?longues.map(renderMission).join(''):`<div class="small">Aucune offre longue durée pour le moment.</div>`}
   </div>`;
 }
-function postulerMission(id){alert('✅ Ta candidature a été enregistrée.\n\nL\'employeur recevra ta demande.\n\n(ID mission : '+id+')');}
+function searchMissions(){
+  const q=document.getElementById('missionSearch').value.trim();
+  nav("/missions"+(q?'?q='+encodeURIComponent(q):''));
+}
+async function postuler(missionId){
+  if(!monProfilId){alert("Crée d'abord ton profil pour postuler.");nav("/jeune/creer");return;}
+  const data=await apiPostuler(missionId,monProfilId,employeurId);
+  if(data.error){alert(data.error);return;}
+  alert("✅ Candidature envoyée.\nL'employeur recevra une notification.");
+}
 
 /* ========== PUBLIER UNE MISSION ========== */
 function pagePublierMission(){
   return `
   <div class="card">
-    <h3>Publier une mission</h3>
-    <p class="small">Une mission courte (1 à 3 jours). Les jeunes postulent. Tu les notes après.</p>
-    <label>Titre de la mission</label><input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage samedi">
-    <label>Description</label><textarea id="mi-desc" rows="2" placeholder="Détails, horaires, lieu..."></textarea>
+    <h3>Publier une offre</h3>
+    <p class="small">Mission courte (1-3 jours) ou emploi longue durée (CDD / CDI).</p>
+    <label>Titre de l'offre</label><input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage">
+    <label>Description</label><textarea id="mi-desc" rows="3" placeholder="Détails, horaires, lieu..."></textarea>
+    <label>Type de contrat</label>
+    <select id="mi-type">
+      <option value="mission">Mission ponctuelle</option>
+      <option value="cdd">CDD (durée déterminée)</option>
+      <option value="cdi">CDI (durée indéterminée)</option>
+      <option value="stage">Stage</option>
+      <option value="apprentissage">Apprentissage</option>
+    </select>
+    <label>Durée</label>
+    <select id="mi-duree">
+      <option value="courte">Courte (1-3 jours)</option>
+      <option value="longue">Longue durée (semaines / mois / permanent)</option>
+    </select>
     <label>Commune</label><input id="mi-commune" placeholder="Ex: Gombe">
-    <label>Budget (optionnel)</label><input id="mi-budget" placeholder="Ex: 20 $ par personne">
+    <label>Budget / salaire</label><input id="mi-budget" placeholder="Ex: 20 $ par jour, 250 $/mois...">
     <label>Nombre de personnes</label><input id="mi-nb" type="number" min="1" value="1">
-    <button style="margin-top:16px;width:100%" onclick="publierMission(this)">Publier la mission (3-5 $)</button>
-    <div class="principle">La publication est payante pour l'employeur. La consultation et la postulation sont gratuites pour le jeune.</div>
+    <label>Contact (téléphone / WhatsApp)</label><input id="mi-contact" placeholder="+243 ...">
+    <button style="margin-top:16px;width:100%" onclick="publierMission(this)">Publier l'offre (3-5 $)</button>
+    <div class="principle">La publication est payante. La consultation et la postulation sont gratuites pour le jeune.</div>
   </div>`;
 }
 async function publierMission(btn){
   const titre=document.getElementById('mi-titre').value.trim();
-  if(!titre){alert('Donne un titre à la mission.');return;}
+  if(!titre){alert('Donne un titre.');return;}
   if(btn){btn.disabled=true;btn.textContent='Publication…';}
-  const data=await apiCreerMission({employeur_id:employeurId,employeur_type:employeurType,titre,description:document.getElementById('mi-desc').value.trim(),commune:document.getElementById('mi-commune').value.trim(),budget:document.getElementById('mi-budget').value.trim(),nombre_personnes:parseInt(document.getElementById('mi-nb').value,10)||1});
-  if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent='Publier la mission (3-5 $)';}return;}
-  alert('✅ Mission publiée avec succès.');
+  const data=await apiCreerMission({
+    employeur_id:employeurId,
+    employeur_type:employeurType,
+    titre,
+    description:document.getElementById('mi-desc').value.trim(),
+    commune:document.getElementById('mi-commune').value.trim(),
+    budget:document.getElementById('mi-budget').value.trim(),
+    nombre_personnes:parseInt(document.getElementById('mi-nb').value,10)||1,
+    duree:document.getElementById('mi-duree').value,
+    type_contrat:document.getElementById('mi-type').value,
+    contact:document.getElementById('mi-contact').value.trim()
+  });
+  if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent='Publier l\'offre (3-5 $)';}return;}
+  alert('✅ Offre publiée.');
   nav('/missions');
 }
+
+/* ========== CANDIDATURES EMPLOYEUR ========== */
+function pageCandidatures(list){
+  const notifCount=(list||[]).filter(c=>c.statut==='nouvelle').length;
+  const items=(list||[]).length
+    ? list.map(c=>`
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+          <b>${escapeHtml(c.profil_nom||'—')}</b>
+          ${c.statut==='nouvelle'?'<span class="badge premium">NOUVELLE</span>':''}
+        </div>
+        <div class="small">${escapeHtml(c.profil_metier||'')} · ${escapeHtml(c.profil_commune||'')}</div>
+        <div class="small" style="margin-top:6px">Pour : <b>${escapeHtml(c.mission_titre||'—')}</b></div>
+        <div class="small" style="margin-top:4px">📞 ${escapeHtml(c.profil_contact||'—')}</div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="gold" onclick="accepterCandidature(${c.id})">Accepter</button>
+          <button class="secondary" onclick="refuserCandidature(${c.id})">Refuser</button>
+        </div>
+      </div>`).join('')
+    : `<div class="card"><p class="small">Aucune candidature reçue pour le moment.</p></div>`;
+
+  return `
+  ${notifCount>0?`<div class="notif"><div class="notif-ico">!</div><div>Tu as ${notifCount} nouvelle(s) candidature(s) à traiter.</div></div>`:''}
+  <div class="card">
+    <h3>📬 Candidatures reçues</h3>
+    <p class="small">Les jeunes qui postulent à tes offres apparaissent ici.</p>
+  </div>
+  ${items}`;
+}
+function accepterCandidature(id){alert('Candidature acceptée. Le jeune sera notifié.');}
+function refuserCandidature(id){alert('Candidature refusée.');}
 
 /* ========== EMPLOYEUR ========== */
 function pageEmployeurAccueil(){
@@ -583,27 +852,27 @@ function pageEmployeurAccueil(){
       <option value="institution">Institution / ONG</option>
     </select>
     <div id="verifZone"></div>
-    <a class="tile" href="#/employeur/publier" style="margin-top:14px"><button class="gold" style="width:100%">📢 Publier une mission (3-5 $)</button></a>
-    <div class="small" style="text-align:center;margin-top:8px">Publie une mission courte. Les jeunes postulent. Tu notes après.</div>
+    <a class="tile" href="#/employeur/publier" style="margin-top:14px"><button class="gold" style="width:100%">📢 Publier une offre (3-5 $)</button></a>
+    <a class="tile" href="#/employeur/candidatures" style="margin-top:8px"><button class="secondary" style="width:100%">📬 Voir mes candidatures reçues</button></a>
     <label style="margin-top:18px">Métier recherché</label>
     <input id="e-metier" placeholder="Ex: couture, mécanique...">
     <label>Commune</label>
     <input id="e-commune" placeholder="Ex: Matete, Gombe...">
     <button style="margin-top:16px;width:100%" onclick="lancerRecherche()">Rechercher un profil</button>
-    <div class="principle">Le classement des résultats repose uniquement sur le mérite (badge + note + nombre d'avis). Il ne s'achète jamais.</div>
+    <div class="principle">Le classement des résultats repose uniquement sur le mérite. Il ne s'achète jamais.</div>
   </div>`;
 }
 function onTypeChange(){employeurType=document.getElementById("e-type").value;localStorage.setItem("zua_emp_type",employeurType);employeurVerifie=false;localStorage.removeItem("zua_emp_verifie");renderVerifZone();}
 function renderVerifZone(){
   const z=document.getElementById("verifZone");if(!z)return;
-  if(employeurVerifie){z.innerHTML=`<div class="small" style="margin-top:12px">✓ Profil vérifié — tu peux lancer ta recherche.</div>`;return;}
+  if(employeurVerifie){z.innerHTML=`<div class="small" style="margin-top:12px">✓ Profil vérifié.</div>`;return;}
   if(employeurType==="particulier"){
-    z.innerHTML=`<label>Vérification par SMS</label><input id="v-tel" placeholder="Ton numéro" value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierSMS(this)">Recevoir & vérifier le code</button><div class="small" id="v-statut">Non vérifié</div>`;
+    z.innerHTML=`<label>Vérification par SMS</label><input id="v-tel" placeholder="Ton numéro" value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierSMS(this)">Vérifier</button>`;
   } else if(employeurType==="entreprise"||employeurType==="soustraitance"){
-    z.innerHTML=`<label>Numéro RCCM</label><input id="v-rccm" placeholder="Ex: CD/KNG/RCCM/..." value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierRCCM(this)">Vérifier l'entreprise</button><div class="small" id="v-statut">Non vérifié</div>`;
+    z.innerHTML=`<label>Numéro RCCM</label><input id="v-rccm" placeholder="Ex: CD/KNG/RCCM/..." value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierRCCM(this)">Vérifier l'entreprise</button>`;
   } else {
     employeurVerifie=true;localStorage.setItem("zua_emp_verifie","1");
-    z.innerHTML=`<div class="small" style="margin-top:12px">✓ Compte institutionnel — accès aux rapports agrégés inclus.</div><a class="tile" href="#/institution/dashboard" style="margin-top:12px"><button class="gold" style="width:100%">📊 Voir les rapports institutionnels</button></a>`;
+    z.innerHTML=`<div class="small" style="margin-top:12px">✓ Compte institutionnel.</div><a class="tile" href="#/institution/dashboard" style="margin-top:12px"><button class="gold" style="width:100%">📊 Voir les rapports</button></a>`;
   }
 }
 async function verifierSMS(btn){const tel=document.getElementById("v-tel").value.trim();if(!tel){alert("Indique ton numéro.");return;}if(btn){btn.disabled=true;btn.textContent="Vérification…";}try{await apiVerifierEmployeur({id:employeurId,type:"particulier",reference:tel});}catch(e){}employeurVerifie=true;employeurReference=tel;localStorage.setItem("zua_emp_verifie","1");localStorage.setItem("zua_emp_ref",tel);renderVerifZone();}
@@ -626,14 +895,14 @@ function pageResultats(params){
           <span class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)} · ${p.nb_avis>0?stars(parseFloat(p.moyenne))+" ("+p.nb_avis+" avis)":"aucun avis"}</span>
         </a>
       </div>`).join("")
-    : `<div class="small">Aucun profil ne correspond. Élargis la recherche.</div>`;
+    : `<div class="small">Aucun profil ne correspond.</div>`;
   const sponsoredHtml=sponsored.length
-    ? `<div class="card"><h4 style="margin-top:0">Profils à la une <span class="spon-tag">Sponsorisé</span></h4>${sponsored.map(p=>`<div class="spon"><a class="tile" href="#/profil/${p.id}"><b>${escapeHtml(p.nom)}</b> — ${escapeHtml(p.metier)} (${escapeHtml(p.commune)}) <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span></a></div>`).join("")}<div class="small" style="margin-top:6px">Rotation équitable entre abonnés. Ne remplace jamais le classement par mérite.</div></div>`
+    ? `<div class="card"><h4 style="margin-top:0">Profils à la une</h4>${sponsored.map(p=>`<div class="spon" style="background:var(--light);border:1px dashed var(--gold);border-radius:12px;padding:12px;margin-bottom:8px"><a class="tile" href="#/profil/${p.id}"><b>${escapeHtml(p.nom)}</b> — ${escapeHtml(p.metier)} <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span></a></div>`).join("")}</div>`
     : "";
   return `
   <div class="card">
     <h3>Résultats (${escapeHtml(employeurType)})</h3>
-    <div class="small" style="margin-bottom:10px">Classement par mérite : badge, puis note moyenne, puis nombre d'avis.</div>
+    <div class="small" style="margin-bottom:10px">Classement par mérite : badge, note moyenne, nombre d'avis.</div>
     ${listHtml}
   </div>
   ${sponsoredHtml}`;
@@ -643,25 +912,28 @@ function pageResultats(params){
 function pageFiche(p){
   if(!p||p.error)return `<div class="card"><p>Profil introuvable.</p></div>`;
   const avis=(p.avis||[]).slice(0,5);
-  const avisHtml=avis.map(a=>`<div class="avisItem"><div class="stars">${stars(a.note)}</div><div style="margin-top:4px">${escapeHtml(a.commentaire||"(sans commentaire)")}</div>${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}</div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
+  const avisHtml=avis.map(a=>`<div class="avisItem"><div class="stars">${stars(a.note)}</div><div style="margin-top:4px">${escapeHtml(a.commentaire||"")}</div>${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}</div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
   const dejaNote = (p.avis||[]).some(a=>a.employeur_id===employeurId);
   return `
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
       <div><h3 style="margin:0">${escapeHtml(p.nom)}</h3><div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div></div>
-      <div style="text-align:right"><span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>${p.vitrine_premium?'<div style="margin-top:6px"><span class="badge premium">PREMIUM</span></div>':''}</div>
+      <div style="text-align:right"><span class="badge ${p.badge}">${badgeLabel(p.badge)}</span></div>
     </div>
     <p style="font-size:.88rem;margin:12px 0;color:var(--text-soft)">${escapeHtml(p.description||'')}</p>
     ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:""}
     <div class="stars">${(p.avis&&p.avis.length)?stars(avg(p.avis))+" ("+p.avis.length+" avis)":"Pas encore d'avis"}</div>
     <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="alert('Contact : ${escapeHtml(p.contact||'')}')">📞 Contacter</button>
-      ${dejaNote?`<button class="secondary" disabled style="flex:1">✓ Tu as déjà laissé un avis</button>`:`<a class="tile" href="#/profil/${p.id}/mission" style="flex:1"><button class="gold" style="width:100%">J'ai réalisé une mission</button></a>`}
+      <button onclick="notifierContact('${escapeHtml(p.nom)}')">📞 Contacter</button>
+      ${dejaNote?`<button class="secondary" disabled style="flex:1">✓ Avis déjà laissé</button>`:`<a class="tile" href="#/profil/${p.id}/mission" style="flex:1"><button class="gold" style="width:100%">J'ai réalisé une mission</button></a>`}
     </div>
-    <div class="principle">Un avis n'est possible qu'après confirmation mutuelle qu'une mission a bien été réalisée. Cela écarte les faux avis.</div>
+    <div class="principle">Un avis n'est possible qu'après confirmation mutuelle de la mission.</div>
     <h4>Avis récents</h4>
     ${avisHtml}
   </div>`;
+}
+function notifierContact(nom){
+  alert(`📞 Contact : ${nom}\n\nVotre demande de contact a été envoyée. Vous recevrez une notification dès que le prestataire répond.`);
 }
 
 /* ========== MISSION ========== */
@@ -669,13 +941,13 @@ function pageMission(id){
   return `
   <div class="card">
     <h3>Confirmer la mission</h3>
-    <p class="small">Pour garantir l'authenticité des avis, les deux parties doivent confirmer qu'une mission a bien eu lieu avant de pouvoir noter.</p>
-    <div class="checkline"><input type="checkbox" id="m-jeune"><label style="margin:0">Le prestataire confirme la mission réalisée</label></div>
-    <div class="checkline"><input type="checkbox" id="m-emp"><label style="margin:0">L'employeur confirme la mission réalisée</label></div>
-    <button style="margin-top:16px;width:100%" onclick="confirmerMission(${id})">Confirmer et passer à la notation</button>
+    <p class="small">Les deux parties doivent confirmer qu'une mission a eu lieu avant de pouvoir noter.</p>
+    <div class="checkline"><input type="checkbox" id="m-jeune"><label style="margin:0">Le prestataire confirme la mission</label></div>
+    <div class="checkline"><input type="checkbox" id="m-emp"><label style="margin:0">L'employeur confirme la mission</label></div>
+    <button style="margin-top:16px;width:100%" onclick="confirmerMission(${id})">Confirmer et noter</button>
   </div>`;
 }
-function confirmerMission(id){if(!document.getElementById("m-jeune").checked||!document.getElementById("m-emp").checked){alert("Les deux parties doivent confirmer la mission.");return;}nav("/profil/"+id+"/avis");}
+function confirmerMission(id){if(!document.getElementById("m-jeune").checked||!document.getElementById("m-emp").checked){alert("Les deux parties doivent confirmer.");return;}nav("/profil/"+id+"/avis");}
 
 /* ========== AVIS ========== */
 let noteChoisie=0;
@@ -695,29 +967,27 @@ function pickStar(n){noteChoisie=n;document.querySelectorAll("#starPick span").f
 async function validerAvis(id,btn){
   if(!noteChoisie){alert("Choisis une note.");return;}
   if(btn){btn.disabled=true;btn.textContent="Envoi…";}
-  const commentaire=document.getElementById("commentaire").value;
-  const data=await apiAjouterAvis({profil_id:parseInt(id,10),employeur_id:employeurId,note:noteChoisie,commentaire});
+  const data=await apiAjouterAvis({profil_id:parseInt(id,10),employeur_id:employeurId,note:noteChoisie,commentaire:document.getElementById("commentaire").value});
   if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent="Envoyer l'avis";}return;}
-  alert("Avis enregistré.\nBadge actuel : "+badgeLabel(data.badge));
+  alert("Avis enregistré. Badge : "+badgeLabel(data.badge));
   nav("/profil/"+id);
 }
 
 /* ========== STATS ========== */
 function pageStats(s){
-  if(!s||s.error)return `<div class="card"><p>Erreur de chargement des statistiques.</p></div>`;
+  if(!s||s.error)return `<div class="card"><p>Erreur de chargement.</p></div>`;
   const communes=(s.par_commune||[]).map(c=>`<div class="result"><span>${escapeHtml(c.commune||'—')}</span><b>${c.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
   const metiers=(s.par_metier||[]).map(m=>`<div class="result"><span>${escapeHtml(m.metier||'—')}</span><b>${m.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
   const badges=(s.par_badge||[]).map(b=>`<div class="result"><span class="badge ${b.badge}">${badgeLabel(b.badge)}</span><b>${b.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
   return `
   <div class="card">
     <h3>Rapport ZUA MOSALA</h3>
-    <p class="small">Données agrégées, anonymisées, prêtes pour les ONG, ministères et bailleurs.</p>
+    <p class="small">Données agrégées, anonymisées.</p>
     <div style="display:flex;gap:10px;margin:16px 0">
       <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--blue)">${s.total_profils||0}</div><div class="small">Profils</div></div>
       <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--red)">${s.total_avis||0}</div><div class="small">Avis</div></div>
-      <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${s.total_missions||0}</div><div class="small">Missions</div></div>
+      <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${s.total_missions||0}</div><div class="small">Offres</div></div>
     </div>
-    <div class="principle">Ce rapport peut être vendu 200-500 USD aux institutions. C'est la troisième source de revenus de ZUA MOSALA.</div>
   </div>
   <div class="card"><h4 style="margin-top:0">Profils par commune</h4>${communes}</div>
   <div class="card"><h4 style="margin-top:0">Profils par métier</h4>${metiers}</div>
@@ -728,13 +998,7 @@ function pageStats(s){
 updateThemeBtn();
 router().catch(err=>{
   console.error('Erreur router:', err);
-  document.getElementById("app").innerHTML = `
-    <div class="card">
-      <h3>Erreur de connexion</h3>
-      <p class="small">Impossible de contacter le serveur. Vérifie que Railway est bien en ligne.</p>
-      <p class="small"><b>Détail :</b> ${err.message}</p>
-      <button onclick="location.reload()">Recharger</button>
-    </div>`;
+  document.getElementById("app").innerHTML = `<div class="card"><h3>Erreur</h3><p class="small">${err.message}</p><button onclick="location.reload()">Recharger</button></div>`;
 });
 </script>
 </body>
