@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
-/* Connexion MySQL (Railway injecte ces variables automatiquement) */
+/* ---------- Connexion MySQL (Railway) ---------- */
 const pool = mysql.createPool({
   host:     process.env.MYSQLHOST,
   user:     process.env.MYSQLUSER,
@@ -19,16 +19,8 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-/* Création automatique des tables */
+/* ---------- Création automatique des tables ---------- */
 async function initDB(){
-  console.log('--- DIAGNOSTIC MYSQL ---');
-  console.log('MYSQLHOST       =', process.env.MYSQLHOST);
-  console.log('MYSQLUSER       =', process.env.MYSQLUSER);
-  console.log('MYSQLDATABASE   =', process.env.MYSQLDATABASE);
-  console.log('MYSQLPORT       =', process.env.MYSQLPORT);
-  console.log('MYSQLPASSWORD   =', process.env.MYSQLPASSWORD ? '(défini)' : '(VIDE)');
-  console.log('------------------------');
-
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS profils (
@@ -45,8 +37,6 @@ async function initDB(){
         cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log('✓ Table profils OK');
-
     await pool.query(`
       CREATE TABLE IF NOT EXISTS avis (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,8 +50,6 @@ async function initDB(){
         UNIQUE KEY unique_avis (profil_id, employeur_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log('✓ Table avis OK');
-
     await pool.query(`
       CREATE TABLE IF NOT EXISTS employeurs (
         id VARCHAR(60) PRIMARY KEY,
@@ -71,16 +59,27 @@ async function initDB(){
         cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log('✓ Table employeurs OK');
-    console.log('✓ TOUTES LES TABLES SONT CRÉÉES');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS missions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employeur_id VARCHAR(60) NOT NULL,
+        employeur_type VARCHAR(40),
+        titre VARCHAR(150) NOT NULL,
+        description TEXT,
+        commune VARCHAR(120),
+        budget VARCHAR(60),
+        nombre_personnes INT DEFAULT 1,
+        statut ENUM('ouverte','pourvue','fermee') DEFAULT 'ouverte',
+        cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+    console.log('✓ Toutes les tables OK');
   } catch(e){
-    console.error('❌ ERREUR initDB :', e.message);
-    console.error('❌ Code erreur :', e.code);
-    console.error('❌ SQL state :', e.sqlState);
+    console.error('❌ Erreur initDB :', e.message);
   }
 }
 
-/* Helpers */
+/* ---------- Helpers ---------- */
 function badgeRank(b){ return { bronze:0, argent:1, or:2 }[b]; }
 function computeEligible(avis){
   const n = avis.length;
@@ -97,9 +96,10 @@ function cleanComment(txt){
   return t.trim();
 }
 
-/* Routes API */
+/* ---------- Routes API ---------- */
 app.get('/api/health', (req,res) => res.json({ ok:true, ts:Date.now() }));
 
+/* PROFILS */
 app.get('/api/profils', async (req,res) => {
   try {
     const { metier, commune } = req.query;
@@ -122,7 +122,7 @@ app.get('/api/profils/:id', async (req,res) => {
     const [profils] = await pool.query('SELECT * FROM profils WHERE id = ?', [req.params.id]);
     if (!profils.length) return res.status(404).json({ error:'Profil introuvable' });
     const [avis] = await pool.query(
-      'SELECT id, note, commentaire, reponse, cree_le FROM avis WHERE profil_id = ? ORDER BY cree_le DESC',
+      'SELECT id, note, commentaire, reponse, employeur_id, cree_le FROM avis WHERE profil_id = ? ORDER BY cree_le DESC',
       [req.params.id]
     );
     res.json({ ...profils[0], avis });
@@ -157,6 +157,7 @@ app.put('/api/profils/:id/premium', async (req,res) => {
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
+/* AVIS */
 app.put('/api/avis/:id/reponse', async (req,res) => {
   try {
     await pool.query('UPDATE avis SET reponse = ? WHERE id = ?', [cleanComment(req.body.reponse), req.params.id]);
@@ -191,6 +192,7 @@ app.post('/api/avis', async (req,res) => {
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
+/* EMPLOYEURS */
 app.post('/api/employeurs/verifier', async (req,res) => {
   try {
     const { id, type, reference } = req.body;
@@ -203,14 +205,58 @@ app.post('/api/employeurs/verifier', async (req,res) => {
   } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
-/* Servir le frontend */
+/* MISSIONS */
+app.get('/api/missions', async (req,res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM missions WHERE statut = "ouverte" ORDER BY cree_le DESC LIMIT 50'
+    );
+    res.json(rows);
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/missions', async (req,res) => {
+  try {
+    const { employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes } = req.body;
+    if (!titre) return res.status(400).json({ error: 'Titre requis' });
+    const [r] = await pool.query(
+      `INSERT INTO missions (employeur_id, employeur_type, titre, description, commune, budget, nombre_personnes)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [employeur_id||'anon', employeur_type||'particulier', titre,
+       description||'', commune||'', budget||'', nombre_personnes||1]
+    );
+    res.json({ id: r.insertId });
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+/* STATS (pour institutions) */
+app.get('/api/stats', async (req,res) => {
+  try {
+    const [parCommune] = await pool.query('SELECT commune, COUNT(*) AS total FROM profils GROUP BY commune ORDER BY total DESC');
+    const [parMetier]  = await pool.query('SELECT metier,  COUNT(*) AS total FROM profils GROUP BY metier  ORDER BY total DESC');
+    const [parBadge]   = await pool.query('SELECT badge,   COUNT(*) AS total FROM profils GROUP BY badge');
+    const [totaux]     = await pool.query('SELECT COUNT(*) AS profils FROM profils');
+    const [avisCount]  = await pool.query('SELECT COUNT(*) AS avis FROM avis');
+    const [missionsCount] = await pool.query('SELECT COUNT(*) AS missions FROM missions WHERE statut="ouverte"');
+    res.json({
+      total_profils: totaux[0].profils,
+      total_avis: avisCount[0].avis,
+      total_missions: missionsCount[0].missions,
+      par_commune: parCommune,
+      par_metier: parMetier,
+      par_badge: parBadge
+    });
+  } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+/* ---------- Frontend ---------- */
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req,res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-/* Démarrage */
+/* ---------- Démarrage ---------- */
 const PORT = process.env.PORT || 3000;
 initDB().then(() => {
-  app.listen(PORT, () => console.log(`✓ MOSALA en ligne sur le port ${PORT}`));
+  app.listen(PORT, () => console.log(`✓ ZUA MOSALA en ligne sur le port ${PORT}`));
 });
