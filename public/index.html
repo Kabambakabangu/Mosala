@@ -8,141 +8,161 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{
-  --rdc-blue:#007FFF; --rdc-blue-dark:#0059b3;
-  --rdc-yellow:#FCD116; --rdc-red:#CE1126; --rdc-gold:#D4A017;
-  --bg:#f7f9fc; --text:#0f172a; --card:#ffffff; --border:#e3e8ef;
-  --light:#eef3fb; --muted:#64748b; --shadow:0 2px 8px rgba(0,127,255,.08);
+  --blue:#007FFF; --blue-dark:#0059b3;
+  --yellow:#FCD116; --red:#CE1126; --gold:#D4A017;
+  --bg:#f5f7fa; --surface:#ffffff; --text:#0f172a; --text-soft:#64748b;
+  --border:#e5e9f0; --light:#f0f4f9; --shadow:0 1px 3px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.04);
 }
 :root[data-theme="dark"]{
-  --bg:#0c1420; --text:#e8edf5; --card:#151e2e; --border:#233047;
-  --light:#1b2739; --muted:#94a3b8; --shadow:0 2px 8px rgba(0,0,0,.35);
+  --bg:#0a1018; --surface:#131b28; --text:#e8edf5; --text-soft:#8b96a8;
+  --border:#1f2a3d; --light:#1a2333; --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.45;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.5;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  transition:background .25s, color .25s;}
-header{background:linear-gradient(135deg,var(--rdc-blue) 0%,var(--rdc-blue-dark) 100%);
-  color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);border-bottom:4px solid var(--rdc-yellow);}
+  transition:background .2s, color .2s;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* === HEADER === */
+header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 16px;position:sticky;top:0;z-index:10;
+  backdrop-filter:saturate(180%) blur(12px);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+  background:rgba(255,255,255,.85);
+}
+:root[data-theme="dark"] header{background:rgba(19,27,40,.85)}
 header .top{display:flex;align-items:center;gap:10px}
-header h1{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.5px}
-header .logo{width:26px;height:26px}
-.back{cursor:pointer;font-size:1.3rem;background:none;border:none;color:#fff;padding:0 6px;line-height:1}
-header .crumb{font-size:.68rem;opacity:.85;margin-top:4px}
-.theme-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
-  color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:1rem;padding:0;}
-.theme-btn:hover{background:rgba(255,255,255,.25)}
-main{max-width:520px;margin:0 auto;padding:16px}
+header h1{margin:0;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+header h1 .brand-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:inline-block;box-shadow:0 0 0 3px rgba(252,209,22,.2)}
+.back{cursor:pointer;font-size:1.4rem;background:none;border:none;color:var(--text);padding:0 4px;line-height:1;font-weight:300}
+.theme-btn{margin-left:auto;background:var(--light);border:none;color:var(--text);
+  width:34px;height:34px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;padding:0;transition:background .2s;}
+.theme-btn:hover{background:var(--border)}
+header .crumb{font-size:.68rem;color:var(--text-soft);margin-top:2px;margin-left:2px}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
-.card h2{margin:0 0 6px;font-size:1.15rem}
-.card h3{margin:0 0 6px;font-size:1rem}
-.card h4{margin:16px 0 8px;font-size:.92rem;color:var(--rdc-blue-dark)}
-:root[data-theme="dark"] .card h4{color:var(--rdc-yellow)}
+/* === CARDS === */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.card h2{margin:0 0 8px;font-size:1.1rem;letter-spacing:-.3px}
+.card h3{margin:0 0 8px;font-size:.98rem;font-weight:700;letter-spacing:-.2px}
+.card h4{margin:18px 0 10px;font-size:.85rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px}
+:root[data-theme="dark"] .card h4{color:var(--yellow)}
 
-label{display:block;font-size:.8rem;font-weight:600;margin:10px 0 4px}
-input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--rdc-yellow);outline-offset:1px;border-color:var(--rdc-blue)}
+/* === FORMS === */
+label{display:block;font-size:.78rem;font-weight:600;margin:12px 0 6px;color:var(--text)}
+input,select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s,background .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+:root[data-theme="dark"] input:focus,:root[data-theme="dark"] select:focus,:root[data-theme="dark"] textarea:focus{background:var(--bg)}
 
-button{background:var(--rdc-blue);color:#fff;border:none;padding:11px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.88rem;font-family:inherit;transition:opacity .15s,transform .1s}
-button:hover{opacity:.92}
-button:active{transform:scale(.98)}
-button.secondary{background:transparent;color:var(--rdc-blue);border:1.5px solid var(--rdc-blue)}
-:root[data-theme="dark"] button.secondary{color:var(--rdc-yellow);border-color:var(--rdc-yellow)}
-button.gold{background:var(--rdc-yellow);color:#1a1a1a}
+button{background:var(--blue);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;font-size:.88rem;font-family:inherit;transition:opacity .15s,transform .08s;letter-spacing:-.1px}
+button:hover{opacity:.94}
+button:active{transform:scale(.985)}
+button.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}
+:root[data-theme="dark"] button.secondary{color:var(--yellow);border-color:var(--yellow)}
+button.gold{background:var(--yellow);color:#1a1a1a}
+button.ghost{background:var(--light);color:var(--text)}
 button:disabled{opacity:.4;cursor:not-allowed}
 a.tile{display:block;text-decoration:none;color:inherit}
-a{color:var(--rdc-blue)}
-:root[data-theme="dark"] a{color:var(--rdc-yellow)}
+a{color:var(--blue);text-decoration:none}
+:root[data-theme="dark"] a{color:var(--yellow)}
 
-.hero{background:linear-gradient(135deg,var(--rdc-blue) 0%,var(--rdc-blue-dark) 100%);
-  color:#fff;border-radius:16px;overflow:hidden;margin-bottom:16px;
-  box-shadow:0 6px 20px rgba(0,127,255,.25);border-bottom:4px solid var(--rdc-yellow);}
-.hero-img{position:relative;height:220px;background-size:cover;background-position:center;overflow:hidden;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,127,255,.55) 0%,rgba(0,89,179,.9) 100%);z-index:1;}
-.hero-illu{position:absolute;inset:0;z-index:0;opacity:.35;}
-.hero-content{position:relative;padding:22px 18px;color:#fff;height:100%;display:flex;flex-direction:column;justify-content:flex-end;z-index:2;}
-.hero-content h1{font-size:1.75rem;margin:0 0 8px;line-height:1.15;font-weight:900;letter-spacing:-.5px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-.hero-content h1 span{color:var(--rdc-yellow)}
-.hero-content p{margin:0;font-size:.9rem;opacity:.97;text-shadow:0 1px 4px rgba(0,0,0,.4)}
-.hero-body{padding:16px 18px;color:#fff;}
-.hero-body p{margin:0 0 8px;font-size:.88rem;opacity:.95}
-.hero-tagline{font-size:.75rem;opacity:.85;font-style:italic;border-top:1px solid rgba(255,255,255,.2);padding-top:10px}
+/* === HERO === */
+.hero{border-radius:18px;overflow:hidden;margin-bottom:16px;box-shadow:0 6px 24px rgba(0,127,255,.18);border:1px solid var(--border);background:var(--surface)}
+.hero-media{position:relative;height:220px;overflow:hidden;background:#1F3864}
+.hero-media img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-media .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,89,179,.15) 0%,rgba(0,89,179,.75) 65%,rgba(0,89,179,.95) 100%)}
+.hero-media .content{position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+.hero-media h1{font-size:1.8rem;margin:0 0 6px;font-weight:800;letter-spacing:-.8px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.hero-media h1 span{color:var(--yellow)}
+.hero-media .tag{font-size:.85rem;opacity:.95;margin:0;text-shadow:0 1px 4px rgba(0,0,0,.3);line-height:1.35}
+.hero-body{padding:16px 18px;background:var(--surface)}
+.hero-body p{margin:0;font-size:.85rem;color:var(--text-soft);line-height:1.5}
 
-.pillar{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--light);border-radius:12px;margin-bottom:10px;border-left:4px solid var(--rdc-yellow)}
-.pillar-illu{width:60px;height:60px;border-radius:10px;flex-shrink:0;overflow:hidden}
-.pillar-illu svg{width:100%;height:100%;display:block}
-.pillar .txt{font-size:.85rem}
-.pillar .txt b{display:block;margin-bottom:2px;color:var(--rdc-blue-dark)}
-:root[data-theme="dark"] .pillar .txt b{color:var(--rdc-yellow)}
-.pillar .txt span{color:var(--muted)}
+/* === BANNIÈRE RDC === */
+.rdc-strip{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--light);border-radius:12px;margin-bottom:14px;font-size:.75rem;color:var(--text-soft);line-height:1.4}
+.rdc-flag{width:26px;height:26px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#007FFF;display:flex;flex-direction:column}
+.rdc-flag div{flex:1}
 
-.choice{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+/* === PHOTO BLOCK === */
+.photo-block{padding:0;overflow:hidden;border-radius:16px}
+.photo-block img{width:100%;height:190px;object-fit:cover;display:block;background:var(--light)}
+.photo-block .body{padding:16px 18px}
+.photo-block h3{margin:0 0 6px;font-size:.98rem}
+.photo-block p{margin:0;font-size:.82rem;color:var(--text-soft);line-height:1.5}
+
+/* === PILIERS === */
+.pillar{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.pillar:last-of-type{border-bottom:none}
+.pillar-img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--light)}
+.pillar .txt{font-size:.85rem;line-height:1.4}
+.pillar .txt b{display:block;margin-bottom:2px;color:var(--text);font-size:.88rem}
+.pillar .txt span{color:var(--text-soft)}
+
+/* === GRID PHOTOS === */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px}
+.photo-grid img{width:100%;height:120px;object-fit:cover;border-radius:12px;display:block;background:var(--light)}
+
+/* === CHOICE === */
+.choice{display:flex;flex-direction:column;gap:10px;margin-top:6px}
 .choice a{display:block;text-decoration:none}
-.choice-btn{width:100%;padding:16px;border-radius:12px;font-weight:700;font-size:.95rem;
-  display:flex;align-items:center;gap:12px;text-align:left;border:2px solid transparent;
-  cursor:pointer;transition:transform .1s;font-family:inherit;position:relative;overflow:hidden;}
-.choice-btn:hover{transform:translateY(-2px)}
-.choice-btn.primary{background:linear-gradient(135deg,var(--rdc-blue),var(--rdc-blue-dark));color:#fff}
-.choice-btn.secondary{background:var(--card);color:var(--rdc-blue-dark);border-color:var(--border);box-shadow:var(--shadow)}
-:root[data-theme="dark"] .choice-btn.secondary{color:var(--rdc-yellow)}
-.choice-btn svg{width:30px;height:30px}
-.choice-btn .arrow{margin-left:auto;font-size:1.2rem;opacity:.6}
+.choice-btn{width:100%;padding:15px 16px;border-radius:14px;font-weight:600;font-size:.92rem;
+  display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid transparent;
+  cursor:pointer;transition:transform .1s, border-color .15s;font-family:inherit;background:var(--surface);}
+.choice-btn:hover{transform:translateY(-1px)}
+.choice-btn.primary{background:var(--blue);color:#fff}
+.choice-btn.secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
+.choice-btn.secondary:hover{border-color:var(--blue)}
+.choice-btn .ico{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.choice-btn.secondary .ico{background:var(--light)}
+.choice-btn .ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.choice-btn.primary .ico svg{stroke:#fff}
+.choice-btn .txt{flex:1}
+.choice-btn .txt b{display:block;font-size:.92rem}
+.choice-btn .txt span{font-size:.75rem;opacity:.75;font-weight:400;display:block;margin-top:2px}
+.choice-btn .arrow{opacity:.5;font-size:1rem}
 
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:#fff;vertical-align:middle}
+/* === BADGES === */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;color:#fff;vertical-align:middle;letter-spacing:.2px}
 .badge.bronze{background:#a06a3c}
 .badge.argent{background:#7a7a7a}
-.badge.or{background:var(--rdc-gold)}
-.badge.premium{background:var(--rdc-red);font-size:.65rem;padding:2px 7px}
+.badge.or{background:var(--gold)}
+.badge.premium{background:var(--red);font-size:.62rem;padding:2px 6px}
 
-.stars{color:var(--rdc-gold);font-size:.95rem;letter-spacing:1px}
-.result{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
+.stars{color:var(--gold);font-size:.92rem;letter-spacing:.5px}
+.result{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:10px}
 .result:last-child{border:none}
 .result a{flex:1;text-decoration:none;color:inherit;display:block}
-.spon{background:var(--light);border:1px dashed var(--rdc-yellow);border-radius:10px;padding:10px;margin-bottom:8px}
-.spon-tag{font-size:.65rem;background:var(--rdc-yellow);color:#1a1a1a;padding:2px 6px;border-radius:10px;font-weight:700;margin-left:6px}
-.small{font-size:.75rem;color:var(--muted)}
-.principle{background:var(--light);border-left:4px solid var(--rdc-yellow);padding:10px 12px;font-size:.82rem;font-weight:600;color:var(--rdc-blue-dark);border-radius:6px;margin:12px 0}
-:root[data-theme="dark"] .principle{color:var(--rdc-yellow)}
-.star-pick span{font-size:1.8rem;cursor:pointer;opacity:.3;transition:opacity .1s;color:var(--rdc-gold)}
+.spon{background:var(--light);border:1px dashed var(--gold);border-radius:12px;padding:12px;margin-bottom:8px}
+.spon-tag{font-size:.6rem;background:var(--gold);color:#fff;padding:2px 6px;border-radius:10px;font-weight:700;margin-left:6px;letter-spacing:.3px}
+.small{font-size:.74rem;color:var(--text-soft);line-height:1.4}
+.principle{background:var(--light);border-left:3px solid var(--yellow);padding:10px 14px;font-size:.78rem;font-weight:500;color:var(--text);border-radius:8px;margin:14px 0;line-height:1.45}
+
+.star-pick span{font-size:1.9rem;cursor:pointer;opacity:.25;transition:opacity .12s;color:var(--gold);user-select:none}
 .star-pick span.on{opacity:1}
-#qr{display:flex;justify-content:center;margin:10px 0}
-.avisItem{border-top:1px solid var(--border);padding:10px 0;font-size:.85rem}
+#qr{display:flex;justify-content:center;margin:12px 0;padding:14px;background:#fff;border-radius:12px}
+.avisItem{border-top:1px solid var(--border);padding:12px 0;font-size:.85rem}
 .avisItem:first-child{border-top:none}
-.reponse{background:var(--light);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:.8rem}
-.checkline{display:flex;gap:8px;align-items:flex-start;font-size:.8rem;margin-top:10px}
-.checkline input{width:auto;margin-top:3px}
-.consent{font-size:.72rem;color:var(--muted);line-height:1.4}
-.loader{text-align:center;padding:30px;color:var(--muted)}
-.rdc-banner{display:flex;align-items:center;gap:10px;padding:10px 12px;
-  background:linear-gradient(90deg,rgba(0,127,255,.08),rgba(252,209,22,.08),rgba(206,17,38,.08));
-  border-radius:10px;margin-bottom:14px;font-size:.75rem;color:var(--muted);
-  border-left:3px solid var(--rdc-yellow);}
-.rdc-banner svg{width:28px;height:28px;flex-shrink:0}
-.mission-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
+.reponse{background:var(--light);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.78rem}
+.checkline{display:flex;gap:10px;align-items:flex-start;font-size:.82rem;margin-top:12px;line-height:1.4}
+.checkline input{width:auto;margin-top:2px;flex-shrink:0}
+.consent{font-size:.7rem;color:var(--text-soft);line-height:1.45}
+.loader{text-align:center;padding:40px;color:var(--text-soft);font-size:.85rem}
+.mission-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:10px}
 .mission-item:last-child{border:none}
 .mission-info{flex:1}
-.photo-block{padding:0;overflow:hidden}
-.photo-block .illu{width:100%;height:200px;overflow:hidden;background:#eef3fb}
-.photo-block .illu svg{width:100%;height:100%;display:block}
-.photo-block .photo-body{padding:14px 16px}
-.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 14px}
-.photo-grid-item{height:130px;border-radius:8px;overflow:hidden}
-.photo-grid-item svg{width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
     <button class="back" id="backBtn" onclick="history.back()" aria-label="Retour">‹</button>
-    <h1 id="headerTitle">
-      <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M7 11V7a2 2 0 1 1 4 0v4M11 11V5a2 2 0 1 1 4 0v6M15 11V6a2 2 0 1 1 4 0v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-3a2 2 0 1 1 4 0" stroke="#FCD116" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      ZUA MOSALA
-    </h1>
+    <h1 id="headerTitle"><span class="brand-dot"></span> ZUA MOSALA</h1>
     <button class="theme-btn" onclick="toggleTheme()" aria-label="Changer de thème" id="themeBtn">🌙</button>
   </div>
   <div class="crumb" id="crumb"></div>
@@ -190,16 +210,8 @@ let employeurVerifie = localStorage.getItem("zua_emp_verifie")==="1";
 let employeurReference = localStorage.getItem("zua_emp_ref")||"";
 
 /* ========== API CALLS ========== */
-async function chargerProfils(){
-  const r=await fetch(API+'/profils');
-  if(!r.ok)throw new Error('Erreur serveur '+r.status);
-  return await r.json();
-}
-async function chargerProfil(id){
-  const r=await fetch(API+'/profils/'+id);
-  if(!r.ok)throw new Error('Profil introuvable');
-  return await r.json();
-}
+async function chargerProfils(){const r=await fetch(API+'/profils');if(!r.ok)throw new Error('Erreur serveur '+r.status);return await r.json();}
+async function chargerProfil(id){const r=await fetch(API+'/profils/'+id);if(!r.ok)throw new Error('Profil introuvable');return await r.json();}
 async function apiCreerProfil(body){const r=await fetch(API+'/profils',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
 async function apiAjouterAvis(body){const r=await fetch(API+'/avis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
 async function apiVerifierEmployeur(body){const r=await fetch(API+'/employeurs/verifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
@@ -210,118 +222,10 @@ async function apiListerMissions(){const r=await fetch(API+'/missions');return a
 async function apiCreerMission(body){const r=await fetch(API+'/missions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
 async function apiStats(){const r=await fetch(API+'/stats');return await r.json();}
 
-/* ========== SVG ILLUSTRATIONS (inline, 100% offline) ========== */
-const ILLU_RDC_MINI = `
-<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <rect x="4" y="8" width="32" height="24" rx="3" fill="#007FFF"/>
-  <path d="M4 26 L36 26" stroke="#FCD116" stroke-width="3"/>
-  <path d="M4 32 L36 32" stroke="#CE1126" stroke-width="3"/>
-  <path d="M12 15 L14 19 L18 19 L15 22 L16 26 L12 23 L8 26 L9 22 L6 19 L10 19 Z" fill="#FCD116"/>
-</svg>`;
-
-const ILLU_KINSHASA = `
-<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <defs>
-    <linearGradient id="skyK" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#007FFF"/><stop offset="1" stop-color="#0059b3"/>
-    </linearGradient>
-  </defs>
-  <rect width="400" height="240" fill="url(#skyK)"/>
-  <rect x="0" y="180" width="400" height="60" fill="#0c1420" opacity=".4"/>
-  <rect x="20" y="90" width="80" height="140" fill="#FCD116" opacity=".95"/>
-  <rect x="28" y="105" width="20" height="20" fill="#1F3864"/>
-  <rect x="55" y="105" width="20" height="20" fill="#1F3864"/>
-  <rect x="28" y="135" width="20" height="20" fill="#1F3864"/>
-  <rect x="55" y="135" width="20" height="20" fill="#1F3864"/>
-  <rect x="40" y="170" width="30" height="60" fill="#1F3864"/>
-  <rect x="115" y="60" width="90" height="180" fill="#2d4a7c"/>
-  <rect x="125" y="75" width="20" height="20" fill="#FCD116"/>
-  <rect x="155" y="75" width="20" height="20" fill="#FCD116"/>
-  <rect x="185" y="75" width="15" height="20" fill="#FCD116"/>
-  <rect x="125" y="110" width="20" height="20" fill="#FCD116"/>
-  <rect x="155" y="110" width="20" height="20" fill="#FCD116"/>
-  <rect x="185" y="110" width="15" height="20" fill="#FCD116"/>
-  <rect x="125" y="145" width="20" height="20" fill="#FCD116"/>
-  <rect x="155" y="145" width="20" height="20" fill="#FCD116"/>
-  <rect x="220" y="80" width="70" height="160" fill="#CE1126"/>
-  <rect x="230" y="95" width="15" height="15" fill="#FCD116"/>
-  <rect x="250" y="95" width="15" height="15" fill="#FCD116"/>
-  <rect x="230" y="120" width="15" height="15" fill="#FCD116"/>
-  <rect x="250" y="120" width="15" height="15" fill="#FCD116"/>
-  <rect x="305" y="100" width="80" height="140" fill="#0059b3"/>
-  <rect x="315" y="115" width="15" height="15" fill="#FCD116"/>
-  <rect x="340" y="115" width="15" height="15" fill="#FCD116"/>
-  <rect x="365" y="115" width="15" height="15" fill="#FCD116"/>
-  <rect x="315" y="140" width="15" height="15" fill="#FCD116"/>
-  <rect x="340" y="140" width="15" height="15" fill="#FCD116"/>
-  <rect x="365" y="140" width="15" height="15" fill="#FCD116"/>
-  <circle cx="200" cy="40" r="15" fill="#FCD116" opacity=".7"/>
-  <text x="200" y="232" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#FCD116">KINSHASA · RDC</text>
-</svg>`;
-
-const ILLU_ARTISANS = `
-<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <rect width="400" height="200" fill="#eef3fb"/>
-  <rect x="0" y="150" width="400" height="50" fill="#007FFF" opacity=".12"/>
-  <circle cx="70" cy="70" r="24" fill="#1a1a1a"/>
-  <rect x="55" y="95" width="30" height="55" rx="6" fill="#FCD116"/>
-  <rect x="40" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="85" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="55" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <rect x="73" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <circle cx="200" cy="70" r="24" fill="#1a1a1a"/>
-  <rect x="185" y="95" width="30" height="55" rx="6" fill="#CE1126"/>
-  <rect x="170" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="215" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="185" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <rect x="203" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <circle cx="330" cy="70" r="24" fill="#1a1a1a"/>
-  <rect x="315" y="95" width="30" height="55" rx="6" fill="#007FFF"/>
-  <rect x="300" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="345" y="110" width="15" height="35" rx="3" fill="#1a1a1a"/>
-  <rect x="315" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <rect x="333" y="150" width="12" height="20" fill="#1a1a1a"/>
-  <text x="200" y="192" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#0059b3">Artisans · Kinshasa</text>
-</svg>`;
-
-const ICO_COUTURE = `
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <rect width="100" height="100" fill="#007FFF"/>
-  <path d="M30 45 L50 22 L70 45 L62 45 L62 78 L38 78 L38 45 Z" fill="#FCD116" stroke="#B08D2B" stroke-width="2"/>
-  <line x1="44" y1="55" x2="56" y2="55" stroke="#1F3864" stroke-width="2"/>
-  <line x1="44" y1="63" x2="56" y2="63" stroke="#1F3864" stroke-width="2"/>
-</svg>`;
-
-const ICO_MECA = `
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <rect width="100" height="100" fill="#1F3864"/>
-  <circle cx="50" cy="50" r="22" fill="none" stroke="#FCD116" stroke-width="4"/>
-  <circle cx="50" cy="50" r="8" fill="#FCD116"/>
-  <path d="M50 18 L50 28 M50 72 L50 82 M18 50 L28 50 M72 50 L82 50 M27 27 L34 34 M66 66 L73 73 M73 27 L66 34 M34 66 L27 73" stroke="#FCD116" stroke-width="4" stroke-linecap="round"/>
-</svg>`;
-
-const ICO_ELEC = `
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <rect width="100" height="100" fill="#CE1126"/>
-  <path d="M55 18 L25 55 L45 55 L40 85 L70 45 L50 45 Z" fill="#FCD116" stroke="#B08D2B" stroke-width="2" stroke-linejoin="round"/>
-</svg>`;
-
-const ICO_COIF = `
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <rect width="100" height="100" fill="#FCD116"/>
-  <circle cx="50" cy="42" r="16" fill="none" stroke="#1F3864" stroke-width="3"/>
-  <path d="M34 42 Q36 20 50 22 Q64 20 66 42" fill="none" stroke="#1F3864" stroke-width="3"/>
-  <path d="M32 58 Q50 76 68 58" fill="none" stroke="#1F3864" stroke-width="3"/>
-  <path d="M36 64 Q50 82 64 64" fill="none" stroke="#1F3864" stroke-width="3"/>
-</svg>`;
-
 /* ========== ROUTER ========== */
 function parseHash(){const h=(location.hash.slice(1)||"/");const [path,qs]=h.split("?");return {segs:path.split("/").filter(Boolean),params:new URLSearchParams(qs||"")};}
 function setHeader(title,crumb,showBack){
-  document.getElementById("headerTitle").innerHTML=
-    `<svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M7 11V7a2 2 0 1 1 4 0v4M11 11V5a2 2 0 1 1 4 0v6M15 11V6a2 2 0 1 1 4 0v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-3a2 2 0 1 1 4 0" stroke="#FCD116" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg> ${title}`;
+  document.getElementById("headerTitle").innerHTML=`<span class="brand-dot"></span> ${title}`;
   document.getElementById("crumb").textContent=crumb||"";
   document.getElementById("backBtn").style.visibility=showBack?"visible":"hidden";
 }
@@ -331,17 +235,11 @@ async function router(){
   const app=document.getElementById("app");
   app.innerHTML=`<div class="loader">Chargement…</div>`;
   updateThemeBtn();
-
   const timeoutId = setTimeout(()=>{
     if(app.innerHTML.includes("Chargement")){
-      app.innerHTML=`<div class="card">
-        <h3>Le serveur met du temps à répondre</h3>
-        <p class="small">Le service était probablement endormi. Attends 30 secondes puis recharge.</p>
-        <button onclick="router()">Réessayer</button>
-      </div>`;
+      app.innerHTML=`<div class="card"><h3>Le serveur met du temps à répondre</h3><p class="small">Attends 30 secondes puis recharge.</p><button onclick="router()">Réessayer</button></div>`;
     }
   }, 8000);
-
   try{
     if(segs.length===0){
       setHeader("ZUA MOSALA","Le portfolio certifié des compétences informelles",false);
@@ -350,86 +248,36 @@ async function router(){
       app.innerHTML=pageHome();
       return;
     }
-    if(segs[0]==="jeune"&&segs[1]==="creer"){
-      setHeader("Créer mon profil","Accueil › Autodidacte",true);
-      app.innerHTML=pageCreer();
-      return;
-    }
+    if(segs[0]==="jeune"&&segs[1]==="creer"){setHeader("Créer mon profil","Accueil › Autodidacte",true);app.innerHTML=pageCreer();return;}
     if(segs[0]==="jeune"&&segs[1]==="profil"){
       if(!monProfilId){nav("/jeune/creer");return;}
       setHeader("Mon profil","Accueil › Autodidacte",true);
       const p=await chargerProfil(monProfilId);
       app.innerHTML=pageMonProfil(p);
       const el=document.getElementById("qr");
-      if(el){
-        el.innerHTML="";
-        try{ new QRCode(el,{text:"zua-mosala.app/profil/"+p.id,width:130,height:130,colorDark:"#007FFF",colorLight:"#ffffff"}); }catch(e){}
-      }
+      if(el){el.innerHTML="";try{new QRCode(el,{text:"zua-mosala.app/profil/"+p.id,width:130,height:130,colorDark:"#007FFF",colorLight:"#ffffff"});}catch(e){}}
       return;
     }
-    if(segs[0]==="jeune"&&segs[1]==="vitrine"){
-      setHeader("Booster ma vitrine","Mon profil › Premium",true);
-      const p=await chargerProfil(monProfilId);
-      app.innerHTML=pageVitrine(p);
-      return;
-    }
-    if(segs[0]==="missions"){
-      setHeader("Missions disponibles","Missions ouvertes",true);
-      try{ missions = await apiListerMissions(); }catch(e){ missions = []; }
-      app.innerHTML=pageMissionsPubliques(missions);
-      return;
-    }
+    if(segs[0]==="jeune"&&segs[1]==="vitrine"){setHeader("Booster ma vitrine","Mon profil › Premium",true);const p=await chargerProfil(monProfilId);app.innerHTML=pageVitrine(p);return;}
+    if(segs[0]==="missions"){setHeader("Missions disponibles","Missions ouvertes",true);try{missions=await apiListerMissions();}catch(e){missions=[];}app.innerHTML=pageMissionsPubliques(missions);return;}
     if(segs[0]==="employeur"&&segs.length===1){
       setHeader("Espace employeur","Accueil › Employeur",true);
       app.innerHTML=pageEmployeurAccueil();
       const sel=document.getElementById("e-type");
-      if(sel && employeurType){ sel.value=employeurType; }
+      if(sel && employeurType){sel.value=employeurType;}
       renderVerifZone();
       return;
     }
-    if(segs[0]==="employeur"&&segs[1]==="publier"){
-      setHeader("Publier une mission","Employeur › Mission",true);
-      app.innerHTML=pagePublierMission();
-      return;
-    }
-    if(segs[0]==="employeur"&&segs[1]==="resultats"){
-      setHeader("Résultats","Employeur › Recherche",true);
-      try{ profiles = await chargerProfils(); }catch(e){ profiles = []; }
-      app.innerHTML=pageResultats(params);
-      return;
-    }
-    if(segs[0]==="institution"&&segs[1]==="dashboard"){
-      setHeader("Rapports institutionnels","Institution › Statistiques",true);
-      try{ const stats = await apiStats(); app.innerHTML=pageStats(stats); }
-      catch(e){ app.innerHTML=`<div class="card"><p>Impossible de charger les stats.</p></div>`; }
-      return;
-    }
-    if(segs[0]==="profil"&&segs.length===2){
-      setHeader("Fiche profil","Résultats › Profil",true);
-      const p=await chargerProfil(segs[1]);
-      app.innerHTML=pageFiche(p);
-      return;
-    }
-    if(segs[0]==="profil"&&segs[2]==="mission"){
-      setHeader("Confirmer la mission","Profil › Mission",true);
-      app.innerHTML=pageMission(segs[1]);
-      return;
-    }
-    if(segs[0]==="profil"&&segs[2]==="avis"){
-      setHeader("Laisser un avis","Profil › Mission › Avis",true);
-      app.innerHTML=pageAvis(segs[1]);
-      return;
-    }
+    if(segs[0]==="employeur"&&segs[1]==="publier"){setHeader("Publier une mission","Employeur › Mission",true);app.innerHTML=pagePublierMission();return;}
+    if(segs[0]==="employeur"&&segs[1]==="resultats"){setHeader("Résultats","Employeur › Recherche",true);try{profiles=await chargerProfils();}catch(e){profiles=[];}app.innerHTML=pageResultats(params);return;}
+    if(segs[0]==="institution"&&segs[1]==="dashboard"){setHeader("Rapports institutionnels","Institution › Statistiques",true);try{const stats=await apiStats();app.innerHTML=pageStats(stats);}catch(e){app.innerHTML=`<div class="card"><p>Impossible de charger les stats.</p></div>`;}return;}
+    if(segs[0]==="profil"&&segs.length===2){setHeader("Fiche profil","Résultats › Profil",true);const p=await chargerProfil(segs[1]);app.innerHTML=pageFiche(p);return;}
+    if(segs[0]==="profil"&&segs[2]==="mission"){setHeader("Confirmer la mission","Profil › Mission",true);app.innerHTML=pageMission(segs[1]);return;}
+    if(segs[0]==="profil"&&segs[2]==="avis"){setHeader("Laisser un avis","Profil › Mission › Avis",true);app.innerHTML=pageAvis(segs[1]);return;}
     app.innerHTML=`<div class="card"><p>Page introuvable.</p></div>`;
   }catch(e){
-    app.innerHTML=`<div class="card">
-      <h3>Erreur</h3>
-      <p class="small">${escapeHtml(e.message)}</p>
-      <button onclick="router()">Réessayer</button>
-    </div>`;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+    app.innerHTML=`<div class="card"><h3>Erreur</h3><p class="small">${escapeHtml(e.message)}</p><button onclick="router()">Réessayer</button></div>`;
+  } finally { clearTimeout(timeoutId); }
 }
 window.addEventListener("hashchange",router);
 
@@ -438,130 +286,111 @@ function pageHome(){
   const dejaInscrit = !!monProfilId;
   return `
   <div class="hero">
-    <div class="hero-img" style="background:linear-gradient(135deg,#007FFF 0%,#0059b3 100%);">
-      <div class="hero-illu">${ILLU_KINSHASA}</div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
+    <div class="hero-media">
+      <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=70&auto=format&fit=crop" alt="Jeune Congolais au travail" loading="eager">
+      <div class="grad"></div>
+      <div class="content">
         <h1>ZUA <span>MOSALA</span></h1>
-        <p><b>Le portfolio numérique qui transforme ton savoir-faire en badge vérifié.</b></p>
+        <p class="tag">Le portfolio qui transforme le savoir-faire informel en badge vérifié.</p>
       </div>
     </div>
     <div class="hero-body">
       <p>Créé pour les jeunes autodidactes de Kinshasa. Utilisé par les employeurs qui recrutent sur la preuve, pas sur le diplôme.</p>
-      <div class="hero-tagline">« Le travail, la preuve. »</div>
     </div>
   </div>
 
-  <div class="rdc-banner">
-    ${ILLU_RDC_MINI}
-    <div>Un projet conçu à Kinshasa, en République Démocratique du Congo, pour valoriser la débrouille et le talent local.</div>
+  <div class="rdc-strip">
+    <div class="rdc-flag">
+      <div style="background:#007FFF"></div>
+      <div style="background:#FCD116"></div>
+      <div style="background:#CE1126"></div>
+    </div>
+    <div>Un projet conçu à Kinshasa, en République Démocratique du Congo, pour valoriser le talent local.</div>
   </div>
 
-  <div class="card photo-block">
-    <div class="illu">${ILLU_ARTISANS}</div>
-    <div class="photo-body">
-      <h3 style="margin:0 0 6px">Le talent est partout. La preuve nulle part.</h3>
-      <p class="small" style="margin:0">
-        À Kinshasa, des milliers de jeunes savent coudre, souder, réparer, coiffer, construire.
-        Mais aucun diplôme ne le prouve. Et aucun employeur ne peut le vérifier.
-      </p>
+  <div class="card photo-block" style="padding:0">
+    <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&q=70&auto=format&fit=crop" alt="Artisan africain au travail" loading="lazy">
+    <div class="body">
+      <h3>Le talent est partout. La preuve nulle part.</h3>
+      <p>À Kinshasa, des milliers de jeunes savent coudre, souder, réparer, coiffer, construire. Mais aucun diplôme ne le prouve. Et aucun employeur ne peut le vérifier.</p>
     </div>
   </div>
 
   <div class="card">
-    <h3 style="margin-top:0">Comment ça marche</h3>
+    <h3>Comment ça marche</h3>
     <div class="pillar">
-      <div class="pillar-illu">${ICO_COUTURE}</div>
+      <img class="pillar-img" src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=200&q=70&auto=format&fit=crop" alt="Jeune autodidacte" loading="lazy">
       <div class="txt"><b>1. Le jeune crée son profil</b><span>Nom, métier, commune, réalisations concrètes. Gratuit.</span></div>
     </div>
     <div class="pillar">
-      <div class="pillar-illu">${ICO_MECA}</div>
-      <div class="txt"><b>2. L'employeur recrute et note</b><span>Après la mission, il donne une note sur 5 étoiles et un commentaire.</span></div>
+      <img class="pillar-img" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&q=70&auto=format&fit=crop" alt="Employeur" loading="lazy">
+      <div class="txt"><b>2. L'employeur recrute et note</b><span>Après la mission, il note sur 5 étoiles et laisse un commentaire.</span></div>
     </div>
     <div class="pillar">
-      <div class="pillar-illu">${ICO_ELEC}</div>
-      <div class="txt"><b>3. Le badge se construit</b><span>Bronze (déclaré), Argent (3 avis ≥3★), Or (5 avis ≥4★). Impossible à acheter.</span></div>
+      <img class="pillar-img" src="https://images.unsplash.com/photo-1591035897819-f4bdf739f446?w=200&q=70&auto=format&fit=crop" alt="Badge" loading="lazy">
+      <div class="txt"><b>3. Le badge se construit</b><span>Bronze (déclaré), Argent (3 avis ≥3★), Or (5 avis ≥4★). Jamais acheté.</span></div>
     </div>
     <div class="principle">Le badge repose uniquement sur la preuve terrain. Aucun diplôme requis. Aucun paiement pour être certifié.</div>
   </div>
 
-  <div class="card photo-block" style="padding:0">
-    <div style="padding:14px 16px 10px">
+  <div class="card" style="padding:0">
+    <div style="padding:18px 18px 12px">
       <h3 style="margin:0">Des métiers, pas des diplômes.</h3>
     </div>
     <div class="photo-grid">
-      <div class="photo-grid-item">${ICO_COUTURE}</div>
-      <div class="photo-grid-item">${ICO_MECA}</div>
-      <div class="photo-grid-item">${ICO_ELEC}</div>
-      <div class="photo-grid-item">${ICO_COIF}</div>
+      <img src="https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?w=400&q=70&auto=format&fit=crop" alt="Coiffure" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=400&q=70&auto=format&fit=crop" alt="Couture" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=70&auto=format&fit=crop" alt="Mécanique" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&q=70&auto=format&fit=crop" alt="Électricité" loading="lazy">
     </div>
-    <div class="photo-body">
-      <p class="small" style="margin:0">
-        Coiffure, couture, mécanique, électricité, menuiserie, soudure, cuisine, réparation.
-        Chaque métier a sa place dans ZUA MOSALA.
-      </p>
+    <div class="body">
+      <p>Coiffure, couture, mécanique, électricité, menuiserie, soudure, cuisine, réparation. Chaque métier a sa place dans ZUA MOSALA.</p>
     </div>
   </div>
 
   <div class="card">
-    <h3 style="margin-top:0">${dejaInscrit ? 'Content de te revoir' : 'Je commence maintenant'}</h3>
+    <h3>${dejaInscrit ? 'Content de te revoir' : 'Je commence maintenant'}</h3>
     <div class="choice">
       <a href="#/jeune/profil" onclick="event.preventDefault();demarrerJeune()">
         <div class="choice-btn primary">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0" stroke="#FCD116" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>${dejaInscrit?'Reprendre mon profil':'Je suis autodidacte'}<br>
-          <span style="font-weight:400;font-size:.78rem;opacity:.85">
-            ${dejaInscrit?'Voir mes badges et avis':'Créer mon profil gratuit'}
-          </span></span>
-          <span class="arrow">›</span>
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg></div>
+          <div class="txt"><b>${dejaInscrit?'Reprendre mon profil':'Je suis autodidacte'}</b><span>${dejaInscrit?'Voir mes badges et avis':'Créer mon profil gratuit'}</span></div>
+          <div class="arrow">›</div>
         </div>
       </a>
       <a href="#/missions">
         <div class="choice-btn secondary">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" stroke="#007FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Voir les missions<br><span style="font-weight:400;font-size:.78rem;opacity:.7">${missions.length} mission(s) ouverte(s)</span></span>
-          <span class="arrow">›</span>
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg></div>
+          <div class="txt"><b>Voir les missions</b><span>${missions.length} mission(s) ouverte(s)</span></div>
+          <div class="arrow">›</div>
         </div>
       </a>
       <a href="#/employeur">
         <div class="choice-btn secondary">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 11h.01M15 11h.01" stroke="#007FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Je suis employeur<br><span style="font-weight:400;font-size:.78rem;opacity:.7">Recruter ou publier une mission</span></span>
-          <span class="arrow">›</span>
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg></div>
+          <div class="txt"><b>Je suis employeur</b><span>Recruter ou publier une mission</span></div>
+          <div class="arrow">›</div>
         </div>
       </a>
     </div>
   </div>
 
   <div class="card">
-    <h3 style="margin-top:0">Pourquoi ZUA MOSALA</h3>
-    <p class="small" style="margin:0 0 8px">
-      À Kinshasa, des milliers de jeunes savent faire un métier sans pouvoir le prouver.
-      ZUA MOSALA remplace le diplôme absent par une réputation vérifiable, construite mission après mission,
-      et consultable par tout employeur via un simple QR code.
+    <h3>Pourquoi ZUA MOSALA</h3>
+    <p class="small" style="margin:0">
+      À Kinshasa, des milliers de jeunes savent faire un métier sans pouvoir le prouver. ZUA MOSALA remplace le diplôme absent par une réputation vérifiable, construite mission après mission, et consultable par tout employeur via un simple QR code.
     </p>
-    <div class="principle" style="margin-bottom:0">
-      Gratuit pour le jeune. Payant uniquement pour ceux qui veulent aller plus vite.
-    </div>
+    <div class="principle" style="margin-bottom:0">Gratuit pour le jeune. Payant uniquement pour ceux qui veulent aller plus vite.</div>
   </div>`;
 }
-function demarrerJeune(){
-  if(monProfilId)nav("/jeune/profil");
-  else nav("/jeune/creer");
-}
+function demarrerJeune(){ if(monProfilId)nav("/jeune/profil"); else nav("/jeune/creer"); }
 
 /* ========== CREER ========== */
 function pageCreer(){
   if(monProfilId){ nav("/jeune/profil"); return ""; }
   return `
   <div class="card">
-    <h3 style="margin-top:0">Créer mon profil autodidacte</h3>
+    <h3>Créer mon profil autodidacte</h3>
     <p class="small">Pas besoin de diplôme. Décris juste ce que tu sais faire.</p>
     <label>Nom complet</label><input id="f-nom" placeholder="Ex: Fiston K.">
     <label>Métier</label><input id="f-metier" placeholder="Ex: soudure, coiffure, mécanique...">
@@ -570,13 +399,9 @@ function pageCreer(){
     <label>Contact (téléphone / WhatsApp)</label><input id="f-contact" placeholder="+243 ...">
     <div class="checkline">
       <input type="checkbox" id="f-consent">
-      <label class="consent" for="f-consent" style="margin:0">
-        J'accepte que mon contact et mes réalisations soient utilisés pour ce service,
-        conformément aux règles de protection des données personnelles en RDC.
-        Je peux demander la suppression de mon profil à tout moment.
-      </label>
+      <label class="consent" for="f-consent" style="margin:0">J'accepte que mon contact et mes réalisations soient utilisés pour ce service, conformément aux règles de protection des données personnelles en RDC. Je peux demander la suppression de mon profil à tout moment.</label>
     </div>
-    <button style="margin-top:14px;width:100%" onclick="creerProfil(this)">Créer mon profil — gratuit</button>
+    <button style="margin-top:16px;width:100%" onclick="creerProfil(this)">Créer mon profil — gratuit</button>
   </div>`;
 }
 async function creerProfil(btn){
@@ -584,14 +409,7 @@ async function creerProfil(btn){
   if(!nom){alert("Indique au moins ton nom.");return;}
   if(!document.getElementById("f-consent").checked){alert("Le consentement est requis.");return;}
   if(btn){btn.disabled=true;btn.textContent="Création en cours…";}
-  const body={
-    nom,
-    metier:document.getElementById("f-metier").value.trim(),
-    commune:document.getElementById("f-commune").value.trim(),
-    description:document.getElementById("f-desc").value.trim(),
-    contact:document.getElementById("f-contact").value.trim(),
-    consentement:true
-  };
+  const body={nom,metier:document.getElementById("f-metier").value.trim(),commune:document.getElementById("f-commune").value.trim(),description:document.getElementById("f-desc").value.trim(),contact:document.getElementById("f-contact").value.trim(),consentement:true};
   const data=await apiCreerProfil(body);
   if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent="Créer mon profil — gratuit";}return;}
   monProfilId=data.id;
@@ -606,12 +424,9 @@ function pageMonProfil(p){
   const avisHtml=avis.map(a=>`
     <div class="avisItem">
       <div class="stars">${stars(a.note)}</div>
-      <div>${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
-      ${a.reponse
-        ?`<div class="reponse"><b>Ta réponse :</b> ${escapeHtml(a.reponse)}</div>`
-        :`<div style="margin-top:4px"><a href="javascript:void(0)" onclick="repondreAvis(${a.id})" class="small">Répondre</a></div>`}
+      <div style="margin-top:4px">${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
+      ${a.reponse?`<div class="reponse"><b>Ta réponse :</b> ${escapeHtml(a.reponse)}</div>`:`<div style="margin-top:6px"><a href="javascript:void(0)" onclick="repondreAvis(${a.id})" class="small">Répondre</a></div>`}
     </div>`).join("")||`<div class="small">Pas encore d'avis. Réalise une mission avec un employeur pour en recevoir.</div>`;
-
   return `
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
@@ -621,79 +436,39 @@ function pageMonProfil(p){
       </div>
       <div style="text-align:right">
         <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
-        ${p.vitrine_premium?'<div style="margin-top:4px"><span class="badge premium">PREMIUM</span></div>':''}
+        ${p.vitrine_premium?'<div style="margin-top:6px"><span class="badge premium">PREMIUM</span></div>':''}
       </div>
     </div>
-    <p style="font-size:.88rem;margin:10px 0">${escapeHtml(p.description||'')}</p>
+    <p style="font-size:.88rem;margin:12px 0;color:var(--text-soft)">${escapeHtml(p.description||'')}</p>
     <div class="stars">${avis.length?stars(avg(avis))+" ("+avis.length+" avis)":"Pas encore d'avis"}</div>
-    <div class="small" style="margin-top:4px">📞 ${escapeHtml(p.contact||'')}</div>
-
+    <div class="small" style="margin-top:6px">📞 ${escapeHtml(p.contact||'')}</div>
     <div class="principle">Le badge se construit sur la durée, jamais sur un seul avis, jamais sur l'argent.</div>
-
     <label>Ajouter une preuve de réalisation</label>
     <input type="file" accept="image/*" onchange="ajouterPreuve(event)">
-    <div id="preuvePreview" style="margin-top:8px">
-      ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:8px">`:''}
-    </div>
-
-    <a class="tile" href="#/missions" style="margin-top:12px">
-      <button class="gold" style="width:100%">📢 Voir les missions disponibles</button>
-    </a>
-
-    <a class="tile" href="#/jeune/vitrine" style="margin-top:8px">
-      <button class="secondary" style="width:100%">
-        ${p.vitrine_premium?'✓ Vitrine active':'Booster ma vitrine (2,5 $/mois, optionnel)'}
-      </button>
-    </a>
-
+    <div id="preuvePreview" style="margin-top:10px">${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px">`:''}</div>
+    <a class="tile" href="#/missions" style="margin-top:14px"><button class="gold" style="width:100%">📢 Voir les missions disponibles</button></a>
+    <a class="tile" href="#/jeune/vitrine" style="margin-top:8px"><button class="secondary" style="width:100%">${p.vitrine_premium?'✓ Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
     <h4>Mon portfolio public</h4>
     <div id="qr"></div>
-    <div class="small" style="text-align:center">
-      Lien : <b>zua-mosala.app/profil/${p.id}</b><br>
-      Tout employeur peut scanner ce QR code pour voir tes badges vérifiés.
-    </div>
-
+    <div class="small" style="text-align:center">Lien : <b>zua-mosala.app/profil/${p.id}</b><br>Tout employeur peut scanner ce QR code pour voir tes badges vérifiés.</div>
     <h4>Avis reçus</h4>
     ${avisHtml}
   </div>`;
 }
-function ajouterPreuve(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=async()=>{
-    await apiAjouterPreuve(monProfilId,r.result);
-    router();
-  };
-  r.readAsDataURL(f);
-}
-async function repondreAvis(avisId){
-  const txt=prompt("Ta réponse à cet avis :");
-  if(!txt)return;
-  await apiRepondreAvis(avisId,txt);
-  router();
-}
+function ajouterPreuve(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{await apiAjouterPreuve(monProfilId,r.result);router();};r.readAsDataURL(f);}
+async function repondreAvis(avisId){const txt=prompt("Ta réponse à cet avis :");if(!txt)return;await apiRepondreAvis(avisId,txt);router();}
 
 /* ========== VITRINE ========== */
 function pageVitrine(p){
   return `
   <div class="card">
-    <h3 style="margin-top:0">Booster ma vitrine</h3>
-    <p class="small">
-      La vitrine met ton profil en avant dans une section « Sponsorisé »,
-      <b>séparée du classement principal qui reste basé uniquement sur le mérite</b>.
-      Aucun badge ne s'achète. Seule la visibilité est payante.
-    </p>
+    <h3>Booster ma vitrine</h3>
+    <p class="small">La vitrine met ton profil en avant dans une section « Sponsorisé », séparée du classement principal basé uniquement sur le mérite. Aucun badge ne s'achète. Seule la visibilité est payante.</p>
     <label>Moyen de paiement</label>
-    <select id="v-moyen">
-      <option>Mobile Money (Airtel / Orange)</option>
-      <option>Carte virtuelle prépayée</option>
-      <option>Carte bancaire Visa / Mastercard</option>
-    </select>
+    <select id="v-moyen"><option>Mobile Money (Airtel / Orange)</option><option>Carte virtuelle prépayée</option><option>Carte bancaire Visa / Mastercard</option></select>
     <label>Numéro ou référence</label>
     <input id="v-ref" placeholder="Ex: +243 9... ou n° carte">
-    <button style="margin-top:14px;width:100%" onclick="payerVitrine(this)" ${p.vitrine_premium?'disabled':''}>
-      ${p.vitrine_premium?'✓ Vitrine déjà active':'Payer 2,5 $ — Activer 30 jours'}
-    </button>
+    <button style="margin-top:16px;width:100%" onclick="payerVitrine(this)" ${p.vitrine_premium?'disabled':''}>${p.vitrine_premium?'✓ Vitrine déjà active':'Payer 2,5 $ — Activer 30 jours'}</button>
   </div>`;
 }
 async function payerVitrine(btn){
@@ -711,43 +486,34 @@ function pageMissionsPubliques(list){
     ? list.map(m=>`
       <div class="mission-item">
         <div class="mission-info">
-          <b>${escapeHtml(m.titre)}</b>
-          <br>
+          <b>${escapeHtml(m.titre)}</b><br>
           <span class="small">${escapeHtml(m.commune||'—')} · ${escapeHtml(m.budget||'budget à discuter')} · ${m.nombre_personnes} personne(s)</span>
-          ${m.description?`<div class="small" style="margin-top:4px">${escapeHtml(m.description)}</div>`:''}
+          ${m.description?`<div class="small" style="margin-top:6px">${escapeHtml(m.description)}</div>`:''}
         </div>
         <button class="gold" onclick="postulerMission(${m.id})">Postuler</button>
       </div>`).join('')
     : `<div class="small">Aucune mission ouverte pour le moment. Reviens plus tard.</div>`;
-
   return `
   <div class="card">
-    <h3 style="margin-top:0">📢 Missions ouvertes (${(list||[]).length})</h3>
+    <h3>📢 Missions ouvertes (${(list||[]).length})</h3>
     <p class="small">Ces missions sont publiées par des employeurs vérifiés. La postulation est gratuite.</p>
     ${items}
   </div>`;
 }
-function postulerMission(id){
-  alert('✅ Ta candidature a été enregistrée.\n\nL\'employeur recevra ta demande.\n\n(ID mission : '+id+')');
-}
+function postulerMission(id){alert('✅ Ta candidature a été enregistrée.\n\nL\'employeur recevra ta demande.\n\n(ID mission : '+id+')');}
 
 /* ========== PUBLIER UNE MISSION ========== */
 function pagePublierMission(){
   return `
   <div class="card">
-    <h3 style="margin-top:0">Publier une mission</h3>
+    <h3>Publier une mission</h3>
     <p class="small">Une mission courte (1 à 3 jours). Les jeunes postulent. Tu les notes après.</p>
-    <label>Titre de la mission</label>
-    <input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage samedi">
-    <label>Description</label>
-    <textarea id="mi-desc" rows="2" placeholder="Détails, horaires, lieu..."></textarea>
-    <label>Commune</label>
-    <input id="mi-commune" placeholder="Ex: Gombe">
-    <label>Budget (optionnel)</label>
-    <input id="mi-budget" placeholder="Ex: 20 $ par personne">
-    <label>Nombre de personnes</label>
-    <input id="mi-nb" type="number" min="1" value="1">
-    <button style="margin-top:12px;width:100%" onclick="publierMission(this)">Publier la mission (3-5 $)</button>
+    <label>Titre de la mission</label><input id="mi-titre" placeholder="Ex: 2 serveurs pour un mariage samedi">
+    <label>Description</label><textarea id="mi-desc" rows="2" placeholder="Détails, horaires, lieu..."></textarea>
+    <label>Commune</label><input id="mi-commune" placeholder="Ex: Gombe">
+    <label>Budget (optionnel)</label><input id="mi-budget" placeholder="Ex: 20 $ par personne">
+    <label>Nombre de personnes</label><input id="mi-nb" type="number" min="1" value="1">
+    <button style="margin-top:16px;width:100%" onclick="publierMission(this)">Publier la mission (3-5 $)</button>
     <div class="principle">La publication est payante pour l'employeur. La consultation et la postulation sont gratuites pour le jeune.</div>
   </div>`;
 }
@@ -755,25 +521,17 @@ async function publierMission(btn){
   const titre=document.getElementById('mi-titre').value.trim();
   if(!titre){alert('Donne un titre à la mission.');return;}
   if(btn){btn.disabled=true;btn.textContent='Publication…';}
-  const data=await apiCreerMission({
-    employeur_id:employeurId,
-    employeur_type:employeurType,
-    titre,
-    description:document.getElementById('mi-desc').value.trim(),
-    commune:document.getElementById('mi-commune').value.trim(),
-    budget:document.getElementById('mi-budget').value.trim(),
-    nombre_personnes:parseInt(document.getElementById('mi-nb').value,10)||1
-  });
+  const data=await apiCreerMission({employeur_id:employeurId,employeur_type:employeurType,titre,description:document.getElementById('mi-desc').value.trim(),commune:document.getElementById('mi-commune').value.trim(),budget:document.getElementById('mi-budget').value.trim(),nombre_personnes:parseInt(document.getElementById('mi-nb').value,10)||1});
   if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent='Publier la mission (3-5 $)';}return;}
   alert('✅ Mission publiée avec succès.');
   nav('/missions');
 }
 
-/* ========== EMPLOYEUR ACCUEIL ========== */
+/* ========== EMPLOYEUR ========== */
 function pageEmployeurAccueil(){
   return `
   <div class="card">
-    <h3 style="margin-top:0">Espace employeur</h3>
+    <h3>Espace employeur</h3>
     <p class="small">Sélectionne ton type de profil. La vérification change selon ton statut.</p>
     <label>Type de profil</label>
     <select id="e-type" onchange="onTypeChange()">
@@ -783,145 +541,57 @@ function pageEmployeurAccueil(){
       <option value="institution">Institution / ONG</option>
     </select>
     <div id="verifZone"></div>
-
-    <a class="tile" href="#/employeur/publier" style="margin-top:14px">
-      <button class="gold" style="width:100%">📢 Publier une mission (3-5 $)</button>
-    </a>
-    <div class="small" style="text-align:center;margin-top:6px">Publie une mission courte. Les jeunes postulent. Tu notes après.</div>
-
-    <label style="margin-top:16px">Métier recherché</label>
+    <a class="tile" href="#/employeur/publier" style="margin-top:14px"><button class="gold" style="width:100%">📢 Publier une mission (3-5 $)</button></a>
+    <div class="small" style="text-align:center;margin-top:8px">Publie une mission courte. Les jeunes postulent. Tu notes après.</div>
+    <label style="margin-top:18px">Métier recherché</label>
     <input id="e-metier" placeholder="Ex: couture, mécanique...">
     <label>Commune</label>
     <input id="e-commune" placeholder="Ex: Matete, Gombe...">
-    <button style="margin-top:14px;width:100%" onclick="lancerRecherche()">Rechercher un profil</button>
-
-    <div class="principle">
-      Le classement des résultats repose uniquement sur le mérite
-      (badge + note + nombre d'avis). Il ne s'achète jamais.
-    </div>
+    <button style="margin-top:16px;width:100%" onclick="lancerRecherche()">Rechercher un profil</button>
+    <div class="principle">Le classement des résultats repose uniquement sur le mérite (badge + note + nombre d'avis). Il ne s'achète jamais.</div>
   </div>`;
 }
-function onTypeChange(){
-  employeurType=document.getElementById("e-type").value;
-  localStorage.setItem("zua_emp_type",employeurType);
-  employeurVerifie=false;
-  localStorage.removeItem("zua_emp_verifie");
-  renderVerifZone();
-}
+function onTypeChange(){employeurType=document.getElementById("e-type").value;localStorage.setItem("zua_emp_type",employeurType);employeurVerifie=false;localStorage.removeItem("zua_emp_verifie");renderVerifZone();}
 function renderVerifZone(){
-  const z=document.getElementById("verifZone");
-  if(!z)return;
-  if(employeurVerifie){
-    z.innerHTML=`<div class="small" style="margin-top:10px">✓ Profil vérifié — tu peux lancer ta recherche.</div>`;
-    return;
-  }
+  const z=document.getElementById("verifZone");if(!z)return;
+  if(employeurVerifie){z.innerHTML=`<div class="small" style="margin-top:12px">✓ Profil vérifié — tu peux lancer ta recherche.</div>`;return;}
   if(employeurType==="particulier"){
-    z.innerHTML=`
-      <label>Vérification par SMS</label>
-      <input id="v-tel" placeholder="Ton numéro" value="${escapeHtml(employeurReference)}">
-      <button class="secondary" style="margin-top:8px" onclick="verifierSMS(this)">Recevoir & vérifier le code</button>
-      <div class="small" id="v-statut">Non vérifié</div>`;
+    z.innerHTML=`<label>Vérification par SMS</label><input id="v-tel" placeholder="Ton numéro" value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierSMS(this)">Recevoir & vérifier le code</button><div class="small" id="v-statut">Non vérifié</div>`;
   } else if(employeurType==="entreprise"||employeurType==="soustraitance"){
-    z.innerHTML=`
-      <label>Numéro RCCM</label>
-      <input id="v-rccm" placeholder="Ex: CD/KNG/RCCM/..." value="${escapeHtml(employeurReference)}">
-      <button class="secondary" style="margin-top:8px" onclick="verifierRCCM(this)">Vérifier l'entreprise</button>
-      <div class="small" id="v-statut">Non vérifié</div>`;
+    z.innerHTML=`<label>Numéro RCCM</label><input id="v-rccm" placeholder="Ex: CD/KNG/RCCM/..." value="${escapeHtml(employeurReference)}"><button class="secondary" style="margin-top:10px" onclick="verifierRCCM(this)">Vérifier l'entreprise</button><div class="small" id="v-statut">Non vérifié</div>`;
   } else {
-    employeurVerifie=true;
-    localStorage.setItem("zua_emp_verifie","1");
-    z.innerHTML=`<div class="small" style="margin-top:10px">✓ Compte institutionnel — accès aux rapports agrégés inclus.</div>
-      <a class="tile" href="#/institution/dashboard" style="margin-top:10px">
-        <button class="gold" style="width:100%">📊 Voir les rapports institutionnels</button>
-      </a>`;
+    employeurVerifie=true;localStorage.setItem("zua_emp_verifie","1");
+    z.innerHTML=`<div class="small" style="margin-top:12px">✓ Compte institutionnel — accès aux rapports agrégés inclus.</div><a class="tile" href="#/institution/dashboard" style="margin-top:12px"><button class="gold" style="width:100%">📊 Voir les rapports institutionnels</button></a>`;
   }
 }
-async function verifierSMS(btn){
-  const tel=document.getElementById("v-tel").value.trim();
-  if(!tel){alert("Indique ton numéro.");return;}
-  if(btn){btn.disabled=true;btn.textContent="Vérification…";}
-  try{ await apiVerifierEmployeur({id:employeurId,type:"particulier",reference:tel}); }catch(e){}
-  employeurVerifie=true;
-  employeurReference=tel;
-  localStorage.setItem("zua_emp_verifie","1");
-  localStorage.setItem("zua_emp_ref",tel);
-  renderVerifZone();
-}
-async function verifierRCCM(btn){
-  const rccm=document.getElementById("v-rccm").value.trim();
-  if(!rccm){alert("Indique le n° RCCM.");return;}
-  if(btn){btn.disabled=true;btn.textContent="Vérification…";}
-  try{ await apiVerifierEmployeur({id:employeurId,type:employeurType,reference:rccm}); }catch(e){}
-  employeurVerifie=true;
-  employeurReference=rccm;
-  localStorage.setItem("zua_emp_verifie","1");
-  localStorage.setItem("zua_emp_ref",rccm);
-  renderVerifZone();
-}
-function lancerRecherche(){
-  if(!employeurVerifie){alert("Vérifie d'abord ton profil employeur.");return;}
-  const m=encodeURIComponent(document.getElementById("e-metier").value.trim());
-  const c=encodeURIComponent(document.getElementById("e-commune").value.trim());
-  nav("/employeur/resultats?metier="+m+"&commune="+c+"&type="+employeurType);
-}
+async function verifierSMS(btn){const tel=document.getElementById("v-tel").value.trim();if(!tel){alert("Indique ton numéro.");return;}if(btn){btn.disabled=true;btn.textContent="Vérification…";}try{await apiVerifierEmployeur({id:employeurId,type:"particulier",reference:tel});}catch(e){}employeurVerifie=true;employeurReference=tel;localStorage.setItem("zua_emp_verifie","1");localStorage.setItem("zua_emp_ref",tel);renderVerifZone();}
+async function verifierRCCM(btn){const rccm=document.getElementById("v-rccm").value.trim();if(!rccm){alert("Indique le n° RCCM.");return;}if(btn){btn.disabled=true;btn.textContent="Vérification…";}try{await apiVerifierEmployeur({id:employeurId,type:employeurType,reference:rccm});}catch(e){}employeurVerifie=true;employeurReference=rccm;localStorage.setItem("zua_emp_verifie","1");localStorage.setItem("zua_emp_ref",rccm);renderVerifZone();}
+function lancerRecherche(){if(!employeurVerifie){alert("Vérifie d'abord ton profil employeur.");return;}const m=encodeURIComponent(document.getElementById("e-metier").value.trim());const c=encodeURIComponent(document.getElementById("e-commune").value.trim());nav("/employeur/resultats?metier="+m+"&commune="+c+"&type="+employeurType);}
 
 /* ========== RESULTATS ========== */
 function pageResultats(params){
   const metier=(params.get("metier")||"").toLowerCase();
   const commune=(params.get("commune")||"").toLowerCase();
-  const filt=p=>
-    (!metier||p.metier.toLowerCase().includes(metier))&&
-    (!commune||p.commune.toLowerCase().includes(commune));
-
+  const filt=p=>(!metier||p.metier.toLowerCase().includes(metier))&&(!commune||p.commune.toLowerCase().includes(commune));
   const filtered=profiles.filter(filt);
-  const sorted=filtered.slice().sort((a,b)=>{
-    const rb=badgeRank(b.badge)-badgeRank(a.badge);
-    if(rb!==0)return rb;
-    const ra=(parseFloat(b.moyenne)||0)-(parseFloat(a.moyenne)||0);
-    if(ra!==0)return ra;
-    return (b.nb_avis||0)-(a.nb_avis||0);
-  });
-
+  const sorted=filtered.slice().sort((a,b)=>{const rb=badgeRank(b.badge)-badgeRank(a.badge);if(rb!==0)return rb;const ra=(parseFloat(b.moyenne)||0)-(parseFloat(a.moyenne)||0);if(ra!==0)return ra;return (b.nb_avis||0)-(a.nb_avis||0);});
   const sponsored=filtered.filter(p=>p.vitrine_premium);
-
   const listHtml=sorted.length
     ? sorted.map(p=>`
       <div class="result">
         <a href="#/profil/${p.id}">
-          <b>${escapeHtml(p.nom)}</b>
-          ${p.vitrine_premium?'<span class="badge premium">PREMIUM</span>':''}
-          <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
-          <br>
-          <span class="small">
-            ${escapeHtml(p.metier)} · ${escapeHtml(p.commune)} ·
-            ${p.nb_avis>0?stars(parseFloat(p.moyenne))+" ("+p.nb_avis+" avis)":"aucun avis"}
-          </span>
+          <b>${escapeHtml(p.nom)}</b> ${p.vitrine_premium?'<span class="badge premium">PREMIUM</span>':''} <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span><br>
+          <span class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)} · ${p.nb_avis>0?stars(parseFloat(p.moyenne))+" ("+p.nb_avis+" avis)":"aucun avis"}</span>
         </a>
       </div>`).join("")
     : `<div class="small">Aucun profil ne correspond. Élargis la recherche.</div>`;
-
   const sponsoredHtml=sponsored.length
-    ? `<div class="card">
-        <h4 style="margin-top:0">Profils à la une <span class="spon-tag">Sponsorisé</span></h4>
-        ${sponsored.map(p=>`
-          <div class="spon">
-            <a class="tile" href="#/profil/${p.id}">
-              <b>${escapeHtml(p.nom)}</b> — ${escapeHtml(p.metier)} (${escapeHtml(p.commune)})
-              <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
-            </a>
-          </div>`).join("")}
-        <div class="small" style="margin-top:6px">
-          Rotation équitable entre abonnés. Ne remplace jamais le classement par mérite.
-        </div>
-      </div>`
+    ? `<div class="card"><h4 style="margin-top:0">Profils à la une <span class="spon-tag">Sponsorisé</span></h4>${sponsored.map(p=>`<div class="spon"><a class="tile" href="#/profil/${p.id}"><b>${escapeHtml(p.nom)}</b> — ${escapeHtml(p.metier)} (${escapeHtml(p.commune)}) <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span></a></div>`).join("")}<div class="small" style="margin-top:6px">Rotation équitable entre abonnés. Ne remplace jamais le classement par mérite.</div></div>`
     : "";
-
   return `
   <div class="card">
-    <h3 style="margin-top:0">Résultats (${escapeHtml(employeurType)})</h3>
-    <div class="small" style="margin-bottom:8px">
-      Classement par mérite : badge, puis note moyenne, puis nombre d'avis.
-    </div>
+    <h3>Résultats (${escapeHtml(employeurType)})</h3>
+    <div class="small" style="margin-bottom:10px">Classement par mérite : badge, puis note moyenne, puis nombre d'avis.</div>
     ${listHtml}
   </div>
   ${sponsoredHtml}`;
@@ -931,45 +601,22 @@ function pageResultats(params){
 function pageFiche(p){
   if(!p||p.error)return `<div class="card"><p>Profil introuvable.</p></div>`;
   const avis=(p.avis||[]).slice(0,5);
-  const avisHtml=avis.map(a=>`
-    <div class="avisItem">
-      <div class="stars">${stars(a.note)}</div>
-      <div>${escapeHtml(a.commentaire||"(sans commentaire)")}</div>
-      ${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}
-    </div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
-
+  const avisHtml=avis.map(a=>`<div class="avisItem"><div class="stars">${stars(a.note)}</div><div style="margin-top:4px">${escapeHtml(a.commentaire||"(sans commentaire)")}</div>${a.reponse?`<div class="reponse"><b>Réponse :</b> ${escapeHtml(a.reponse)}</div>`:""}</div>`).join("")||`<div class="small">Pas encore d'avis.</div>`;
   const dejaNote = (p.avis||[]).some(a=>a.employeur_id===employeurId);
-
   return `
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div>
-        <h3 style="margin:0">${escapeHtml(p.nom)}</h3>
-        <div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div>
-      </div>
-      <div style="text-align:right">
-        <span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>
-        ${p.vitrine_premium?'<div style="margin-top:4px"><span class="badge premium">PREMIUM</span></div>':''}
-      </div>
+      <div><h3 style="margin:0">${escapeHtml(p.nom)}</h3><div class="small">${escapeHtml(p.metier)} · ${escapeHtml(p.commune)}</div></div>
+      <div style="text-align:right"><span class="badge ${p.badge}">${badgeLabel(p.badge)}</span>${p.vitrine_premium?'<div style="margin-top:6px"><span class="badge premium">PREMIUM</span></div>':''}</div>
     </div>
-    <p style="font-size:.88rem;margin:10px 0">${escapeHtml(p.description||'')}</p>
-    ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:8px;margin-bottom:8px">`:""}
+    <p style="font-size:.88rem;margin:12px 0;color:var(--text-soft)">${escapeHtml(p.description||'')}</p>
+    ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:""}
     <div class="stars">${(p.avis&&p.avis.length)?stars(avg(p.avis))+" ("+p.avis.length+" avis)":"Pas encore d'avis"}</div>
-
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
       <button onclick="alert('Contact : ${escapeHtml(p.contact||'')}')">📞 Contacter</button>
-      ${dejaNote
-        ? `<button class="secondary" disabled style="flex:1">✓ Tu as déjà laissé un avis</button>`
-        : `<a class="tile" href="#/profil/${p.id}/mission" style="flex:1">
-            <button class="gold" style="width:100%">J'ai réalisé une mission</button>
-          </a>`}
+      ${dejaNote?`<button class="secondary" disabled style="flex:1">✓ Tu as déjà laissé un avis</button>`:`<a class="tile" href="#/profil/${p.id}/mission" style="flex:1"><button class="gold" style="width:100%">J'ai réalisé une mission</button></a>`}
     </div>
-
-    <div class="principle">
-      Un avis n'est possible qu'après confirmation mutuelle qu'une mission a bien été réalisée.
-      Cela écarte les faux avis.
-    </div>
-
+    <div class="principle">Un avis n'est possible qu'après confirmation mutuelle qu'une mission a bien été réalisée. Cela écarte les faux avis.</div>
     <h4>Avis récents</h4>
     ${avisHtml}
   </div>`;
@@ -979,22 +626,14 @@ function pageFiche(p){
 function pageMission(id){
   return `
   <div class="card">
-    <h3 style="margin-top:0">Confirmer la mission</h3>
-    <p class="small">
-      Pour garantir l'authenticité des avis, les deux parties doivent confirmer
-      qu'une mission a bien eu lieu avant de pouvoir noter.
-    </p>
+    <h3>Confirmer la mission</h3>
+    <p class="small">Pour garantir l'authenticité des avis, les deux parties doivent confirmer qu'une mission a bien eu lieu avant de pouvoir noter.</p>
     <div class="checkline"><input type="checkbox" id="m-jeune"><label style="margin:0">Le prestataire confirme la mission réalisée</label></div>
     <div class="checkline"><input type="checkbox" id="m-emp"><label style="margin:0">L'employeur confirme la mission réalisée</label></div>
-    <button style="margin-top:14px;width:100%" onclick="confirmerMission(${id})">Confirmer et passer à la notation</button>
+    <button style="margin-top:16px;width:100%" onclick="confirmerMission(${id})">Confirmer et passer à la notation</button>
   </div>`;
 }
-function confirmerMission(id){
-  if(!document.getElementById("m-jeune").checked||!document.getElementById("m-emp").checked){
-    alert("Les deux parties doivent confirmer la mission.");return;
-  }
-  nav("/profil/"+id+"/avis");
-}
+function confirmerMission(id){if(!document.getElementById("m-jeune").checked||!document.getElementById("m-emp").checked){alert("Les deux parties doivent confirmer la mission.");return;}nav("/profil/"+id+"/avis");}
 
 /* ========== AVIS ========== */
 let noteChoisie=0;
@@ -1002,75 +641,45 @@ function pageAvis(id){
   noteChoisie=0;
   return `
   <div class="card">
-    <h3 style="margin-top:0">Noter ce profil</h3>
+    <h3>Noter ce profil</h3>
     <p class="small">Ta note alimente directement le badge du prestataire.</p>
-    <div class="star-pick" id="starPick" style="margin:14px 0">
-      ${[1,2,3,4,5].map(n=>`<span data-n="${n}" onclick="pickStar(${n})">★</span>`).join("")}
-    </div>
+    <div class="star-pick" id="starPick" style="margin:16px 0">${[1,2,3,4,5].map(n=>`<span data-n="${n}" onclick="pickStar(${n})">★</span>`).join("")}</div>
     <label>Commentaire (optionnel — 180 caractères max)</label>
     <textarea id="commentaire" rows="3" maxlength="180" placeholder="Ex: travail rapide et soigné."></textarea>
-    <button style="margin-top:14px;width:100%" onclick="validerAvis(${id},this)">Envoyer l'avis</button>
+    <button style="margin-top:16px;width:100%" onclick="validerAvis(${id},this)">Envoyer l'avis</button>
   </div>`;
 }
-function pickStar(n){
-  noteChoisie=n;
-  document.querySelectorAll("#starPick span").forEach((s,i)=>s.classList.toggle("on",i<n));
-}
+function pickStar(n){noteChoisie=n;document.querySelectorAll("#starPick span").forEach((s,i)=>s.classList.toggle("on",i<n));}
 async function validerAvis(id,btn){
   if(!noteChoisie){alert("Choisis une note.");return;}
   if(btn){btn.disabled=true;btn.textContent="Envoi…";}
   const commentaire=document.getElementById("commentaire").value;
-  const data=await apiAjouterAvis({
-    profil_id:parseInt(id,10),
-    employeur_id:employeurId,
-    note:noteChoisie,
-    commentaire
-  });
+  const data=await apiAjouterAvis({profil_id:parseInt(id,10),employeur_id:employeurId,note:noteChoisie,commentaire});
   if(data.error){alert(data.error);if(btn){btn.disabled=false;btn.textContent="Envoyer l'avis";}return;}
   alert("Avis enregistré.\nBadge actuel : "+badgeLabel(data.badge));
   nav("/profil/"+id);
 }
 
-/* ========== STATS INSTITUTION ========== */
+/* ========== STATS ========== */
 function pageStats(s){
   if(!s||s.error)return `<div class="card"><p>Erreur de chargement des statistiques.</p></div>`;
   const communes=(s.par_commune||[]).map(c=>`<div class="result"><span>${escapeHtml(c.commune||'—')}</span><b>${c.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
   const metiers=(s.par_metier||[]).map(m=>`<div class="result"><span>${escapeHtml(m.metier||'—')}</span><b>${m.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
   const badges=(s.par_badge||[]).map(b=>`<div class="result"><span class="badge ${b.badge}">${badgeLabel(b.badge)}</span><b>${b.total}</b></div>`).join('')||'<div class="small">Aucune donnée.</div>';
-
   return `
   <div class="card">
-    <h3 style="margin-top:0">Rapport ZUA MOSALA</h3>
+    <h3>Rapport ZUA MOSALA</h3>
     <p class="small">Données agrégées, anonymisées, prêtes pour les ONG, ministères et bailleurs.</p>
-    <div style="display:flex;gap:10px;margin:12px 0">
-      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
-        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-blue)">${s.total_profils||0}</div>
-        <div class="small">Profils</div>
-      </div>
-      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
-        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-red)">${s.total_avis||0}</div>
-        <div class="small">Avis vérifiés</div>
-      </div>
-      <div style="flex:1;background:var(--light);padding:12px;border-radius:10px;text-align:center">
-        <div style="font-size:1.6rem;font-weight:800;color:var(--rdc-gold)">${s.total_missions||0}</div>
-        <div class="small">Missions</div>
-      </div>
+    <div style="display:flex;gap:10px;margin:16px 0">
+      <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--blue)">${s.total_profils||0}</div><div class="small">Profils</div></div>
+      <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--red)">${s.total_avis||0}</div><div class="small">Avis</div></div>
+      <div style="flex:1;background:var(--light);padding:14px;border-radius:12px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${s.total_missions||0}</div><div class="small">Missions</div></div>
     </div>
     <div class="principle">Ce rapport peut être vendu 200-500 USD aux institutions. C'est la troisième source de revenus de ZUA MOSALA.</div>
   </div>
-
-  <div class="card">
-    <h4 style="margin-top:0">Profils par commune</h4>
-    ${communes}
-  </div>
-  <div class="card">
-    <h4 style="margin-top:0">Profils par métier</h4>
-    ${metiers}
-  </div>
-  <div class="card">
-    <h4 style="margin-top:0">Répartition des badges</h4>
-    ${badges}
-  </div>`;
+  <div class="card"><h4 style="margin-top:0">Profils par commune</h4>${communes}</div>
+  <div class="card"><h4 style="margin-top:0">Profils par métier</h4>${metiers}</div>
+  <div class="card"><h4 style="margin-top:0">Répartition des badges</h4>${badges}</div>`;
 }
 
 /* ========== DÉMARRAGE ========== */
