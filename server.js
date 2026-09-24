@@ -9,11 +9,11 @@ app.use(express.json({ limit: '5mb' }));
 
 /* Connexion MySQL (Railway injecte ces variables automatiquement) */
 const pool = mysql.createPool({
-  host:     process.env.MYSQLHOST     || process.env.DB_HOST     || 'localhost',
-  user:     process.env.MYSQLUSER     || process.env.DB_USER     || 'root',
-  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
-  database: process.env.MYSQLDATABASE || process.env.DB_NAME     || 'mosala',
-  port:     process.env.MYSQLPORT     || 3306,
+  host:     process.env.MYSQLHOST,
+  user:     process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port:     process.env.MYSQLPORT,
   waitForConnections: true,
   connectionLimit: 10,
   charset: 'utf8mb4'
@@ -21,6 +21,14 @@ const pool = mysql.createPool({
 
 /* Création automatique des tables */
 async function initDB(){
+  console.log('--- DIAGNOSTIC MYSQL ---');
+  console.log('MYSQLHOST       =', process.env.MYSQLHOST);
+  console.log('MYSQLUSER       =', process.env.MYSQLUSER);
+  console.log('MYSQLDATABASE   =', process.env.MYSQLDATABASE);
+  console.log('MYSQLPORT       =', process.env.MYSQLPORT);
+  console.log('MYSQLPASSWORD   =', process.env.MYSQLPASSWORD ? '(défini)' : '(VIDE)');
+  console.log('------------------------');
+
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS profils (
@@ -37,6 +45,8 @@ async function initDB(){
         cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    console.log('✓ Table profils OK');
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS avis (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,6 +60,8 @@ async function initDB(){
         UNIQUE KEY unique_avis (profil_id, employeur_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    console.log('✓ Table avis OK');
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS employeurs (
         id VARCHAR(60) PRIMARY KEY,
@@ -59,9 +71,12 @@ async function initDB(){
         cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log('✓ Tables vérifiées/créées');
+    console.log('✓ Table employeurs OK');
+    console.log('✓ TOUTES LES TABLES SONT CRÉÉES');
   } catch(e){
-    console.error('Erreur initDB :', e.message);
+    console.error('❌ ERREUR initDB :', e.message);
+    console.error('❌ Code erreur :', e.code);
+    console.error('❌ SQL state :', e.sqlState);
   }
 }
 
