@@ -1,5 +1,5 @@
 /* ============================================================
-   ZUA MOSALA — Backend complet
+   ZUA MOSALA — Backend complet avec Admin
    Règles métier annotées // RG-XX
 ============================================================ */
 
@@ -29,9 +29,7 @@ const genCode6 = () => Math.floor(100000 + Math.random() * 900000).toString();
 ============================================================ */
 async function initDB(){
   try {
-    /* === MIGRATIONS SAFE (ajout de colonnes manquantes) === */
     const migrations = [
-      // Table comptes
       `ALTER TABLE comptes ADD COLUMN telephone VARCHAR(30) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN prenom VARCHAR(80) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN nom VARCHAR(80) DEFAULT NULL`,
@@ -41,7 +39,6 @@ async function initDB(){
       `ALTER TABLE comptes ADD COLUMN employeur_id VARCHAR(60) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN code_sms VARCHAR(10) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN code_sms_expire DATETIME DEFAULT NULL`,
-      // Table profils
       `ALTER TABLE profils ADD COLUMN vitrine_premium TINYINT(1) DEFAULT 0`,
       `ALTER TABLE profils ADD COLUMN vitrine_expire DATETIME DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN preuve_type VARCHAR(20) DEFAULT NULL`,
@@ -49,15 +46,12 @@ async function initDB(){
       `ALTER TABLE profils ADD COLUMN preuve_referent VARCHAR(120) DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN preuve_hash VARCHAR(80) DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN signale TINYINT(1) DEFAULT 0`,
-      // Table avis
       `ALTER TABLE avis ADD COLUMN mission_id INT DEFAULT NULL`,
       `ALTER TABLE avis ADD COLUMN signale TINYINT(1) DEFAULT 0`,
-      // Table missions
       `ALTER TABLE missions ADD COLUMN duree ENUM('courte','longue') DEFAULT 'courte'`,
       `ALTER TABLE missions ADD COLUMN type_contrat VARCHAR(40) DEFAULT 'mission'`,
       `ALTER TABLE missions ADD COLUMN contact VARCHAR(60) DEFAULT ''`,
       `ALTER TABLE missions ADD COLUMN profil_id INT DEFAULT NULL`,
-      // Table candidatures
       `ALTER TABLE candidatures ADD COLUMN statut2 ENUM('Postulee','Acceptee','Refusee','EnCours','Terminee','ConfirmeeJeune','Confirmee','Avisee','Annulee') DEFAULT 'Postulee'`,
       `ALTER TABLE candidatures ADD COLUMN motif_annulation VARCHAR(200) DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_acceptee DATETIME DEFAULT NULL`,
@@ -65,16 +59,12 @@ async function initDB(){
       `ALTER TABLE candidatures ADD COLUMN date_terminee DATETIME DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_confirmee DATETIME DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_avisee DATETIME DEFAULT NULL`,
-      // Table employeurs
       `ALTER TABLE employeurs ADD COLUMN commune VARCHAR(120) DEFAULT NULL`,
       `ALTER TABLE employeurs ADD COLUMN contact VARCHAR(60) DEFAULT NULL`,
       `ALTER TABLE employeurs ADD COLUMN secteur VARCHAR(80) DEFAULT NULL`
     ];
-    for (const sql of migrations) {
-      try { await pool.query(sql); } catch(e){ /* colonne existe déjà */ }
-    }
+    for (const sql of migrations) { try { await pool.query(sql); } catch(e){} }
 
-    /* === CRÉATION DES TABLES === */
     await pool.query(`CREATE TABLE IF NOT EXISTS profils (
       id INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(120) NOT NULL,
       metier VARCHAR(120) NOT NULL, commune VARCHAR(120) NOT NULL,
@@ -171,6 +161,34 @@ async function initDB(){
       cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS rapports_vendus (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      titre VARCHAR(150), destinataire VARCHAR(150),
+      montant DECIMAL(10,2), vendeur VARCHAR(120),
+      cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS paiements (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      type VARCHAR(40), payeur VARCHAR(150),
+      montant DECIMAL(10,2), statut ENUM('paye','attente','annule') DEFAULT 'paye',
+      reference VARCHAR(120),
+      cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS config (
+      cle VARCHAR(60) PRIMARY KEY,
+      valeur VARCHAR(255),
+      maj TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS admin_logs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      admin_email VARCHAR(160), action VARCHAR(120),
+      details VARCHAR(255),
+      cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
     console.log('✓ Toutes les tables OK');
   } catch(e){ console.error('❌ initDB :', e.message); }
 }
@@ -179,7 +197,6 @@ async function initDB(){
    RÈGLES MÉTIER
 ============================================================ */
 function badgeRank(b){ return {bronze:0,argent:1,or:2}[b] || 0; }
-
 function computeEligible(avis){
   const n = avis.length;
   const a = n ? avis.reduce((s,x)=>s+x.note,0)/n : 0;
@@ -187,11 +204,9 @@ function computeEligible(avis){
   if (n>=3 && a>=3) return 'argent';
   return 'bronze';
 }
-
 function mergeBadge(actuel, eligible){
   return badgeRank(eligible) > badgeRank(actuel) ? eligible : actuel;
 }
-
 const BANNED = ['merde','connard','idiot','imbécile','fdp','ntm','salaud'];
 function cleanComment(t){
   if(!t) return '';
@@ -215,13 +230,26 @@ async function auth(req,res,next){
   } catch(e){ res.status(500).json({ error:e.message }); }
 }
 
+async function requireAdmin(req,res,next){
+  const t = req.headers['x-auth-token'];
+  if (!t) return res.status(401).json({ error:'Non authentifié' });
+  try {
+    const [r] = await pool.query(
+      'SELECT c.* FROM sessions s JOIN comptes c ON c.id=s.compte_id WHERE s.token=?', [t]
+    );
+    if (!r.length) return res.status(401).json({ error:'Session expirée' });
+    if (r[0].email !== 'admin@zuamosala.cd') return res.status(403).json({ error:'Accès réservé aux administrateurs' });
+    req.compte = r[0]; next();
+  } catch(e){ res.status(500).json({ error:e.message }); }
+}
+
 async function requireVerifiedEmployeur(req,res,next){
   if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé aux employeurs' });
   const empId = req.compte.employeur_id || ('emp-' + req.compte.id);
   const [r] = await pool.query('SELECT verifie, en_attente, categorie FROM employeurs WHERE id=?', [empId]);
   if (r.length && r[0].verifie) return next();
   if (req.compte.employeur_categorie === 'institution') return next();
-  return res.status(403).json({ error:'Vérifie ton profil employeur d\'abord' });
+  return res.status(403).json({ error:"Vérifie ton profil employeur d'abord" });
 }
 
 async function notifier(compteId, type, titre, message, lien){
@@ -230,6 +258,13 @@ async function notifier(compteId, type, titre, message, lien){
       'INSERT INTO notifications (compte_id,type,titre,message,lien) VALUES (?,?,?,?,?)',
       [compteId, type, titre, message, lien||'']
     );
+  } catch(e){}
+}
+
+async function adminLog(adminEmail, action, details){
+  try {
+    await pool.query('INSERT INTO admin_logs (admin_email,action,details) VALUES (?,?,?)',
+      [adminEmail, action, details||'']);
   } catch(e){}
 }
 
@@ -441,7 +476,7 @@ app.put('/api/profils/:id/premium', auth, async (req,res) => {
 app.post('/api/avis', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé aux employeurs' });
-    if (!req.compte.employeur_id) return res.status(403).json({ error:'Vérifie ton profil employeur d\'abord' });
+    if (!req.compte.employeur_id) return res.status(403).json({ error:"Vérifie ton profil employeur d'abord" });
     const { profil_id, mission_id, note, commentaire } = req.body;
     if (!profil_id || !note) return res.status(400).json({ error:'Champs manquants' });
     if (note < 1 || note > 5) return res.status(400).json({ error:'Note entre 1 et 5' });
@@ -556,12 +591,12 @@ app.post('/api/missions', auth, requireVerifiedEmployeur, async (req,res) => {
 });
 
 /* ============================================================
-   CANDIDATURES — WORKFLOW
+   CANDIDATURES
 ============================================================ */
 app.post('/api/missions/:id/postuler', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune') return res.status(403).json({ error:'Réservé aux jeunes' });
-    if (!req.compte.profil_id) return res.status(400).json({ error:'Crée ton profil jeune d\'abord' });
+    if (!req.compte.profil_id) return res.status(400).json({ error:"Crée ton profil jeune d'abord" });
     const [m] = await pool.query('SELECT employeur_id, titre FROM missions WHERE id=?', [req.params.id]);
     if (!m.length) return res.status(404).json({ error:'Mission introuvable' });
     const [d] = await pool.query('SELECT id FROM candidatures WHERE mission_id=? AND profil_id=?', [req.params.id, req.compte.profil_id]);
@@ -625,7 +660,7 @@ app.post('/api/candidatures/:id/accepter', auth, async (req,res) => {
 
     await pool.query('UPDATE candidatures SET statut2="Acceptee", statut="acceptee", date_acceptee=NOW() WHERE id=?', [req.params.id]);
     const [pj] = await pool.query('SELECT id FROM comptes WHERE profil_id=?', [c[0].profil_id]);
-    if (pj.length) await notifier(pj[0].id, 'candidature', 'Candidature acceptée', 'Contacte l\'employeur pour organiser.', '/jeune/profil');
+    if (pj.length) await notifier(pj[0].id, 'candidature', 'Candidature acceptée', "Contacte l'employeur pour organiser.", '/jeune/profil');
     res.json({ ok:true });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -637,7 +672,7 @@ app.post('/api/candidatures/:id/refuser', auth, async (req,res) => {
     if (!c.length) return res.status(404).json({ error:'Candidature introuvable' });
     await pool.query('UPDATE candidatures SET statut2="Refusee", statut="refusee" WHERE id=?', [req.params.id]);
     const [pj] = await pool.query('SELECT id FROM comptes WHERE profil_id=?', [c[0].profil_id]);
-    if (pj.length) await notifier(pj[0].id, 'candidature', 'Candidature refusée', 'Ta candidature n\'a pas été retenue.', '/jeune/profil');
+    if (pj.length) await notifier(pj[0].id, 'candidature', 'Candidature refusée', "Ta candidature n'a pas été retenue.", '/jeune/profil');
     res.json({ ok:true });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -663,7 +698,7 @@ app.post('/api/candidatures/:id/terminer', auth, async (req,res) => {
     if (c[0].statut2 !== 'EnCours') return res.status(400).json({ error:'Statut invalide' });
     await pool.query('UPDATE candidatures SET statut2="Terminee", date_terminee=NOW() WHERE id=?', [req.params.id]);
     const [pj] = await pool.query('SELECT id FROM comptes WHERE profil_id=?', [c[0].profil_id]);
-    if (pj.length) await notifier(pj[0].id, 'candidature', 'Mission terminée', 'L\'employeur a marqué la mission terminée. Confirme à ton tour.', '/jeune/profil');
+    if (pj.length) await notifier(pj[0].id, 'candidature', 'Mission terminée', "L'employeur a marqué la mission terminée. Confirme à ton tour.", '/jeune/profil');
     res.json({ ok:true });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -692,17 +727,6 @@ app.post('/api/candidatures/:id/annuler', auth, async (req,res) => {
       || (req.compte.type === 'employeur' && (c[0].employeur_id === req.compte.employeur_id || c[0].employeur_id === ('emp-'+req.compte.id)));
     if (!isPartie) return res.status(403).json({ error:'Non autorisé' });
     await pool.query('UPDATE candidatures SET statut2="Annulee", motif_annulation=? WHERE id=?', [cleanComment(motif), req.params.id]);
-    res.json({ ok:true });
-  } catch(e){ res.status(500).json({ error:e.message }); }
-});
-
-app.post('/api/candidatures/:id/litige', auth, async (req,res) => {
-  try {
-    const { motif } = req.body;
-    const [c] = await pool.query('SELECT * FROM candidatures WHERE id=?', [req.params.id]);
-    if (!c.length) return res.status(404).json({ error:'Introuvable' });
-    await pool.query('INSERT INTO signalements (cible_type,cible_id,motif,signale_par) VALUES ("mission",?,?,?)',
-      [req.params.id, motif||'', req.compte.id]);
     res.json({ ok:true });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -759,7 +783,7 @@ app.post('/api/signalements', auth, async (req,res) => {
 });
 
 /* ============================================================
-   STATS
+   STATS PUBLIQUES
 ============================================================ */
 app.get('/api/stats', async (req,res) => {
   try {
@@ -774,8 +798,211 @@ app.get('/api/stats', async (req,res) => {
 });
 
 /* ============================================================
+   ADMIN — Back-office interne
+============================================================ */
+app.get('/api/admin/dashboard', requireAdmin, async (req,res) => {
+  try{
+    const [[jeunes]]      = await pool.query('SELECT COUNT(*) AS c FROM comptes WHERE type="jeune"');
+    const [[employeurs]]  = await pool.query('SELECT COUNT(*) AS c FROM comptes WHERE type="employeur"');
+    const [[attente]]     = await pool.query('SELECT COUNT(*) AS c FROM employeurs WHERE en_attente=1');
+    const [[offres]]      = await pool.query('SELECT COUNT(*) AS c FROM missions WHERE statut="ouverte"');
+    const [[cands]]       = await pool.query('SELECT COUNT(*) AS c FROM candidatures');
+    const [[avisC]]       = await pool.query('SELECT COUNT(*) AS c FROM avis WHERE signale=0');
+    const [[signC]]       = await pool.query('SELECT COUNT(*) AS c FROM signalements WHERE statut="nouveau"');
+    const [[abos]]        = await pool.query('SELECT COUNT(*) AS c FROM profils WHERE vitrine_premium=1');
+    const [[rapports]]    = await pool.query('SELECT COUNT(*) AS c FROM rapports_vendus');
+    const [[paiements]]   = await pool.query('SELECT COALESCE(SUM(montant),0) AS total FROM paiements WHERE statut="paye"');
+    res.json({
+      jeunes: jeunes.c, employeurs: employeurs.c, attente: attente.c,
+      offres: offres.c, candidatures: cands.c, avis: avisC.c,
+      signalements: signC.c, abonnements: abos.c,
+      rapports: rapports.c, total_encaisse: paiements.total
+    });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/employeurs', requireAdmin, async (req,res) => {
+  try{
+    const { statut } = req.query;
+    let sql = 'SELECT e.*, c.email AS compte_email FROM employeurs e LEFT JOIN comptes c ON c.employeur_id = e.id';
+    const params = [];
+    if (statut === 'attente'){ sql += ' WHERE e.en_attente=1'; }
+    else if (statut === 'verifie'){ sql += ' WHERE e.verifie=1'; }
+    else if (statut === 'refuse'){ sql += ' WHERE e.verifie=0 AND e.en_attente=0'; }
+    sql += ' ORDER BY e.cree_le DESC LIMIT 100';
+    const [r] = await pool.query(sql, params);
+    res.json(r);
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/employeurs/:id/valider', requireAdmin, async (req,res) => {
+  try{
+    await pool.query('UPDATE employeurs SET verifie=1, en_attente=0 WHERE id=?', [req.params.id]);
+    const [c] = await pool.query('SELECT id FROM comptes WHERE employeur_id=?', [req.params.id]);
+    if (c.length) await notifier(c[0].id, 'verification', 'Profil vérifié', 'Ton entreprise est validée. Tu peux publier des offres.', '/employeur');
+    await adminLog(req.compte.email, 'VALIDER_EMPLOYEUR', req.params.id);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/employeurs/:id/refuser', requireAdmin, async (req,res) => {
+  try{
+    const motif = req.body.motif || 'RCCM non vérifiable';
+    await pool.query('UPDATE employeurs SET verifie=0, en_attente=0 WHERE id=?', [req.params.id]);
+    const [c] = await pool.query('SELECT id FROM comptes WHERE employeur_id=?', [req.params.id]);
+    if (c.length) await notifier(c[0].id, 'verification', 'Vérification refusée', 'Motif : ' + motif, '/employeur');
+    await adminLog(req.compte.email, 'REFUSER_EMPLOYEUR', req.params.id + ' — ' + motif);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/jeunes', requireAdmin, async (req,res) => {
+  try{
+    const [r] = await pool.query(`
+      SELECT p.*, c.email AS compte_email, c.telephone AS compte_tel,
+             COALESCE(AVG(a.note),0) AS moyenne, COUNT(a.id) AS nb_avis
+      FROM profils p
+      LEFT JOIN comptes c ON c.profil_id = p.id
+      LEFT JOIN avis a ON a.profil_id = p.id AND a.signale=0
+      GROUP BY p.id
+      ORDER BY p.cree_le DESC LIMIT 100
+    `);
+    res.json(r);
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/jeunes/:id/suspendre', requireAdmin, async (req,res) => {
+  try{
+    await pool.query('UPDATE profils SET signale=1 WHERE id=?', [req.params.id]);
+    const [c] = await pool.query('SELECT id FROM comptes WHERE profil_id=?', [req.params.id]);
+    if (c.length) await notifier(c[0].id, 'admin', 'Profil suspendu', 'Ton profil a été suspendu. Contacte le support.', '/');
+    await adminLog(req.compte.email, 'SUSPENDRE_JEUNE', req.params.id);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/jeunes/:id/reactiver', requireAdmin, async (req,res) => {
+  try{
+    await pool.query('UPDATE profils SET signale=0 WHERE id=?', [req.params.id]);
+    await adminLog(req.compte.email, 'REACTIVER_JEUNE', req.params.id);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/signalements', requireAdmin, async (req,res) => {
+  try{
+    const [r] = await pool.query(`
+      SELECT s.*, c.email AS signale_par_email
+      FROM signalements s
+      LEFT JOIN comptes c ON c.id = s.signale_par
+      ORDER BY s.cree_le DESC LIMIT 100
+    `);
+    res.json(r);
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/signalements/:id/traiter', requireAdmin, async (req,res) => {
+  try{
+    await pool.query('UPDATE signalements SET statut="traite" WHERE id=?', [req.params.id]);
+    await adminLog(req.compte.email, 'TRAITER_SIGNALEMENT', req.params.id);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/signalements/:id/rejeter', requireAdmin, async (req,res) => {
+  try{
+    await pool.query('UPDATE signalements SET statut="rejete" WHERE id=?', [req.params.id]);
+    await adminLog(req.compte.email, 'REJETER_SIGNALEMENT', req.params.id);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/rapports/apercu', requireAdmin, async (req,res) => {
+  try{
+    const [parCommune]    = await pool.query('SELECT commune, COUNT(*) AS total FROM profils WHERE signale=0 GROUP BY commune ORDER BY total DESC');
+    const [parMetier]     = await pool.query('SELECT metier, COUNT(*) AS total FROM profils WHERE signale=0 GROUP BY metier ORDER BY total DESC');
+    const [parBadge]      = await pool.query('SELECT badge, COUNT(*) AS total FROM profils WHERE signale=0 GROUP BY badge');
+    const [parMois]       = await pool.query("SELECT DATE_FORMAT(cree_le,'%Y-%m') AS mois, COUNT(*) AS total FROM profils GROUP BY mois ORDER BY mois DESC LIMIT 12");
+    const [topEmployeurs] = await pool.query('SELECT employeur_id, COUNT(*) AS total FROM missions GROUP BY employeur_id ORDER BY total DESC LIMIT 10');
+    const [[totalFin]]    = await pool.query('SELECT COUNT(*) AS c FROM profils WHERE vitrine_premium=1');
+    const [[missionsTot]] = await pool.query('SELECT COUNT(*) AS c FROM missions');
+    const [[avisTot]]     = await pool.query('SELECT COUNT(*) AS c FROM avis');
+    res.json({
+      par_commune: parCommune, par_metier: parMetier, par_badge: parBadge,
+      par_mois: parMois, top_employeurs: topEmployeurs,
+      abonnements_actifs: totalFin.c, total_missions: missionsTot.c,
+      total_avis: avisTot.c, date_generation: new Date()
+    });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/rapports/generer', requireAdmin, async (req,res) => {
+  try{
+    const { titre, destinataire, montant } = req.body;
+    await pool.query('INSERT INTO rapports_vendus (titre,destinataire,montant,vendeur) VALUES (?,?,?,?)',
+      [titre||'Rapport ZUA MOSALA', destinataire||'', montant||0, req.compte.email]);
+    await adminLog(req.compte.email, 'GENERER_RAPPORT', titre + ' → ' + destinataire);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/rapports/vendus', requireAdmin, async (req,res) => {
+  try{
+    const [r] = await pool.query('SELECT * FROM rapports_vendus ORDER BY cree_le DESC LIMIT 50');
+    res.json(r);
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/finances', requireAdmin, async (req,res) => {
+  try{
+    const [paiements] = await pool.query('SELECT * FROM paiements ORDER BY cree_le DESC LIMIT 100');
+    const [[total]]   = await pool.query('SELECT COALESCE(SUM(montant),0) AS total FROM paiements WHERE statut="paye"');
+    const [[mois]]    = await pool.query('SELECT COALESCE(SUM(montant),0) AS total FROM paiements WHERE statut="paye" AND cree_le > DATE_SUB(NOW(), INTERVAL 30 DAY)');
+    const [parType]   = await pool.query('SELECT type, SUM(montant) AS total, COUNT(*) AS nb FROM paiements WHERE statut="paye" GROUP BY type');
+    res.json({ paiements:paiements, total_general:total.total, total_30j:mois.total, par_type:parType });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/finances/ajouter', requireAdmin, async (req,res) => {
+  try{
+    const { type, payeur, montant, reference, statut } = req.body;
+    await pool.query('INSERT INTO paiements (type,payeur,montant,reference,statut) VALUES (?,?,?,?,?)',
+      [type||'divers', payeur||'', montant||0, reference||'', statut||'paye']);
+    await adminLog(req.compte.email, 'AJOUT_PAIEMENT', type + ' ' + montant + '$ — ' + payeur);
+    res.json({ ok:true });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/admin/notifier-tous', requireAdmin, async (req,res) => {
+  try{
+    const { cible, titre, message } = req.body;
+    let sql = 'SELECT id FROM comptes';
+    const params = [];
+    if (cible === 'jeunes'){ sql += ' WHERE type="jeune"'; }
+    else if (cible === 'employeurs'){ sql += ' WHERE type="employeur"'; }
+    const [comptes] = await pool.query(sql, params);
+    for (const c of comptes){
+      await notifier(c.id, 'admin', titre||'Message de ZUA MOSALA', message||'', '/');
+    }
+    await adminLog(req.compte.email, 'NOTIFIER_TOUS', cible + ' (' + comptes.length + ' envois)');
+    res.json({ ok:true, envoyes: comptes.length });
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/admin/logs', requireAdmin, async (req,res) => {
+  try{
+    const [r] = await pool.query('SELECT * FROM admin_logs ORDER BY cree_le DESC LIMIT 100');
+    res.json(r);
+  }catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+/* ============================================================
    FRONTEND
 ============================================================ */
+app.get('/console', (req,res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (_,r) => r.sendFile(path.join(__dirname, 'public', 'index.html')));
 
