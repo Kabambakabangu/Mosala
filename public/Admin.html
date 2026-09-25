@@ -2,412 +2,408 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ZUA MOSALA — Console Admin</title>
 <style>
-:root{
-  --navy:#0F172A; --navy-light:#1E293B;
-  --blue:#007FFF; --blue-dark:#0059b3;
-  --yellow:#FCD116; --red:#CE1126; --gold:#D4A017; --green:#16A34A;
-  --bg:#F8F9FB; --surface:#FFFFFF; --text:#0F172A; --text-soft:#64748B;
-  --border:#E5E7EB; --light:#F1F5F9;
-  --shadow:0 1px 2px rgba(15,23,42,.04), 0 4px 16px rgba(15,23,42,.06);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.5;font-size:14px;}
-
+:root{--navy:#0F172A;--blue:#007FFF;--yellow:#FCD116;--red:#CE1126;--gold:#D4A017;--green:#16A34A;--bg:#F8F9FB;--surface:#FFF;--text:#0F172A;--soft:#64748B;--border:#E5E7EB;--light:#F1F5F9}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
 .layout{display:flex;min-height:100vh}
-
-/* Sidebar */
-.sidebar{width:240px;background:var(--navy);color:#fff;flex-shrink:0;
-  padding:20px 0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;z-index:10;
-  transition:transform .3s}
-.sidebar .brand{padding:0 20px 20px;font-size:15px;font-weight:800;
-  border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px}
+.sidebar{width:240px;background:var(--navy);color:#fff;position:fixed;top:0;bottom:0;left:0;padding:20px 0;overflow-y:auto;z-index:10;transition:transform .3s}
+.sidebar .brand{padding:0 20px 20px;font-size:15px;font-weight:800;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;align-items:center}
 .sidebar .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
-.sidebar .brand-sub{font-size:11px;opacity:.6;font-weight:500;margin-top:4px}
+.sidebar .sub{font-size:11px;opacity:.6;margin-top:4px}
 .sidebar nav{padding:16px 0}
-.sidebar nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;
-  color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;
-  transition:all .15s;cursor:pointer;border-left:3px solid transparent}
+.sidebar nav a{display:flex;gap:10px;align-items:center;padding:11px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;cursor:pointer;border-left:3px solid transparent}
 .sidebar nav a:hover{background:rgba(255,255,255,.06);color:#fff}
 .sidebar nav a.active{background:rgba(0,127,255,.15);color:#fff;border-left-color:var(--blue)}
-.sidebar nav a svg{width:18px;height:18px;stroke:currentColor;fill:none;
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.sidebar nav .nav-badge{background:var(--red);color:#fff;font-size:10px;
-  font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto}
-.sidebar .footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);
-  font-size:11.5px;color:rgba(255,255,255,.5)}
+.sidebar nav a svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sidebar nav .badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto}
+.sidebar .footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:rgba(255,255,255,.5)}
 .sidebar .footer strong{color:#fff;display:block;margin-bottom:2px}
-
-/* Main */
+.sidebar .footer a{color:var(--yellow);cursor:pointer;font-weight:600}
 .main{flex:1;margin-left:240px;padding:24px;max-width:calc(100vw - 240px)}
-.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:20;
-  width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;
-  border:none;align-items:center;justify-content:center;cursor:pointer;
-  box-shadow:0 4px 14px rgba(0,0,0,.2)}
-.menu-toggle svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
-@media (max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0;max-width:100vw;padding:70px 16px 24px}
-  .menu-toggle{display:flex}
-}
-
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:20;width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);align-items:center;justify-content:center}
+.menu-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;max-width:100vw;padding:70px 16px 24px}.menu-btn{display:flex}}
 h1{font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-.5px}
-.subtitle{font-size:13.5px;color:var(--text-soft);margin:0 0 24px}
-
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.subtitle{font-size:13.5px;color:var(--soft);margin:0 0 24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(15,23,42,.04)}
 .card h3{margin:0 0 14px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
-.card h3 svg{width:18px;height:18px;stroke:var(--blue);fill:none;stroke-width:1.9;
-  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-
-/* Widgets */
+.card h3 svg{width:18px;height:18px;stroke:var(--blue);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .grid{display:grid;gap:12px;margin-bottom:20px}
 .grid-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 .grid-3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-
-.widget{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
 .widget::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue)}
 .widget.yellow::before{background:var(--yellow)}
 .widget.red::before{background:var(--red)}
 .widget.green::before{background:var(--green)}
 .widget.gold::before{background:var(--gold)}
-.widget .label{font-size:11.5px;font-weight:600;color:var(--text-soft);
-  text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.widget .value{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-1px}
-.widget .hint{font-size:11.5px;color:var(--text-soft);margin-top:4px}
-
-/* Tables */
+.widget .label{font-size:11.5px;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.widget .value{font-size:26px;font-weight:800;letter-spacing:-1px}
+.widget .hint{font-size:11.5px;color:var(--soft);margin-top:4px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 8px;border-bottom:1.5px solid var(--border);
-  font-size:11px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px}
+th{text-align:left;padding:10px 8px;border-bottom:1.5px solid var(--border);font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
 td{padding:12px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.table-wrap{overflow-x:auto;margin:-8px}
-
-/* Badges */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;
-  border-radius:20px;font-size:11px;font-weight:700;line-height:1.3;color:#fff}
-.badge.blue{background:var(--blue)}
-.badge.green{background:var(--green)}
-.badge.red{background:var(--red)}
-.badge.yellow{background:var(--yellow);color:#1a1a1a}
-.badge.gold{background:var(--gold)}
-.badge.gray{background:#94A3B8}
-
-/* Buttons */
-button{background:var(--blue);color:#fff;border:none;padding:9px 14px;
-  border-radius:9px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  transition:opacity .15s,transform .08s}
+.wrap{overflow-x:auto;margin:-8px}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;color:#fff}
+.b-blue{background:var(--blue)}.b-green{background:var(--green)}.b-red{background:var(--red)}.b-yellow{background:var(--yellow);color:#1a1a1a}.b-gold{background:var(--gold)}.b-gray{background:#94A3B8}
+button{background:var(--blue);color:#fff;border:none;padding:9px 14px;border-radius:9px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;display:inline-flex;gap:6px;align-items:center;justify-content:center}
 button:hover{opacity:.9}
-button:active{transform:scale(.98)}
-button.sm{padding:6px 11px;font-size:12px;border-radius:7px}
+button.sm{padding:6px 11px;font-size:12px}
 button.green{background:var(--green)}
 button.red{background:var(--red)}
 button.gray{background:var(--light);color:var(--text)}
-button.gray:hover{background:var(--border)}
-button:disabled{opacity:.4;cursor:not-allowed}
-button svg{width:14px;height:14px;stroke:currentColor;fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* Forms */
-input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);
-  border-radius:9px;font-size:13.5px;background:var(--bg);color:var(--text);
-  font-family:inherit;transition:border-color .15s}
+button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--bg);color:var(--text);font-family:inherit}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--surface)}
-label{display:block;font-size:12px;font-weight:600;margin:12px 0 5px;color:var(--text)}
-
-/* Login screen */
-.login-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0F172A 0%,#1E293B 100%);
-  display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
-.login-box{background:var(--surface);border-radius:18px;padding:32px 28px;
-  max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-box h1{font-size:22px;margin:0 0 6px;color:var(--text)}
-.login-box p{color:var(--text-soft);font-size:13.5px;margin:0 0 24px}
+label{display:block;font-size:12px;font-weight:600;margin:12px 0 5px}
+.login{position:fixed;inset:0;background:linear-gradient(160deg,#0F172A,#1E293B);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.login-box{background:var(--surface);border-radius:18px;padding:32px 28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-box h1{font-size:22px;margin:0 0 6px}
+.login-box p{color:var(--soft);font-size:13.5px;margin:0 0 24px}
 .login-box input{margin-bottom:12px}
 .login-box button{width:100%;padding:13px;font-size:14px}
-
-.empty{text-align:center;padding:40px 20px;color:var(--text-soft)}
-.empty svg{width:40px;height:40px;stroke:var(--text-soft);fill:none;
-  stroke-width:1.4;opacity:.5;margin-bottom:12px}
-.empty p{margin:0;font-size:13.5px}
-
-.loader{text-align:center;padding:60px 20px;color:var(--text-soft);font-size:13.5px}
-
+.empty{text-align:center;padding:40px 20px;color:var(--soft)}
+.loader{text-align:center;padding:60px 20px;color:var(--soft)}
 .alert{padding:12px 14px;border-radius:10px;margin-bottom:14px;font-size:13px}
-.alert.info{background:rgba(0,127,255,.08);color:var(--blue-dark);border-left:3px solid var(--blue)}
 .alert.warn{background:rgba(212,160,23,.1);color:#8B6914;border-left:3px solid var(--gold)}
 .alert.danger{background:rgba(206,17,38,.08);color:var(--red);border-left:3px solid var(--red)}
-.alert.success{background:rgba(22,163,74,.08);color:var(--green);border-left:3px solid var(--green)}
-
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:150;
-  display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:var(--surface);border-radius:14px;padding:24px;
-  max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
-.modal h3{margin:0 0 14px;font-size:17px}
-
-.row-flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row-flex > *{flex-shrink:0}
-.spacer{flex:1}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 </style>
 </head>
 <body>
 
-<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">
+<button class="menu-btn" onclick="toggleSide()">
   <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
 </button>
 
-<div id="loginScreen" class="login-screen">
+<div class="login" id="login">
   <div class="login-box">
     <h1>ZUA MOSALA</h1>
     <p>Console d'administration. Accès réservé.</p>
-    <label>Email administrateur</label>
-    <input id="loginEmail" type="email" placeholder="admin@zuamosala.cd" value="admin@zuamosala.cd">
+    <label>Email admin</label>
+    <input id="email" type="email" value="admin@zuamosala.cd">
     <label>Mot de passe</label>
-    <input id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <div id="loginError" class="alert danger" style="display:none;margin-top:12px"></div>
-    <button onclick="doLogin()" style="margin-top:16px">Se connecter</button>
+    <input id="pwd" type="password" onkeydown="if(event.key==='Enter')login()">
+    <div id="err" class="alert danger" style="display:none;margin-top:12px"></div>
+    <button onclick="login()" style="margin-top:16px">Se connecter</button>
   </div>
 </div>
 
-<div class="layout" id="layout" style="display:none">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <span class="dot"></span>
-      <div>
-        ZUA MOSALA
-        <div class="brand-sub">Console admin</div>
-      </div>
-    </div>
+<div class="layout" id="app" style="display:none">
+  <aside class="sidebar" id="side">
+    <div class="brand"><span class="dot"></span><div>ZUA MOSALA<div class="sub">Console admin</div></div></div>
     <nav id="nav">
-      <a onclick="go('dashboard')" data-page="dashboard">
-        <svg viewBox="0 0 24 24"><path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/></svg>
-        Tableau de bord
-      </a>
-      <a onclick="go('employeurs')" data-page="employeurs">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
-        Employeurs
-        <span class="nav-badge" id="badgeEmployeurs" style="display:none">0</span>
-      </a>
-      <a onclick="go('jeunes')" data-page="jeunes">
-        <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>
-        Jeunes
-      </a>
-      <a onclick="go('signalements')" data-page="signalements">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
-        Signalements
-        <span class="nav-badge" id="badgeSignalements" style="display:none">0</span>
-      </a>
-      <a onclick="go('rapports')" data-page="rapports">
-        <svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 6-6"/></svg>
-        Rapports
-      </a>
-      <a onclick="go('finances')" data-page="finances">
-        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
-        Finances
-      </a>
-      <a onclick="go('notifier')" data-page="notifier">
-        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        Notification
-      </a>
-      <a onclick="go('logs')" data-page="logs">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        Journal
-      </a>
+      <a onclick="go('dash')" data-p="dash"><svg viewBox="0 0 24 24"><path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/></svg>Tableau de bord</a>
+      <a onclick="go('emp')" data-p="emp"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>Employeurs<span class="badge" id="bdgEmp" style="display:none">0</span></a>
+      <a onclick="go('jeunes')" data-p="jeunes"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>Jeunes</a>
+      <a onclick="go('sig')" data-p="sig"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>Signalements<span class="badge" id="bdgSig" style="display:none">0</span></a>
+      <a onclick="go('rap')" data-p="rap"><svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 6-6"/></svg>Rapports</a>
+      <a onclick="go('fin')" data-p="fin"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Finances</a>
+      <a onclick="go('notif')" data-p="notif"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>Notification</a>
+      <a onclick="go('logs')" data-p="logs"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Journal</a>
     </nav>
-    <div class="footer">
-      <strong id="adminEmail">—</strong>
-      ZUA MOSALA Admin v1.0
-      <div style="margin-top:8px"><a onclick="doLogout()" style="color:var(--yellow);cursor:pointer;font-weight:600">Se déconnecter</a></div>
-    </div>
+    <div class="footer"><strong id="who">—</strong>ZUA MOSALA Admin v1.0<div style="margin-top:8px"><a onclick="logout()">Se déconnecter</a></div></div>
   </aside>
-
-  <main class="main" id="main">
-    <div class="loader">Chargement…</div>
-  </main>
+  <main class="main" id="main"><div class="loader">Chargement…</div></main>
 </div>
 
 <script>
-/* ============================================================
-   STATE
-============================================================ */
-var API = '/api';
-var TOKEN = localStorage.getItem('zua_admin_token') || null;
-var ADMIN_EMAIL = localStorage.getItem('zua_admin_email') || 'admin@zuamosala.cd';
+var API='/api';
+var TOKEN=localStorage.getItem('zua_admin_token')||null;
+var WHO=localStorage.getItem('zua_admin_email')||'admin@zuamosala.cd';
 
-/* ============================================================
-   HELPERS
-============================================================ */
-function esc(s){ return String(s||'').replace(/[&<>"']/g,function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
-function fmtDate(d){ if(!d) return '—'; return new Date(d).toLocaleString('fr-FR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function fmtDay(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}); }
-function fmtMoney(m){ return parseFloat(m||0).toFixed(2) + ' USD'; }
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleString('fr-FR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtDay(d){if(!d)return '—';return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});}
+function money(m){return parseFloat(m||0).toFixed(2)+' USD';}
 
-async function apiGet(u){
-  var r = await fetch(API+u, { headers: TOKEN ? {'x-auth-token': TOKEN} : {} });
-  if (r.status === 401 || r.status === 403){ doLogout(); throw new Error('Session expirée'); }
-  if (!r.ok) throw new Error('Erreur '+r.status);
-  return await r.json();
-}
-async function apiPost(u,b){
-  var r = await fetch(API+u, { method:'POST',
-    headers: TOKEN ? {'Content-Type':'application/json','x-auth-token':TOKEN} : {'Content-Type':'application/json'},
-    body: b ? JSON.stringify(b) : undefined });
-  if (r.status === 401 || r.status === 403){ doLogout(); throw new Error('Session expirée'); }
-  return await r.json();
-}
+async function get(u){var r=await fetch(API+u,{headers:TOKEN?{'x-auth-token':TOKEN}:{}});if(r.status===401||r.status===403){logout();throw new Error('Session expirée');}if(!r.ok)throw new Error('Erreur '+r.status);return r.json();}
+async function post(u,b){var r=await fetch(API+u,{method:'POST',headers:TOKEN?{'Content-Type':'application/json','x-auth-token':TOKEN}:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});if(r.status===401||r.status===403){logout();throw new Error('Session expirée');}return r.json();}
 
-/* ============================================================
-   AUTH
-============================================================ */
-async function doLogin(){
-  var email = document.getElementById('loginEmail').value.trim();
-  var pwd = document.getElementById('loginPassword').value;
-  var errBox = document.getElementById('loginError');
-  errBox.style.display='none';
-  if (!email || !pwd){ errBox.textContent='Remplis tous les champs'; errBox.style.display='block'; return; }
-  if (email !== 'admin@zuamosala.cd'){
-    errBox.textContent='Accès réservé à admin@zuamosala.cd';
-    errBox.style.display='block'; return;
-  }
-  try {
-    var r = await fetch(API+'/auth/connexion', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email:email, password:pwd})
-    });
-    var data = await r.json();
-    if (data.error){ errBox.textContent = data.error; errBox.style.display='block'; return; }
-    if (data.type !== 'jeune' && data.type !== 'employeur'){ errBox.textContent='Type de compte invalide'; errBox.style.display='block'; return; }
-    TOKEN = data.token;
-    ADMIN_EMAIL = email;
-    localStorage.setItem('zua_admin_token', TOKEN);
-    localStorage.setItem('zua_admin_email', ADMIN_EMAIL);
-    showApp();
-  } catch(e){
-    errBox.textContent = 'Erreur de connexion au serveur : ' + e.message;
-    errBox.style.display='block';
-  }
+async function login(){
+  var e=document.getElementById('email').value.trim(),p=document.getElementById('pwd').value,err=document.getElementById('err');
+  err.style.display='none';
+  if(!e||!p){err.textContent='Remplis tous les champs';err.style.display='block';return;}
+  if(e!=='admin@zuamosala.cd'){err.textContent='Accès réservé à admin@zuamosala.cd';err.style.display='block';return;}
+  try{var r=await fetch(API+'/auth/connexion',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
+  var d=await r.json();
+  if(d.error){err.textContent=d.error;err.style.display='block';return;}
+  TOKEN=d.token;WHO=e;localStorage.setItem('zua_admin_token',TOKEN);localStorage.setItem('zua_admin_email',e);showApp();}
+  catch(x){err.textContent='Erreur serveur : '+x.message;err.style.display='block';}
 }
-function doLogout(){
-  TOKEN = null;
-  localStorage.removeItem('zua_admin_token');
-  document.getElementById('layout').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-}
-function showApp(){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('layout').style.display = 'flex';
-  document.getElementById('adminEmail').textContent = ADMIN_EMAIL;
-  go('dashboard');
-}
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
+function logout(){TOKEN=null;localStorage.removeItem('zua_admin_token');document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';}
+function showApp(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('who').textContent=WHO;go('dash');}
+function toggleSide(){document.getElementById('side').classList.toggle('open');}
+
+function go(p){
+  var links=document.querySelectorAll('.sidebar nav a');
+  for(var i=0;i<links.length;i++)links[i].classList.toggle('active',links[i].dataset.p===p);
+  document.getElementById('side').classList.remove('open');
+  var m=document.getElementById('main');m.innerHTML='<div class="loader">Chargement…</div>';
+  if(p==='dash')dash();else if(p==='emp')emp('attente');else if(p==='jeunes')jeunes();else if(p==='sig')sig();else if(p==='rap')rap();else if(p==='fin')fin();else if(p==='notif')notif();else if(p==='logs')logs();
 }
 
-/* ============================================================
-   ROUTER
-============================================================ */
-function go(page){
-  var links = document.querySelectorAll('.sidebar nav a');
-  for (var i=0;i<links.length;i++){
-    links[i].classList.toggle('active', links[i].dataset.page === page);
-  }
-  document.getElementById('sidebar').classList.remove('open');
-  var main = document.getElementById('main');
-  main.innerHTML = '<div class="loader">Chargement…</div>';
-  if (page === 'dashboard') renderDashboard();
-  else if (page === 'employeurs') renderEmployeurs();
-  else if (page === 'jeunes') renderJeunes();
-  else if (page === 'signalements') renderSignalements();
-  else if (page === 'rapports') renderRapports();
-  else if (page === 'finances') renderFinances();
-  else if (page === 'notifier') renderNotifier();
-  else if (page === 'logs') renderLogs();
+function w(l,v,h,c){return '<div class="widget '+(c||'')+'"><div class="label">'+esc(l)+'</div><div class="value">'+esc(v)+'</div>'+(h?'<div class="hint">'+esc(h)+'</div>':'')+'</div>';}
+
+async function dash(){
+  try{var d=await get('/admin/dashboard');
+  document.getElementById('bdgEmp').style.display=d.attente>0?'inline-block':'none';
+  document.getElementById('bdgEmp').textContent=d.attente;
+  document.getElementById('bdgSig').style.display=d.signalements>0?'inline-block':'none';
+  document.getElementById('bdgSig').textContent=d.signalements;
+  var h='<h1>Tableau de bord</h1><p class="subtitle">Vue d\'ensemble ZUA MOSALA</p>';
+  if(d.attente>0)h+='<div class="alert warn">'+d.attente+' entreprise(s) en attente. <a onclick="go(\'emp\')" style="cursor:pointer;font-weight:700;text-decoration:underline">Traiter</a></div>';
+  h+='<div class="grid grid-4">';
+  h+=w('Jeunes',d.jeunes,'','blue');
+  h+=w('Employeurs',d.employeurs,'','blue');
+  h+=w('En attente',d.attente,'RCCM','yellow');
+  h+=w('Offres',d.offres,'','blue');
+  h+=w('Candidatures',d.candidatures,'','blue');
+  h+=w('Avis',d.avis,'','green');
+  h+=w('Signalements',d.signalements,'','red');
+  h+=w('Abonnements',d.abonnements,'Premium','gold');
+  h+=w('Rapports vendus',d.rapports,'','gold');
+  h+=w('Total encaissé',money(d.total_encaisse),'','green');
+  h+='</div>';
+  h+='<div class="card"><h3>Actions rapides</h3><div class="row">';
+  h+='<button onclick="go(\'emp\')">Vérifier entreprises</button>';
+  h+='<button class="gray" onclick="go(\'rap\')">Rapports</button>';
+  h+='<button class="gray" onclick="go(\'fin\')">Paiements</button>';
+  h+='<button class="gray" onclick="go(\'notif\')">Notifier</button>';
+  h+='</div></div>';
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
 }
 
-/* ============================================================
-   DASHBOARD
-============================================================ */
-async function renderDashboard(){
-  try{
-    var d = await apiGet('/admin/dashboard');
-    document.getElementById('badgeEmployeurs').style.display = d.attente > 0 ? 'inline-block' : 'none';
-    document.getElementById('badgeEmployeurs').textContent = d.attente;
-    document.getElementById('badgeSignalements').style.display = d.signalements > 0 ? 'inline-block' : 'none';
-    document.getElementById('badgeSignalements').textContent = d.signalements;
-    var html = '';
-    html += '<h1>Tableau de bord</h1>';
-    html += '<p class="subtitle">Vue d\'ensemble de la plateforme ZUA MOSALA</p>';
-
-    if (d.attente > 0){
-      html += '<div class="alert warn">' + d.attente + ' entreprise(s) en attente de vérification. <a onclick="go(\'employeurs\')" style="cursor:pointer;font-weight:700;text-decoration:underline">Traiter maintenant</a></div>';
+async function emp(f){
+  f=f||'attente';
+  try{var list=await get('/admin/employeurs?statut='+f);
+  var h='<h1>Employeurs</h1><p class="subtitle">Vérification des entreprises</p>';
+  h+='<div class="row" style="margin-bottom:16px">';
+  h+='<button class="'+(f==='attente'?'':'gray')+'" onclick="emp(\'attente\')">En attente</button>';
+  h+='<button class="'+(f==='verifie'?'':'gray')+'" onclick="emp(\'verifie\')">Vérifiés</button>';
+  h+='<button class="'+(f===''?'':'gray')+'" onclick="emp(\'\')">Tous</button>';
+  h+='</div>';
+  if(!list.length)h+='<div class="card"><div class="empty">Aucun employeur.</div></div>';
+  else{
+    h+='<div class="card"><div class="wrap"><table>';
+    h+='<tr><th>Entreprise</th><th>Type</th><th>RCCM</th><th>Commune</th><th>Contact</th><th>Inscrit</th><th>Statut</th><th></th></tr>';
+    for(var i=0;i<list.length;i++){var e=list[i];
+      var st=e.verifie==1?'<span class="badge b-green">Vérifié</span>':(e.en_attente==1?'<span class="badge b-yellow">En attente</span>':'<span class="badge b-red">Non vérifié</span>');
+      h+='<tr><td><b>'+esc(e.id)+'</b><br><span style="font-size:11px;color:var(--soft)">'+esc(e.compte_email||'—')+'</span></td>';
+      h+='<td>'+esc(e.categorie)+'</td><td>'+esc(e.reference||'—')+'</td><td>'+esc(e.commune||'—')+'</td><td>'+esc(e.contact||'—')+'</td><td>'+fmtDay(e.cree_le)+'</td><td>'+st+'</td>';
+      h+='<td>';
+      if(e.verifie!=1)h+='<button class="green sm" onclick="valEmp(\''+e.id+'\')">Valider</button> <button class="red sm" onclick="refEmp(\''+e.id+'\')">Refuser</button>';
+      else h+='<button class="gray sm" onclick="refEmp(\''+e.id+'\')">Révoquer</button>';
+      h+='</td></tr>';
     }
-
-    html += '<div class="grid grid-4">';
-    html += widget('Jeunes inscrits', d.jeunes, '', 'blue');
-    html += widget('Employeurs', d.employeurs, '', 'blue');
-    html += widget('En attente', d.attente, 'RCCM à vérifier', 'yellow');
-    html += widget('Offres actives', d.offres, '', 'blue');
-    html += widget('Candidatures', d.candidatures, '', 'blue');
-    html += widget('Avis laissés', d.avis, '', 'green');
-    html += widget('Signalements', d.signalements, 'à examiner', 'red');
-    html += widget('Abonnements actifs', d.abonnements, 'vitrines Premium', 'gold');
-    html += '</div>';
-
-    html += '<div class="grid grid-3">';
-    html += widget('Rapports vendus', d.rapports, '', 'gold');
-    html += widget('Total encaissé', fmtMoney(d.total_encaisse), 'cumul plateforme', 'green');
-    html += '</div>';
-
-    html += '<div class="card"><h3>Actions rapides</h3>';
-    html += '<div class="row-flex">';
-    html += '<button onclick="go(\'employeurs\')">Vérifier les entreprises</button>';
-    html += '<button class="gray" onclick="go(\'rapports\')">Générer un rapport</button>';
-    html += '<button class="gray" onclick="go(\'finances\')">Enregistrer un paiement</button>';
-    html += '<button class="gray" onclick="go(\'notifier\')">Envoyer une notification</button>';
-    html += '</div></div>';
-
-    document.getElementById('main').innerHTML = html;
-  }catch(e){
-    document.getElementById('main').innerHTML = '<div class="alert danger">Erreur : ' + esc(e.message) + '</div>';
+    h+='</table></div></div>';
   }
-}
-function widget(label, value, hint, color){
-  return '<div class="widget ' + (color||'') + '">' +
-    '<div class="label">' + esc(label) + '</div>' +
-    '<div class="value">' + esc(value) + '</div>' +
-    (hint ? '<div class="hint">' + esc(hint) + '</div>' : '') +
-  '</div>';
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
 }
 
-/* ============================================================
-   EMPLOYEURS
-============================================================ */
-async function renderEmployeurs(filter){
-  filter = filter || 'attente';
-  try{
-    var list = await apiGet('/admin/employeurs?statut=' + filter);
-    var html = '';
-    html += '<h1>Employeurs</h1>';
-    html += '<p class="subtitle">Vérification et gestion des entreprises</p>';
+async function valEmp(id){
+  if(!confirm('Valider '+id+' ?'))return;
+  var r=await post('/admin/employeurs/'+id+'/valider',{});
+  if(r.error){alert(r.error);return;}
+  alert('Validé. Notification envoyée.');emp();
+}
+async function refEmp(id){
+  var m=prompt('Motif du refus :','RCCM non vérifiable');if(!m)return;
+  var r=await post('/admin/employeurs/'+id+'/refuser',{motif:m});
+  if(r.error){alert(r.error);return;}
+  alert('Refus enregistré.');emp();
+}
 
-    html += '<div class="row-flex" style="margin-bottom:16px">';
-    html += '<button class="' + (filter==='attente'?'':'gray') + '" onclick="renderEmployeurs(\'attente\')">En attente</button>';
-    html += '<button class="' + (filter==='verifie'?'':'gray') + '" onclick="renderEmployeurs(\'verifie\')">Vérifiés</button>';
-    html += '<button class="' + (filter==='refuse'?'':'gray') + '" onclick="renderEmployeurs(\'refuse\')">Refusés / Non vérifiés</button>';
-    html += '<button class="' + (filter===''?'':'gray') + '" onclick="renderEmployeurs(\'\')">Tous</button>';
-    html += '</div>';
+async function jeunes(){
+  try{var list=await get('/admin/jeunes');
+  var h='<h1>Jeunes</h1><p class="subtitle">'+list.length+' profil(s)</p>';
+  if(!list.length)h+='<div class="card"><div class="empty">Aucun jeune.</div></div>';
+  else{
+    h+='<div class="card"><div class="wrap"><table>';
+    h+='<tr><th>Nom</th><th>Métier</th><th>Commune</th><th>Badge</th><th>Avis</th><th>Contact</th><th>Statut</th><th></th></tr>';
+    for(var i=0;i<list.length;i++){var j=list[i];
+      var bc=j.badge==='or'?'b-gold':(j.badge==='argent'?'b-gray':'b-yellow');
+      h+='<tr><td><b>'+esc(j.nom)+'</b><br><span style="font-size:11px;color:var(--soft)">'+esc(j.compte_email||'—')+'</span></td>';
+      h+='<td>'+esc(j.metier)+'</td><td>'+esc(j.commune)+'</td><td><span class="badge '+bc+'">'+esc(j.badge)+'</span></td>';
+      h+='<td>'+(j.nb_avis||0)+(j.moyenne>0?' ('+parseFloat(j.moyenne).toFixed(1)+'★)':'')+'</td><td>'+esc(j.contact||'—')+'</td>';
+      h+='<td>'+(j.signale==1?'<span class="badge b-red">Suspendu</span>':'<span class="badge b-green">Actif</span>')+'</td>';
+      h+='<td>';
+      if(j.signale==1)h+='<button class="green sm" onclick="reaJ('+j.id+')">Réactiver</button>';
+      else h+='<button class="red sm" onclick="susJ('+j.id+')">Suspendre</button>';
+      h+='</td></tr>';
+    }
+    h+='</table></div></div>';
+  }
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
+}
+async function susJ(id){if(!confirm('Suspendre ce profil ?'))return;var r=await post('/admin/jeunes/'+id+'/suspendre',{});if(r.error){alert(r.error);return;}jeunes();}
+async function reaJ(id){var r=await post('/admin/jeunes/'+id+'/reactiver',{});if(r.error){alert(r.error);return;}jeunes();}
 
-    if (!list.length){
-      html += '<div class="card"><div class="empty">' +
-        '<svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>' +
-        '<p>Aucun employeur dans cette catégorie.</p></div></div>';
-    } else {
-      html += '<div class="card"><h3>' + list.length + ' résultat(s)</h3>';
-      html += '<div class="table-wrap"><tab
+async function sig(){
+  try{var list=await get('/admin/signalements');
+  var h='<h1>Signalements</h1><p class="subtitle">Modération</p>';
+  if(!list.length)h+='<div class="card"><div class="empty">Aucun signalement.</div></div>';
+  else{
+    h+='<div class="card">';
+    for(var i=0;i<list.length;i++){var s=list[i];
+      var st=s.statut==='nouveau'?'<span class="badge b-red">Nouveau</span>':(s.statut==='traite'?'<span class="badge b-green">Traité</span>':'<span class="badge b-gray">Rejeté</span>');
+      h+='<div style="padding:14px 0;border-bottom:1px solid var(--border)">';
+      h+='<div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Cible : '+esc(s.cible_type)+' #'+s.cible_id+'</b>'+st+'</div>';
+      h+='<div style="font-size:13px;color:var(--soft);margin-bottom:6px"><b>Motif :</b> '+esc(s.motif||'—')+'</div>';
+      h+='<div style="font-size:12px;color:var(--soft);margin-bottom:8px">Par : '+esc(s.signale_par_email||'—')+' · '+fmtDate(s.cree_le)+'</div>';
+      if(s.statut==='nouveau')h+='<div class="row"><button class="green sm" onclick="traiteSig('+s.id+')">Traiter</button><button class="gray sm" onclick="rejSig('+s.id+')">Rejeter</button></div>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
+}
+async function traiteSig(id){var r=await post('/admin/signalements/'+id+'/traiter',{});if(r.error){alert(r.error);return;}sig();}
+async function rejSig(id){var r=await post('/admin/signalements/'+id+'/rejeter',{});if(r.error){alert(r.error);return;}sig();}
+
+async function rap(){
+  try{var d=await get('/admin/rapports/apercu');
+  var v=await get('/admin/rapports/vendus');
+  var h='<h1>Rapports</h1><p class="subtitle">Vente de rapports aux institutions</p>';
+  h+='<div class="grid grid-3">';
+  h+=w('Profils',(d.par_commune||[]).reduce(function(s,x){return s+x.total;},0),'','blue');
+  h+=w('Missions',d.total_missions,'','blue');
+  h+=w('Avis',d.total_avis,'','green');
+  h+=w('Abonnements',d.abonnements_actifs,'','gold');
+  h+='</div>';
+
+  h+='<div class="card"><h3>Par commune</h3><div class="wrap"><table><tr><th>Commune</th><th>Profils</th></tr>';
+  for(var i=0;i<(d.par_commune||[]).length;i++){var c=d.par_commune[i];h+='<tr><td>'+esc(c.commune||'—')+'</td><td><b>'+c.total+'</b></td></tr>';}
+  h+='</table></div></div>';
+
+  h+='<div class="card"><h3>Par métier</h3><div class="wrap"><table><tr><th>Métier</th><th>Profils</th></tr>';
+  for(var j=0;j<(d.par_metier||[]).length;j++){var m=d.par_metier[j];h+='<tr><td>'+esc(m.metier||'—')+'</td><td><b>'+m.total+'</b></td></tr>';}
+  h+='</table></div></div>';
+
+  h+='<div class="card"><h3>Générer un rapport à vendre</h3>';
+  h+='<label>Titre</label><input id="rt" placeholder="Rapport compétences Matete Q3 2025">';
+  h+='<label>Destinataire</label><input id="rd" placeholder="PNUD RDC">';
+  h+='<label>Montant (USD)</label><input id="rm" type="number" placeholder="300">';
+  h+='<button style="margin-top:14px" onclick="genRap()">Enregistrer la vente</button>';
+  h+='</div>';
+
+  h+='<div class="card"><h3>Rapports vendus</h3>';
+  if(!v.length)h+='<p style="color:var(--soft);margin:0">Aucun rapport vendu.</p>';
+  else{
+    h+='<div class="wrap"><table><tr><th>Titre</th><th>Destinataire</th><th>Montant</th><th>Date</th></tr>';
+    for(var k=0;k<v.length;k++)h+='<tr><td>'+esc(v[k].titre)+'</td><td>'+esc(v[k].destinataire)+'</td><td><b>'+money(v[k].montant)+'</b></td><td>'+fmtDay(v[k].cree_le)+'</td></tr>';
+    h+='</table></div>';
+  }
+  h+='</div>';
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
+}
+async function genRap(){
+  var t=document.getElementById('rt').value.trim(),d=document.getElementById('rd').value.trim(),m=parseFloat(document.getElementById('rm').value)||0;
+  if(!t||!d){alert('Titre et destinataire obligatoires');return;}
+  var r=await post('/admin/rapports/generer',{titre:t,destinataire:d,montant:m});
+  if(r.error){alert(r.error);return;}
+  alert('Rapport enregistré.');rap();
+}
+
+async function fin(){
+  try{var d=await get('/admin/finances');
+  var h='<h1>Finances</h1><p class="subtitle">Suivi des paiements</p>';
+  h+='<div class="grid grid-3">';
+  h+=w('Total encaissé',money(d.total_general),'','green');
+  h+=w('30 derniers jours',money(d.total_30j),'','blue');
+  h+=w('Transactions',(d.paiements||[]).length,'','blue');
+  h+='</div>';
+
+  if((d.par_type||[]).length){
+    h+='<div class="card"><h3>Revenus par source</h3><div class="wrap"><table><tr><th>Type</th><th>Total</th><th>Nombre</th></tr>';
+    for(var i=0;i<d.par_type.length;i++){var t=d.par_type[i];h+='<tr><td>'+esc(t.type)+'</td><td><b>'+money(t.total)+'</b></td><td>'+t.nb+'</td></tr>';}
+    h+='</table></div></div>';
+  }
+
+  h+='<div class="card"><h3>Enregistrer un paiement</h3>';
+  h+='<label>Type</label><select id="pt"><option value="abonnement_pme">Abonnement PME</option><option value="vitrine_jeune">Vitrine jeune</option><option value="publication_offre">Publication offre</option><option value="rapport_institution">Rapport institution</option><option value="divers">Divers</option></select>';
+  h+='<label>Payeur</label><input id="pp" placeholder="Nom ou entreprise">';
+  h+='<label>Montant (USD)</label><input id="pm" type="number" placeholder="35">';
+  h+='<label>Référence (optionnel)</label><input id="pr" placeholder="TXN-2025-001">';
+  h+='<button style="margin-top:14px" onclick="addPay()">Enregistrer</button>';
+  h+='</div>';
+
+  h+='<div class="card"><h3>Historique</h3>';
+  if(!(d.paiements||[]).length)h+='<p style="color:var(--soft);margin:0">Aucun paiement.</p>';
+  else{
+    h+='<div class="wrap"><table><tr><th>Date</th><th>Type</th><th>Payeur</th><th>Montant</th><th>Statut</th><th>Réf.</th></tr>';
+    for(var j=0;j<d.paiements.length;j++){var p=d.paiements[j];
+      var st=p.statut==='paye'?'<span class="badge b-green">Payé</span>':(p.statut==='attente'?'<span class="badge b-yellow">Attente</span>':'<span class="badge b-gray">Annulé</span>');
+      h+='<tr><td>'+fmtDay(p.cree_le)+'</td><td>'+esc(p.type)+'</td><td>'+esc(p.payeur)+'</td><td><b>'+money(p.montant)+'</b></td><td>'+st+'</td><td>'+esc(p.reference||'—')+'</td></tr>';
+    }
+    h+='</table></div>';
+  }
+  h+='</div>';
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
+}
+async function addPay(){
+  var t=document.getElementById('pt').value,p=document.getElementById('pp').value.trim(),m=parseFloat(document.getElementById('pm').value)||0,r=document.getElementById('pr').value.trim();
+  if(!p||!m){alert('Payeur et montant obligatoires');return;}
+  var res=await post('/admin/finances/ajouter',{type:t,payeur:p,montant:m,reference:r,statut:'paye'});
+  if(res.error){alert(res.error);return;}
+  alert('Paiement enregistré.');fin();
+}
+
+function notif(){
+  var h='<h1>Notification</h1><p class="subtitle">Message groupé</p>';
+  h+='<div class="card"><h3>Nouveau message</h3>';
+  h+='<label>Destinataires</label><select id="nc"><option value="tous">Tous</option><option value="jeunes">Jeunes</option><option value="employeurs">Employeurs</option></select>';
+  h+='<label>Titre</label><input id="nt" placeholder="Nouvelle fonctionnalité">';
+  h+='<label>Message</label><textarea id="nm" rows="4"></textarea>';
+  h+='<button style="margin-top:14px" onclick="sendNotif()">Envoyer</button>';
+  h+='</div>';
+  document.getElementById('main').innerHTML=h;
+}
+async function sendNotif(){
+  var c=document.getElementById('nc').value,t=document.getElementById('nt').value.trim(),m=document.getElementById('nm').value.trim();
+  if(!t||!m){alert('Titre et message obligatoires');return;}
+  if(!confirm('Confirmer l\'envoi à "'+c+'" ?'))return;
+  var r=await post('/admin/notifier-tous',{cible:c,titre:t,message:m});
+  if(r.error){alert(r.error);return;}
+  alert('Envoyé à '+r.envoyes+' utilisateur(s).');notif();
+}
+
+async function logs(){
+  try{var list=await get('/admin/logs');
+  var h='<h1>Journal</h1><p class="subtitle">Actions admin</p>';
+  if(!list.length)h+='<div class="card"><p style="color:var(--soft);margin:0">Aucune action.</p></div>';
+  else{
+    h+='<div class="card"><div class="wrap"><table><tr><th>Date</th><th>Admin</th><th>Action</th><th>Détails</th></tr>';
+    for(var i=0;i<list.length;i++){var l=list[i];h+='<tr><td>'+fmtDate(l.cree_le)+'</td><td>'+esc(l.admin_email)+'</td><td><b>'+esc(l.action)+'</b></td><td>'+esc(l.details||'—')+'</td></tr>';}
+    h+='</table></div></div>';
+  }
+  document.getElementById('main').innerHTML=h;
+  }catch(e){document.getElementById('main').innerHTML='<div class="alert danger">'+esc(e.message)+'</div>';}
+}
+
+(async function init(){
+  if(TOKEN){
+    try{
+      var r=await fetch(API+'/auth/moi',{headers:{'x-auth-token':TOKEN}});
+      if(r.ok){
+        var c=await r.json();
+        if(c.email==='admin@zuamosala.cd'){showApp();return;}
+      }
+    }catch(e){}
+    TOKEN=null;localStorage.removeItem('zua_admin_token');
+  }
+  document.getElementById('login').style.display='flex';
+})();
+</script>
+</body>
+</html>
