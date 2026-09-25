@@ -168,6 +168,7 @@ button svg{
 .badge.longue{background:var(--red);font-size:.58rem}
 .badge.verifie{background:#16a34a;font-size:.58rem}
 .badge.nonverifie{background:#d97706;font-size:.58rem}
+.badge.attente{background:#6b7280;font-size:.58rem}
 .stars{color:var(--gold);font-size:.88rem;letter-spacing:.5px}
 .small{font-size:.72rem;color:var(--text-soft);line-height:1.4}
 .principle{background:var(--light);border-left:3px solid var(--yellow);padding:9px 12px;
@@ -329,7 +330,9 @@ button svg{
 <main id="app"><div class="loader">Chargement…</div></main>
 
 <script>
-/* ============ ICONES ============ */
+/* ============================================================
+   ICÔNES SVG
+============================================================ */
 const I = {
   user:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>',
   brief: '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
@@ -348,10 +351,16 @@ const I = {
   arrow: '<svg viewBox="0 0 24 24" width="14" height="14" style="display:inline-block;vertical-align:middle"><path d="m9 6 6 6-6 6"/></svg>',
   eye:   '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
   rocket:'<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2M15 9l6-6M9 15l-4 4M15 9c1-4 4-6 7-6 0 3-2 6-6 7"/></svg>',
+  warn:  '<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" width="16" height="16" style="display:inline-block;vertical-align:middle"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
 };
 
-/* ============ THEME ============ */
-(function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('zua_theme')||'light'); })();
+/* ============================================================
+   THEME
+============================================================ */
+(function(){
+  document.documentElement.setAttribute('data-theme', localStorage.getItem('zua_theme')||'light');
+})();
 function toggleTheme(){
   const cur = document.documentElement.getAttribute('data-theme')||'light';
   const nxt = cur==='dark'?'light':'dark';
@@ -359,7 +368,9 @@ function toggleTheme(){
   localStorage.setItem('zua_theme', nxt);
 }
 
-/* ============ STATE ============ */
+/* ============================================================
+   STATE
+============================================================ */
 const API = '/api';
 let authToken = localStorage.getItem('zua_token') || null;
 let authCompte = null;
@@ -368,7 +379,12 @@ let missions = [];
 let notifCount = 0;
 let espTab = 'profil';
 
-function setToken(t){ authToken=t; if(t) localStorage.setItem('zua_token',t); else localStorage.removeItem('zua_token'); updateAuthUI(); }
+function setToken(t){
+  authToken = t;
+  if(t) localStorage.setItem('zua_token', t);
+  else localStorage.removeItem('zua_token');
+  updateAuthUI();
+}
 function updateAuthUI(){
   const logged = !!authToken;
   document.getElementById('logoutBtn').style.display = logged?'flex':'none';
@@ -378,7 +394,7 @@ function updateAuthUI(){
 async function chargerCompte(){
   if(!authToken) return null;
   try{
-    const r = await fetch(API+'/auth/moi',{ headers:{ 'x-auth-token':authToken } });
+    const r = await fetch(API+'/auth/moi', { headers:{ 'x-auth-token':authToken } });
     if(!r.ok){ setToken(null); authCompte=null; return null; }
     authCompte = await r.json();
     updateAuthUI();
@@ -394,7 +410,9 @@ function authHeaders(){
   return authToken ? { 'Content-Type':'application/json','x-auth-token':authToken } : { 'Content-Type':'application/json' };
 }
 
-/* ============ HELPERS ============ */
+/* ============================================================
+   HELPERS
+============================================================ */
 const rk = b => ({bronze:0,argent:1,or:2}[b]||0);
 const avg = a => a.length ? a.reduce((s,x)=>s+x.note,0)/a.length : 0;
 const stars = n => { const f=Math.round(n); return "★".repeat(f)+"☆".repeat(5-f); };
@@ -402,14 +420,19 @@ const bLabel = b => ({bronze:"Bronze",argent:"Argent",or:"Or"}[b]);
 const nav = h => location.hash = h;
 const esc = s => String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ============ API ============ */
+/* ============================================================
+   API
+============================================================ */
 async function apiGet(u){ const r=await fetch(API+u,{headers:authToken?{'x-auth-token':authToken}:{}}); if(!r.ok)throw new Error('Erreur '+r.status); return await r.json(); }
 async function apiPost(u,b){ const r=await fetch(API+u,{method:'POST',headers:authHeaders(),body:b?JSON.stringify(b):undefined}); return await r.json(); }
 async function apiPut(u,b){ const r=await fetch(API+u,{method:'PUT',headers:authHeaders(),body:b?JSON.stringify(b):undefined}); return await r.json(); }
 
-/* ============ ROUTER ============ */
+/* ============================================================
+   ROUTER
+============================================================ */
 function parseHash(){ const h=(location.hash.slice(1)||'/'); const [p,q]=h.split('?'); return { segs:p.split('/').filter(Boolean), params:new URLSearchParams(q||'') }; }
-function setHeader(title,showBack){
+
+function setHeader(title, showBack){
   document.getElementById('headerTitle').innerHTML = `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
       <path d="M7 11V7a2 2 0 1 1 4 0v4M11 11V5a2 2 0 1 1 4 0v6M15 11V6a2 2 0 1 1 4 0v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-3a2 2 0 1 1 4 0" stroke="#007FFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -418,14 +441,16 @@ function setHeader(title,showBack){
     <span>${esc(title)}</span>`;
   document.getElementById('backBtn').style.visibility = showBack?'visible':'hidden';
 }
-
 function requireAuth(redir){
-  if(!authToken){ nav('/auth?redirect='+encodeURIComponent(redir||location.hash.slice(1)||'/')); return false; }
+  if(!authToken){
+    nav('/auth?redirect='+encodeURIComponent(redir||location.hash.slice(1)||'/'));
+    return false;
+  }
   return true;
 }
 
 async function router(){
-  const {segs,params} = parseHash();
+  const {segs, params} = parseHash();
   const app = document.getElementById('app');
   app.innerHTML = `<div class="loader">Chargement…</div>`;
 
@@ -463,6 +488,22 @@ async function router(){
       if(!requireAuth('/compte')) return;
       setHeader('Mon compte',true);
       app.innerHTML = pageCompte();
+      return;
+    }
+    if(segs[0]==='parametres'){
+      if(!requireAuth('/parametres')) return;
+      setHeader('Paramètres',true);
+      app.innerHTML = pageParametres();
+      return;
+    }
+    if(segs[0]==='cgu'){
+      setHeader('Conditions d\'utilisation',true);
+      app.innerHTML = pageCGU();
+      return;
+    }
+    if(segs[0]==='confidentialite'){
+      setHeader('Confidentialité',true);
+      app.innerHTML = pagePrivacy();
       return;
     }
 
@@ -508,6 +549,13 @@ async function router(){
       app.innerHTML = pageVitrine(p);
       return;
     }
+    if(segs[0]==='jeune' && segs[1]==='editer'){
+      if(!requireAuth('/jeune/editer')) return;
+      setHeader('Éditer mon profil',true);
+      const p = await apiGet('/profils/'+authCompte.profil_id);
+      app.innerHTML = pageEditerProfil(p);
+      return;
+    }
 
     if(segs[0]==='missions'){
       setHeader('Offres et missions',true);
@@ -542,6 +590,13 @@ async function router(){
       app.innerHTML = pageResultats(params);
       return;
     }
+    if(segs[0]==='employeur' && segs[1]==='recherches'){
+      if(!requireAuth('/employeur/recherches')) return;
+      setHeader('Mes recherches',true);
+      const list = await apiGet('/recherches');
+      app.innerHTML = pageRecherchesSauvegardees(list);
+      return;
+    }
     if(segs[0]==='institution' && segs[1]==='dashboard'){
       if(!requireAuth('/institution/dashboard')) return;
       setHeader('Rapports institutionnels',true);
@@ -569,6 +624,12 @@ async function router(){
       app.innerHTML = pageAvis(segs[1]);
       return;
     }
+    if(segs[0]==='profil' && segs[2]==='signaler'){
+      if(!requireAuth()) return;
+      setHeader('Signaler',true);
+      app.innerHTML = pageSignaler('profil', segs[1]);
+      return;
+    }
 
     app.innerHTML = `<div class="card"><p>Page introuvable.</p></div>`;
   }catch(e){
@@ -577,42 +638,49 @@ async function router(){
 }
 window.addEventListener('hashchange', router);
 
-/* ============ ONBOARDING ============ */
+/* ============================================================
+   ONBOARDING 4 SLIDES
+============================================================ */
 function showOnboarding(){
   const ov = document.createElement('div');
   ov.className='onb-overlay'; ov.id='onbOverlay';
   ov.innerHTML = `
-    <button class="onb-skip" onclick="closeOnboarding(true)">Passer</button>
+    <button class="onb-skip" onclick="closeOnboarding('skip')">Passer</button>
 
     <div class="onb-slide active" data-slide="0">
       <div class="onb-deco d1"></div><div class="onb-deco d2"></div>
       <div class="onb-flag"><div class="b"></div><div class="y"></div><div class="r"></div></div>
-      <div class="onb-title">Bienvenue sur <span>ZUA MOSALA</span></div>
-      <p class="onb-text">Le portfolio numérique qui transforme ton savoir-faire en badge vérifié.</p>
-      <p class="onb-text" style="font-size:.8rem;opacity:.75">Créé à Kinshasa, pour la RDC.</p>
+      <div class="onb-title">Ton savoir-faire mérite d'être <span>vu</span>.</div>
+      <p class="onb-text">ZUA MOSALA transforme ton savoir-faire en badge vérifié, consultable par tout employeur via un QR code.</p>
       <div class="onb-illust">${I.badge}</div>
     </div>
 
     <div class="onb-slide" data-slide="1">
       <div class="onb-deco d1"></div><div class="onb-deco d2"></div>
-      <div class="onb-title">Le <span>problème</span></div>
-      <p class="onb-text">À Kinshasa, plus d'un million de jeunes savent coudre, souder, réparer, coiffer.</p>
-      <p class="onb-text">Mais <b>aucun diplôme ne le prouve</b>. Les employeurs recrutent au hasard.</p>
+      <div class="onb-title">Comment ça <span>marche</span> ?</div>
+      <div class="onb-list">
+        <div class="onb-item"><div class="onb-item-num">1</div><div class="onb-item-txt"><b>Crée ton profil</b><span>Nom, métier, commune. Gratuit et sans diplôme.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">2</div><div class="onb-item-txt"><b>Ajoute une preuve</b><span>Photo, lien ou référent.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">3</div><div class="onb-item-txt"><b>Travaille, reçois un avis</b><span>Un employeur te note sur 5 étoiles.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">4</div><div class="onb-item-txt"><b>Obtiens ton badge</b><span>Bronze → Argent → Or.</span></div></div>
+      </div>
     </div>
 
     <div class="onb-slide" data-slide="2">
       <div class="onb-deco d1"></div><div class="onb-deco d2"></div>
-      <div class="onb-title">La <span>solution</span></div>
-      <p class="onb-text">Un portfolio numérique. Un badge vérifié par les employeurs. Un QR code consultable partout.</p>
+      <div class="onb-title">La confiance, <span>pas l'argent</span>.</div>
+      <p class="onb-text">Le classement repose uniquement sur le mérite : badge + note moyenne + nombre d'avis.</p>
+      <p class="onb-text">Les badges <b>ne s'achètent jamais</b>. C'est notre promesse.</p>
+      <div class="onb-illust">${I.check}</div>
     </div>
 
     <div class="onb-slide" data-slide="3">
       <div class="onb-deco d1"></div><div class="onb-deco d2"></div>
-      <div class="onb-title">Comment <span>commencer</span> ?</div>
+      <div class="onb-title">Prêt à <span>commencer</span> ?</div>
+      <p class="onb-text">Choisis ton parcours :</p>
       <div class="onb-list">
-        <div class="onb-item"><div class="onb-item-num">1</div><div class="onb-item-txt"><b>Créer un compte</b><span>Email + mot de passe. 30 secondes.</span></div></div>
-        <div class="onb-item"><div class="onb-item-num">2</div><div class="onb-item-txt"><b>Choisir ton rôle</b><span>Jeune autodidacte ou employeur.</span></div></div>
-        <div class="onb-item"><div class="onb-item-num">3</div><div class="onb-item-txt"><b>Commencer</b><span>Créer ton profil ou publier une offre.</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">${I.user}</div><div class="onb-item-txt"><b>Je suis autodidacte</b><span>Créer mon profil gratuit</span></div></div>
+        <div class="onb-item"><div class="onb-item-num">${I.brief}</div><div class="onb-item-txt"><b>Je suis employeur</b><span>Recruter ou publier une offre</span></div></div>
       </div>
     </div>
 
@@ -626,44 +694,41 @@ function showOnboarding(){
       </div>
     </div>`;
   document.body.appendChild(ov);
-  window._onbIndex=0;
+  window._onbIndex = 0;
 }
 function onbNext(){
   const s=document.querySelectorAll('.onb-slide'), d=document.querySelectorAll('.onb-dot');
-  if(window._onbIndex>=s.length-1){ closeOnboarding(true); return; }
-  s[window._onbIndex].classList.remove('active');
-  d[window._onbIndex].classList.remove('active');
+  if(window._onbIndex>=s.length-1){ closeOnboarding('finish'); return; }
+  s[window._onbIndex].classList.remove('active'); d[window._onbIndex].classList.remove('active');
   window._onbIndex++;
-  s[window._onbIndex].classList.add('active');
-  d[window._onbIndex].classList.add('active');
+  s[window._onbIndex].classList.add('active'); d[window._onbIndex].classList.add('active');
   document.getElementById('onbPrev').style.display = window._onbIndex>0?'block':'none';
   document.getElementById('onbNext').textContent = (window._onbIndex>=s.length-1)?'Commencer':'Suivant';
 }
 function onbPrev(){
   const s=document.querySelectorAll('.onb-slide'), d=document.querySelectorAll('.onb-dot');
   if(window._onbIndex<=0) return;
-  s[window._onbIndex].classList.remove('active');
-  d[window._onbIndex].classList.remove('active');
+  s[window._onbIndex].classList.remove('active'); d[window._onbIndex].classList.remove('active');
   window._onbIndex--;
-  s[window._onbIndex].classList.add('active');
-  d[window._onbIndex].classList.add('active');
+  s[window._onbIndex].classList.add('active'); d[window._onbIndex].classList.add('active');
   document.getElementById('onbPrev').style.display = window._onbIndex>0?'block':'none';
   document.getElementById('onbNext').textContent = 'Suivant';
 }
-function closeOnboarding(goAuth){
+function closeOnboarding(mode){
   const ov = document.getElementById('onbOverlay');
   if(ov) ov.remove();
   localStorage.setItem('zua_onb_seen','1');
-  if(goAuth) nav('/auth');
+  if(mode==='finish' || mode==='skip') nav('/auth');
 }
 
-/* ============ HOME ============ */
+/* ============================================================
+   HOME
+============================================================ */
 function pageHome(){
   const log = !!authToken;
   const isEmployeur = log && authCompte && authCompte.type === 'employeur';
   return `
   ${log?`<div class="user-chip">${I.user} Connecté — ${esc(authCompte.email)}</div>`:''}
-
   <div class="hero">
     <div class="hero-top"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
     <div class="hero-content">
@@ -673,8 +738,7 @@ function pageHome(){
     </div>
     <div class="hero-footer">Créé pour les jeunes autodidactes de Kinshasa.</div>
   </div>
-
-  ${isEmployeur ? renderHomeEmployeur() : renderHomeJeune()}`
+  ${isEmployeur ? renderHomeEmployeur() : renderHomeJeune()}`;
 }
 
 function renderHomeJeune(){
@@ -692,12 +756,10 @@ function renderHomeJeune(){
     <span class="search-tag" onclick="quickSearch('serveur')">Serveur</span>
     <span class="search-tag" onclick="quickSearch('')">Tout voir</span>
   </div>
-
   <div class="rdc-strip">
     <div class="rdc-flag"><div style="background:#007FFF"></div><div style="background:#FCD116"></div><div style="background:#CE1126"></div></div>
     <div>Projet conçu à Kinshasa, en RDC.</div>
   </div>
-
   <div class="card">
     <h3>${I.brief} Offres récentes</h3>
     <p class="small" style="margin:0 0 8px">${missions.length} offre(s) disponible(s).</p>
@@ -712,23 +774,12 @@ function renderHomeJeune(){
       </div>`).join('')||'<p class="small">Aucune offre pour le moment.</p>'}
     <a class="tile" href="#/missions" style="margin-top:10px"><button class="secondary block">Voir toutes les offres ${I.arrow}</button></a>
   </div>
-
   <div class="card">
     <h3>${I.check} Comment ça marche</h3>
-    <div class="pillar">
-      <div class="pillar-icon p1">${I.user}</div>
-      <div class="txt"><b>1. Crée ton profil</b><span>Gratuit et sans diplôme.</span></div>
-    </div>
-    <div class="pillar">
-      <div class="pillar-icon p2">${I.badge}</div>
-      <div class="txt"><b>2. Travaille et sois noté</b><span>Après la mission, l'employeur note sur 5 étoiles.</span></div>
-    </div>
-    <div class="pillar">
-      <div class="pillar-icon p3">${I.rocket}</div>
-      <div class="txt"><b>3. Obtiens ton badge</b><span>Bronze → Argent → Or.</span></div>
-    </div>
+    <div class="pillar"><div class="pillar-icon p1">${I.user}</div><div class="txt"><b>1. Crée ton profil</b><span>Gratuit et sans diplôme.</span></div></div>
+    <div class="pillar"><div class="pillar-icon p2">${I.badge}</div><div class="txt"><b>2. Travaille et sois noté</b><span>L'employeur note sur 5 étoiles.</span></div></div>
+    <div class="pillar"><div class="pillar-icon p3">${I.rocket}</div><div class="txt"><b>3. Obtiens ton badge</b><span>Bronze → Argent → Or.</span></div></div>
   </div>
-
   <div class="card">
     <h3>${isJeune ? 'Mon espace' : 'Commencer'}</h3>
     <div class="choice">
@@ -773,7 +824,6 @@ function renderHomeEmployeur(){
     <span class="search-tag" onclick="quickSearchEmployeur('mécanique')">Mécanique</span>
     <span class="search-tag" onclick="quickSearchEmployeur('coiffure')">Coiffure</span>
   </div>
-
   <div class="card">
     <h3>${I.brief} Tableau de bord</h3>
     <p class="small">Catégorie : <b>${esc(cat)}</b> ${isVerified?'<span class="badge verifie">VÉRIFIÉ</span>':'<span class="badge nonverifie">NON VÉRIFIÉ</span>'}</p>
@@ -782,16 +832,14 @@ function renderHomeEmployeur(){
       <a class="tile" href="#/employeur"><button class="block">Vérifier mon profil</button></a>
     `:`
       <a class="tile" href="#/employeur/publier" style="margin-bottom:8px"><button class="gold block">${I.plus} Publier une offre</button></a>
-      <a class="tile" href="#/employeur/candidatures"><button class="secondary block">${I.bell} Voir les candidatures</button></a>
+      <a class="tile" href="#/employeur/candidatures" style="margin-bottom:8px"><button class="secondary block">${I.bell} Voir les candidatures</button></a>
+      <a class="tile" href="#/employeur/recherches"><button class="secondary block">${I.search} Mes recherches sauvegardées</button></a>
     `}
   </div>
-
   <div class="card">
     <h3>${I.search} Chercher un talent</h3>
-    <label>Métier</label>
-    <input id="empSearchMetier" placeholder="Ex: couture, mécanique...">
-    <label>Commune</label>
-    <input id="empSearchCommune" placeholder="Ex: Matete, Gombe...">
+    <label>Métier</label><input id="empSearchMetier" placeholder="Ex: couture, mécanique...">
+    <label>Commune</label><input id="empSearchCommune" placeholder="Ex: Matete, Gombe...">
     <button class="block" style="margin-top:12px" onclick="lancerRechercheTalent()">${I.search} Rechercher</button>
   </div>`;
 }
@@ -812,7 +860,9 @@ function demarrerJeune(){
   else nav('/jeune/creer');
 }
 
-/* ============ AUTH ============ */
+/* ============================================================
+   AUTH
+============================================================ */
 function pageAuth(redirect){
   return `
   <div class="auth-wrap">
@@ -825,12 +875,17 @@ function pageAuth(redirect){
       </div>
       <div id="authForm"></div>
       <input type="hidden" id="authRedirect" value="${esc(redirect)}">
+      <p class="small" style="text-align:center;margin-top:14px">
+        <a href="javascript:void(0)" onclick="switchAuthTab('recover')">Mot de passe oublié ?</a>
+      </p>
     </div>
   </div>`;
 }
 function switchAuthTab(t){
-  document.getElementById('tabLogin').classList.toggle('active',t==='login');
-  document.getElementById('tabSignup').classList.toggle('active',t==='signup');
+  ['login','signup','recover'].forEach(x=>{
+    const el = document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(el) el.classList.toggle('active', x===t);
+  });
   renderAuthForm(t);
 }
 function renderAuthForm(tab){
@@ -844,25 +899,35 @@ function renderAuthForm(tab){
       </select>
       <div id="catWrap" style="display:none">
         <label>Type d'employeur</label>
-        <select id="a-cat">
-          <option value="particulier">Particulier (SMS)</option>
+        <select id="a-cat" onchange="onCatChange()">
+          <option value="particulier">Particulier (vérif SMS)</option>
           <option value="entreprise">Entreprise (RCCM)</option>
           <option value="soustraitance">Sous-traitance (RCCM)</option>
           <option value="institution">Institution / ONG</option>
         </select>
+        <label>Secteur (optionnel)</label>
+        <input id="a-secteur" placeholder="Ex: BTP, hôtellerie, commerce...">
       </div>
-      <label>Email</label>
-      <input id="a-email" type="email" placeholder="ton@email.com" autocomplete="email">
+      <label>Prénom</label><input id="a-prenom" placeholder="Ex: Fiston">
+      <label>Nom</label><input id="a-nom" placeholder="Ex: Kabangu">
+      <label>Téléphone</label><input id="a-tel" placeholder="+243 9...">
+      <label>Email</label><input id="a-email" type="email" placeholder="ton@email.com">
       <label>Mot de passe (6 caractères min.)</label>
-      <input id="a-password" type="password" placeholder="••••••" autocomplete="new-password">
+      <input id="a-password" type="password" placeholder="••••••">
       <button class="block" style="margin-top:14px" onclick="inscription(this)">Créer mon compte</button>
       <p class="small" style="text-align:center;margin-top:10px">Déjà un compte ? <a href="javascript:void(0)" onclick="switchAuthTab('login')">Connecte-toi</a></p>`;
+  } else if(tab==='recover'){
+    f.innerHTML = `
+      <label>Email du compte</label>
+      <input id="a-email" type="email" placeholder="ton@email.com">
+      <button class="block" style="margin-top:14px" onclick="recover(this)">Envoyer le lien</button>
+      <p class="small" style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="switchAuthTab('login')">Retour à la connexion</a></p>`;
   } else {
     f.innerHTML = `
       <label>Email</label>
-      <input id="a-email" type="email" placeholder="ton@email.com" autocomplete="email">
+      <input id="a-email" type="email" placeholder="ton@email.com">
       <label>Mot de passe</label>
-      <input id="a-password" type="password" placeholder="••••••" autocomplete="current-password">
+      <input id="a-password" type="password" placeholder="••••••">
       <button class="block" style="margin-top:14px" onclick="connexion(this)">Se connecter</button>
       <p class="small" style="text-align:center;margin-top:10px">Pas de compte ? <a href="javascript:void(0)" onclick="switchAuthTab('signup')">Inscris-toi</a></p>`;
   }
@@ -871,14 +936,19 @@ function onAuthTypeChange(){
   const t = document.getElementById('a-type').value;
   document.getElementById('catWrap').style.display = t==='employeur'?'block':'none';
 }
+function onCatChange(){}
 async function inscription(btn){
   const email = document.getElementById('a-email').value.trim();
   const pwd = document.getElementById('a-password').value;
   const type = document.getElementById('a-type').value;
   const cat = document.getElementById('a-cat')?.value || null;
+  const secteur = document.getElementById('a-secteur')?.value.trim() || null;
+  const prenom = document.getElementById('a-prenom').value.trim();
+  const nom = document.getElementById('a-nom').value.trim();
+  const telephone = document.getElementById('a-tel').value.trim();
   if(!email || !pwd){ alert('Remplis tous les champs'); return; }
   btn.disabled=true; btn.textContent='Création…';
-  const data = await apiPost('/auth/inscription',{email,password:pwd,type,employeur_categorie:cat});
+  const data = await apiPost('/auth/inscription',{email,password:pwd,type,employeur_categorie:cat,employeur_secteur:secteur,prenom,nom,telephone});
   if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Créer mon compte'; return; }
   setToken(data.token);
   await chargerCompte();
@@ -902,8 +972,18 @@ async function connexion(btn){
   else if(authCompte && authCompte.profil_id) nav('/jeune/profil');
   else nav('/jeune/creer');
 }
+async function recover(btn){
+  const email = document.getElementById('a-email').value.trim();
+  if(!email){ alert('Renseigne ton email'); return; }
+  btn.disabled=true; btn.textContent='Envoi…';
+  const data = await apiPost('/auth/recover',{email});
+  alert(data.message || 'Si un compte existe, un lien de récupération a été envoyé.');
+  switchAuthTab('login');
+}
 
-/* ============ COMPTE ============ */
+/* ============================================================
+   COMPTE / PARAMÈTRES
+============================================================ */
 function pageCompte(){
   const c = authCompte||{};
   return `
@@ -912,9 +992,11 @@ function pageCompte(){
     <p class="small" style="margin:0 0 12px">${esc(c.email||'')}</p>
     <div class="step"><div class="step-num">${c.type==='jeune'?'J':'E'}</div>
       <div class="txt"><b>Type de compte</b><span>${c.type==='jeune'?'Jeune autodidacte':'Employeur / Recruteur'}</span></div></div>
+    ${c.telephone?`<div class="step"><div class="step-num y">${I.phone}</div><div class="txt"><b>Téléphone</b><span>${esc(c.telephone)}</span></div></div>`:''}
     ${c.profil_id?`<div class="step"><div class="step-num y">✓</div><div class="txt"><b>Profil jeune lié</b><span>ID #${c.profil_id}</span></div></div>`:''}
     ${c.employeur_id?`<div class="step"><div class="step-num y">✓</div><div class="txt"><b>Profil employeur lié</b><span>${esc(c.employeur_id)}</span></div></div>`:''}
-    <button class="danger block" style="margin-top:14px" onclick="deconnexion()">Se déconnecter</button>
+    <a class="tile" href="#/parametres" style="margin-top:14px"><button class="secondary block">${I.settings} Paramètres</button></a>
+    <button class="danger block" style="margin-top:8px" onclick="deconnexion()">Se déconnecter</button>
   </div>
   <div class="card">
     <h3>${I.badge} Mon espace</h3>
@@ -923,10 +1005,51 @@ function pageCompte(){
         <a href="#/jeune/profil"><div class="choice-btn secondary"><div class="ico">${I.user}</div><div class="txt"><b>Mon profil jeune</b><span>Badges, avis, QR code</span></div></div></a>`:`
         <a href="#/employeur"><div class="choice-btn secondary"><div class="ico">${I.brief}</div><div class="txt"><b>Espace employeur</b><span>Recruter, publier, candidatures</span></div></div></a>`}
     </div>
+  </div>
+  <div class="card">
+    <a class="tile" href="#/cgu"><button class="secondary block">${I.warn} Conditions d'utilisation</button></a>
+    <a class="tile" href="#/confidentialite" style="margin-top:8px"><button class="secondary block">${I.lock} Politique de confidentialité</button></a>
+  </div>`;
+}
+function pageParametres(){
+  return `
+  <div class="card">
+    <h3>${I.settings} Paramètres</h3>
+    <p class="small">Options de votre compte et préférences.</p>
+    <label>Préférence de thème</label>
+    <select onchange="if(this.value==='dark'||this.value==='light'){document.documentElement.setAttribute('data-theme',this.value);localStorage.setItem('zua_theme',this.value);}">
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+    </select>
+    <div class="principle">Pour supprimer ton compte et tes données, écris-nous à contact@zuamosala.cd.</div>
+  </div>`;
+}
+function pageCGU(){
+  return `
+  <div class="card">
+    <h3>${I.warn} Conditions d'utilisation</h3>
+    <p class="small">En utilisant ZUA MOSALA, tu acceptes les règles suivantes :</p>
+    <div class="step"><div class="step-num">1</div><div class="txt"><b>Exactitude</b><span>Les informations de profil et les preuves doivent être exactes.</span></div></div>
+    <div class="step"><div class="step-num y">2</div><div class="txt"><b>Respect</b><span>Pas de contenu haineux, diffamatoire ou frauduleux.</span></div></div>
+    <div class="step"><div class="step-num r">3</div><div class="txt"><b>Pas de manipulation</b><span>Les avis doivent refléter des missions réelles.</span></div></div>
+  </div>`;
+}
+function pagePrivacy(){
+  return `
+  <div class="card">
+    <h3>${I.lock} Politique de confidentialité</h3>
+    <p class="small">ZUA MOSALA respecte la réglementation RDC sur la protection des données.</p>
+    <p class="small">Nous collectons uniquement ce qui est nécessaire :</p>
+    <div class="step"><div class="step-num">•</div><div class="txt"><b>Identité</b><span>Nom, contact pour te mettre en relation.</span></div></div>
+    <div class="step"><div class="step-num y">•</div><div class="txt"><b>Preuves</b><span>Photos ou liens que tu publies.</span></div></div>
+    <div class="step"><div class="step-num r">•</div><div class="txt"><b>Avis</b><span>Notes et commentaires des employeurs.</span></div></div>
+    <div class="principle">Tu peux demander la suppression de ton profil et de tes données à tout moment.</div>
   </div>`;
 }
 
-/* ============ NOTIFICATIONS ============ */
+/* ============================================================
+   NOTIFICATIONS
+============================================================ */
 function pageNotifications(list){
   const items = (list||[]).length ? list.map(n=>`
     <div class="card">
@@ -946,7 +1069,9 @@ function pageNotifications(list){
   return `<div class="card"><h3>${I.bell} Notifications</h3></div>${items}`;
 }
 
-/* ============ CREER PROFIL ============ */
+/* ============================================================
+   CRÉER PROFIL JEUNE
+============================================================ */
 function pageCreer(){
   return `
   <div class="card">
@@ -982,7 +1107,38 @@ async function creerProfil(btn){
   nav('/jeune/profil');
 }
 
-/* ============ ESPACE JEUNE ============ */
+/* ============================================================
+   ÉDITER PROFIL
+============================================================ */
+function pageEditerProfil(p){
+  return `
+  <div class="card">
+    <h3>${I.edit} Éditer mon profil</h3>
+    <label>Nom</label><input id="e-nom" value="${esc(p.nom)}">
+    <label>Métier</label><input id="e-metier" value="${esc(p.metier)}">
+    <label>Commune</label><input id="e-commune" value="${esc(p.commune)}">
+    <label>Description</label><textarea id="e-desc" rows="3">${esc(p.description||'')}</textarea>
+    <label>Contact</label><input id="e-contact" value="${esc(p.contact||'')}">
+    <button class="block" style="margin-top:14px" onclick="sauverProfil(${p.id},this)">Enregistrer</button>
+  </div>`;
+}
+async function sauverProfil(id,btn){
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  const data = await apiPut('/profils/'+id,{
+    nom:document.getElementById('e-nom').value.trim(),
+    metier:document.getElementById('e-metier').value.trim(),
+    commune:document.getElementById('e-commune').value.trim(),
+    description:document.getElementById('e-desc').value.trim(),
+    contact:document.getElementById('e-contact').value.trim()
+  });
+  if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Enregistrer'; return; }
+  alert('Profil mis à jour.');
+  nav('/jeune/profil');
+}
+
+/* ============================================================
+   ESPACE JEUNE
+============================================================ */
 function pageEspaceJeune(p, cands){
   const avis = p.avis||[];
   const isPremium = p.vitrine_premium == 1;
@@ -1027,14 +1183,27 @@ function pageEspaceJeune(p, cands){
 
   ${espTab==='profil'?`
     <div class="card">
-      <h3>${I.edit} Preuve de réalisation</h3>
-      <input type="file" accept="image/*" onchange="ajouterPreuve(event)">
-      <div style="margin-top:10px">${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px">`:''}</div>
+      <h3>${I.edit} Actions rapides</h3>
+      <a class="tile" href="#/jeune/editer" style="margin-bottom:8px"><button class="secondary block">${I.edit} Éditer mon profil</button></a>
+      <a class="tile" href="#/jeune/vitrine" style="margin-bottom:8px"><button class="secondary block">${isPremium?'Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
+      <a class="tile" href="#/missions"><button class="gold block">${I.search} Voir les offres d'emploi</button></a>
     </div>
     <div class="card">
-      <h3>${I.brief} Actions rapides</h3>
-      <a class="tile" href="#/missions" style="margin-bottom:8px"><button class="gold block">${I.search} Voir les offres d'emploi</button></a>
-      <a class="tile" href="#/jeune/vitrine"><button class="secondary block">${isPremium?'Vitrine active':'Booster ma vitrine (2,5 $/mois)'}</button></a>
+      <h3>${I.badge} Preuve de réalisation</h3>
+      <label>Type de preuve</label>
+      <select id="p-type">
+        <option value="photo">Photo</option>
+        <option value="lien">Lien externe (TikTok, Facebook)</option>
+        <option value="referent">Référent</option>
+      </select>
+      <label>Upload photo (optionnel)</label>
+      <input type="file" accept="image/*" onchange="uploadPreuve(event)">
+      <label>Lien externe (optionnel)</label>
+      <input id="p-lien" placeholder="https://..." value="${esc(p.preuve_lien||'')}">
+      <label>Référent — téléphone (optionnel)</label>
+      <input id="p-ref" placeholder="+243 ..." value="${esc(p.preuve_referent||'')}">
+      <button class="secondary block" style="margin-top:12px" onclick="sauverPreuve(${p.id},this)">Enregistrer la preuve</button>
+      <div style="margin-top:10px">${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px">`:''}</div>
     </div>
     <div class="card">
       <h3>${I.bell} Avis reçus</h3>
@@ -1063,11 +1232,25 @@ function renderQR(id){
   el.innerHTML='';
   try{ new QRCode(el,{text:location.origin+'/#/p/'+id,width:150,height:150,colorDark:'#007FFF',colorLight:'#ffffff'}); }catch(e){}
 }
-function ajouterPreuve(e){
+function uploadPreuve(e){
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader();
-  r.onload = async () => { await apiPut('/profils/'+authCompte.profil_id+'/preuve',{preuve:r.result}); router(); };
+  r.onload = async () => {
+    await apiPut('/profils/'+authCompte.profil_id+'/preuve',{preuve:r.result});
+    alert('Photo enregistrée.');
+    router();
+  };
   r.readAsDataURL(f);
+}
+async function sauverPreuve(id,btn){
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  await apiPut('/profils/'+id+'/preuve',{
+    preuve_type:document.getElementById('p-type').value,
+    preuve_lien:document.getElementById('p-lien').value.trim(),
+    preuve_referent:document.getElementById('p-ref').value.trim()
+  });
+  alert('Preuve enregistrée.');
+  router();
 }
 async function repondreAvis(avisId){
   const t = prompt('Ta réponse :'); if(!t) return;
@@ -1075,7 +1258,9 @@ async function repondreAvis(avisId){
   router();
 }
 
-/* ============ VITRINE ============ */
+/* ============================================================
+   VITRINE
+============================================================ */
 function pageVitrine(p){
   const isPremium = p.vitrine_premium == 1;
   return `
@@ -1092,22 +1277,17 @@ function pageVitrine(p){
 async function payerVitrine(btn){
   const ref = document.getElementById('v-ref').value.trim();
   if(!ref){ alert('Renseigne une référence.'); return; }
-  if(!authCompte || !authCompte.profil_id){ alert('Profil introuvable. Reconnecte-toi.'); return; }
   btn.disabled=true; btn.textContent='Activation…';
-  try {
-    const r = await fetch(API+'/profils/'+authCompte.profil_id+'/premium', { method:'PUT', headers: authHeaders() });
-    const data = await r.json();
-    if(!r.ok || data.error){ alert('Erreur : ' + (data.error || 'Impossible d\'activer')); btn.disabled=false; btn.textContent='Réessayer'; return; }
-    alert('Vitrine activée pour 30 jours.');
-    await chargerCompte();
-    router();
-  } catch(e){
-    alert('Erreur réseau : ' + e.message);
-    btn.disabled=false; btn.textContent='Réessayer';
-  }
+  const data = await apiPut('/profils/'+authCompte.profil_id+'/premium');
+  if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Réessayer'; return; }
+  alert('Vitrine activée pour 30 jours.');
+  await chargerCompte();
+  router();
 }
 
-/* ============ PROFIL PUBLIC ============ */
+/* ============================================================
+   PROFIL PUBLIC
+============================================================ */
 function pageProfilPublic(p){
   const a = p.avis||[];
   const isPremium = p.vitrine_premium == 1;
@@ -1128,6 +1308,7 @@ function pageProfilPublic(p){
     </div>
     <p class="small" style="margin:0 0 10px">${esc(p.description||'')}</p>
     ${p.preuve_url?`<img src="${p.preuve_url}" style="max-width:100%;border-radius:10px;margin-bottom:10px">`:''}
+    ${p.preuve_lien?`<div class="small" style="margin-bottom:8px">Lien : <a href="${esc(p.preuve_lien)}" target="_blank">${esc(p.preuve_lien)}</a></div>`:''}
     <div class="stars" style="font-size:1rem">${a.length?stars(avg(a))+' ('+a.length+' avis)':'Pas encore d\'avis'}</div>
     <button class="block" style="margin-top:12px" onclick="alert('Contact : ${esc(p.contact||'')}')">${I.phone} Contacter</button>
     <h4>Avis</h4>
@@ -1136,7 +1317,9 @@ function pageProfilPublic(p){
   </div>`;
 }
 
-/* ============ MISSIONS ============ */
+/* ============================================================
+   MISSIONS
+============================================================ */
 function pageMissions(list, params){
   const q = (params&&params.get('q'))||'';
   const f = (list||[]).filter(m=>!q||(m.titre||'').toLowerCase().includes(q.toLowerCase())||(m.description||'').toLowerCase().includes(q.toLowerCase()));
@@ -1184,7 +1367,9 @@ async function postuler(missionId){
   alert('Candidature envoyée.');
 }
 
-/* ============ PUBLIER OFFRE ============ */
+/* ============================================================
+   PUBLIER OFFRE
+============================================================ */
 function pagePublier(){
   const cat = (authCompte && authCompte.employeur_categorie)||'particulier';
   const isVerified = !!(authCompte && authCompte.employeur_id);
@@ -1233,7 +1418,9 @@ async function publier(btn){
   nav('/missions');
 }
 
-/* ============ CANDIDATURES EMPLOYEUR ============ */
+/* ============================================================
+   CANDIDATURES EMPLOYEUR
+============================================================ */
 function pageCandidatures(list){
   const newCount = (list||[]).filter(c=>c.statut==='nouvelle').length;
   const items = (list||[]).length ? list.map(c=>`
@@ -1255,7 +1442,9 @@ function pageCandidatures(list){
   ${items}`;
 }
 
-/* ============ EMPLOYEUR ACCUEIL ============ */
+/* ============================================================
+   EMPLOYEUR ACCUEIL
+============================================================ */
 function pageEmployeur(){
   const cat = (authCompte && authCompte.employeur_categorie)||'particulier';
   const isVerified = !!(authCompte && authCompte.employeur_id);
@@ -1271,6 +1460,7 @@ function pageEmployeur(){
     `:`
       <a class="tile" href="#/employeur/publier"><button class="gold block" style="margin-bottom:8px">${I.plus} Publier une offre</button></a>
       <a class="tile" href="#/employeur/candidatures"><button class="secondary block" style="margin-bottom:8px">${I.bell} Voir candidatures</button></a>
+      <a class="tile" href="#/employeur/recherches"><button class="secondary block" style="margin-bottom:8px">${I.search} Mes recherches</button></a>
       ${(cat==='institution')?`<a class="tile" href="#/institution/dashboard"><button class="secondary block">${I.badge} Rapports</button></a>`:''}
     `}
     <label style="margin-top:16px">Métier recherché</label>
@@ -1287,7 +1477,8 @@ async function verifierEmployeur(btn){
   const data = await apiPost('/employeurs/verifier',{reference:ref});
   if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Vérifier'; return; }
   await chargerCompte();
-  alert('Profil employeur vérifié.');
+  if(data.en_attente) alert('En attente de validation (GUCE/KYC). Tu seras notifié.');
+  else alert('Profil employeur vérifié.');
   router();
 }
 function rechercheEmployeur(){
@@ -1296,7 +1487,9 @@ function rechercheEmployeur(){
   nav('/employeur/resultats?metier='+m+'&commune='+c);
 }
 
-/* ============ RESULTATS ============ */
+/* ============================================================
+   RÉSULTATS
+============================================================ */
 function pageResultats(params){
   const metier = (params.get('metier')||'').toLowerCase();
   const commune = (params.get('commune')||'').toLowerCase();
@@ -1311,10 +1504,31 @@ function pageResultats(params){
         <div class="small" style="margin-top:3px">${esc(p.metier)} · ${esc(p.commune)} · ${p.nb_avis>0?stars(parseFloat(p.moyenne))+' ('+p.nb_avis+')':'aucun avis'}</div>
       </a>
     </div>`).join('') : '<p class="small">Aucun profil.</p>';
-  return `<div class="card"><h3>${I.search} Résultats</h3><p class="small" style="margin-bottom:10px">Classement par mérite uniquement.</p>${listHtml}</div>`;
+  return `
+  <div class="card">
+    <h3>${I.search} Résultats</h3>
+    <p class="small" style="margin-bottom:10px">Classement par mérite uniquement.</p>
+    ${listHtml}
+    <button class="secondary block" style="margin-top:12px" onclick="sauverRecherche('${esc(metier)}','${esc(commune)}')">${I.check} Sauvegarder cette recherche</button>
+  </div>`;
+}
+async function sauverRecherche(metier,commune){
+  await apiPost('/recherches',{metier,commune});
+  alert('Recherche sauvegardée.');
+}
+function pageRecherchesSauvegardees(list){
+  const items = (list||[]).length ? list.map(r=>`
+    <div class="card">
+      <b>${esc(r.metier||'Tout')}</b>
+      <div class="small">${esc(r.commune||'Toutes communes')}</div>
+      <a class="tile" href="#/employeur/resultats?metier=${encodeURIComponent(r.metier||'')}&commune=${encodeURIComponent(r.commune||'')}" style="margin-top:8px"><button class="secondary block">Relancer</button></a>
+    </div>`).join('') : '<div class="card"><p class="small">Aucune recherche sauvegardée.</p></div>';
+  return `<div class="card"><h3>${I.search} Mes recherches</h3></div>${items}`;
 }
 
-/* ============ FICHE PROFIL ============ */
+/* ============================================================
+   FICHE PROFIL
+============================================================ */
 function pageFiche(p){
   if(!p || p.error) return `<div class="card"><p>Profil introuvable.</p></div>`;
   const a = (p.avis||[]).slice(0,5);
@@ -1338,13 +1552,16 @@ function pageFiche(p){
       ${dejaNote?`<button class="secondary" style="flex:1" disabled>Avis déjà laissé</button>`:
         `<a class="tile" href="#/profil/${p.id}/mission" style="flex:1"><button class="gold block">J'ai réalisé une mission</button></a>`}
     </div>
+    <a class="tile" href="#/profil/${p.id}/signaler" style="margin-top:8px"><button class="secondary block" style="font-size:.78rem">${I.warn} Signaler ce profil</button></a>
     <div class="principle">Un avis n'est possible qu'après confirmation mutuelle de la mission.</div>
     <h4>Avis récents</h4>
     ${ah}
   </div>`;
 }
 
-/* ============ MISSION ============ */
+/* ============================================================
+   MISSION / AVIS
+============================================================ */
 function pageMission(id){
   return `
   <div class="card">
@@ -1360,7 +1577,6 @@ function confirmerMission(id){
   nav('/profil/'+id+'/avis');
 }
 
-/* ============ AVIS ============ */
 let noteChoisie = 0;
 function pageAvis(id){
   noteChoisie = 0;
@@ -1384,7 +1600,39 @@ async function validerAvis(id, btn){
   nav('/profil/'+id);
 }
 
-/* ============ STATS ============ */
+/* ============================================================
+   SIGNALER
+============================================================ */
+function pageSignaler(type, id){
+  return `
+  <div class="card">
+    <h3>${I.warn} Signaler</h3>
+    <p class="small">Les signalements graves (fraude manifeste) sont examinés par notre équipe.</p>
+    <label>Motif</label>
+    <select id="s-motif">
+      <option value="fausse-identite">Fausse identité</option>
+      <option value="faux-avis">Faux avis</option>
+      <option value="contenu-inapproprie">Contenu inapproprié</option>
+      <option value="fraude">Fraude / arnaque</option>
+      <option value="autre">Autre</option>
+    </select>
+    <label>Détails (optionnel)</label>
+    <textarea id="s-detail" rows="3" maxlength="200"></textarea>
+    <button class="block" style="margin-top:14px" onclick="envoyerSignalement('${type}',${id},this)">Envoyer</button>
+  </div>`;
+}
+async function envoyerSignalement(type,id,btn){
+  btn.disabled=true; btn.textContent='Envoi…';
+  const motif = document.getElementById('s-motif').value + ' — ' + document.getElementById('s-detail').value.trim();
+  const data = await apiPost('/signalements',{cible_type:type,cible_id:id,motif});
+  if(data.error){ alert(data.error); btn.disabled=false; btn.textContent='Envoyer'; return; }
+  alert('Signalement transmis. Merci.');
+  history.back();
+}
+
+/* ============================================================
+   STATS
+============================================================ */
 function pageStats(s){
   if(!s||s.error) return `<div class="card"><p>Erreur.</p></div>`;
   const c = (s.par_commune||[]).map(x=>`<div class="result"><span>${esc(x.commune||'—')}</span><b>${x.total}</b></div>`).join('')||'<p class="small">Aucune donnée.</p>';
@@ -1404,7 +1652,9 @@ function pageStats(s){
   <div class="card"><h4>Répartition des badges</h4>${b}</div>`;
 }
 
-/* ============ NOTIF BADGE ============ */
+/* ============================================================
+   NOTIF BADGE
+============================================================ */
 async function checkNotif(){
   if(!authToken || !authCompte || authCompte.type!=='jeune') return;
   try{
@@ -1418,7 +1668,9 @@ function updateNotifBadge(){
   if(dot) dot.style.display = notifCount>0?'block':'none';
 }
 
-/* ============ INIT ============ */
+/* ============================================================
+   INIT
+============================================================ */
 (async function init(){
   await chargerCompte();
   updateAuthUI();
