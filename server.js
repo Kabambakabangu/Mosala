@@ -418,6 +418,240 @@ app.get('/api/public/profil/:id', async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
+app.post('/api/profils', auth, async (req,ren_email VARCHAR(160), action VARCHAR(120),
+      details VARCHAR(255),
+      cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
+
+    console.log('✓ Toutes les tables OK');
+  } catch(e){ console.error('❌ initDB :', e.message); }
+}
+
+/* ============================================================
+   RÈGLES MÉTIER
+============================================================ */
+function badgeRank(b){ return {bronze:0,argent:1,or:2}[b] || 0; }
+function computeEligible(avis){
+  const n = avis.length;
+  const a = n ? avis.reduce((s,x)=>s+x.note,0)/n : 0;
+  if (n>=5 && a>=4) return 'or';
+  if (n>=3 && a>=3) return 'argent';
+  return 'bronze';
+}
+function mergeBadge(actuel, eligible){
+  return badgeRank(eligible) > badgeRank(actuel) ? eligible : actuel;
+}
+const BANNED = ['merde','connard','idiot','imbécile','fdp','ntm','salaud'];
+function cleanComment(t){
+  if(!t) return '';
+  let s = String(t).slice(0,180);
+  BANNED.forEach(w => { s = s.replace(new RegExp(w,'gi'),'***'); });
+  return s.trim();
+}
+
+/* ============================================================
+   MIDDLEWARES
+============================================================ */
+async function auth(req,res,next){
+  const t = req.headers['x-auth-token'];
+  if (!t) return res.status(401).json({ error:'Non authentifié' });
+  try {
+    const [r] = await pool.query(
+      'SELECT c.* FROM sessions s JOIN comptes c ON c.id=s.compte_id WHERE s.token=?', [t]
+    );
+    if (!r.length) return res.status(401).json({ error:'Session expirée' });
+    req.compte = r[0]; next();
+  } catch(e){ res.status(500).json({ error:e.message }); }
+}
+
+async function requireAdmin(req,res,next){
+  const t = req.headers['x-auth-token'];
+  if (!t) return res.status(401).json({ error:'Non authentifié' });
+  try {
+    const [r] = await pool.query(
+      'SELECT c.* FROM sessions s JOIN comptes c ON c.id=s.compte_id WHERE s.token=?', [t]
+    );
+    if (!r.length) return res.status(401).json({ error:'Session expirée' });
+    if (r[0].email !== 'admin@zuamosala.cd') return res.status(403).json({ error:'Accès réservé aux administrateurs' });
+    req.compte = r[0]; next();
+  } catch(e){ res.status(500).json({ error:e.message }); }
+}
+
+async function requireVerifiedEmployeur(req,res,next){
+  if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé aux employeurs' });
+  const empId = req.compte.employeur_id || ('emp-' + req.compte.id);
+  const [r] = await pool.query('SELECT verifie, en_attente, categorie FROM employeurs WHERE id=?', [empId]);
+  if (r.length && r[0].verifie) return next();
+  if (req.compte.employeur_categorie === 'institution') return next();
+  return res.status(403).json({ error:"Vérifie ton profil employeur d'abord" });
+}
+
+async function notifier(compteId, type, titre, message, lien){
+  try {
+    await pool.query(
+      'INSERT INTO notifications (compte_id,type,titre,message,lien) VALUES (?,?,?,?,?)',
+      [compteId, type, titre, message, lien||'']
+    );
+  } catch(e){}
+}
+
+async function adminLog(adminEmail, action, details){
+  try {
+    await pool.query('INSERT INTO admin_logs (admin_email,action,details) VALUES (?,?,?)',
+      [adminEmail, action, details||'']);
+  } catch(e){}
+}
+
+async function checkVitrineExpire(profil){
+  if (profil.vitrine_premium && profil.vitrine_expire && new Date(profil.vitrine_expire) < new Date()){
+    await pool.query('UPDATE profils SET vitrine_premium=0, vitrine_expire=NULL WHERE id=?', [profil.id]);
+    return { ...profil, vitrine_premium:0, vitrine_expire:null };
+  }
+  return profil;
+}
+
+app.get('/api/health', (_,r) => r.json({ ok:true, ts:Date.now() }));
+
+/* ============================================================
+   AUTH
+============================================================ */
+app.post('/api/auth/inscription', async (req,res) => {
+  try {
+    const { email, password, type, telephone, prenom, nom, employeur_categorie, employeur_secteur } = req.body;
+    if (!email || !password) return res.status(400).json({ error:'Email et mot de passe requis' });
+    if (password.length < 6) return res.status(400).json({ error:'Mot de passe : 6 caractères minimum' });
+    if (!['jeune','employeur'].includes(type)) return res.status(400).json({ error:'Type invalide' });
+
+    const [e] = await pool.query('SELECT id FROM comptes WHERE email=?', [email]);
+    if (e.length) return res.status(409).json({ error:'Cet email est déjà utilisé' });
+
+    const cat = type==='employeur' ? (employeur_categorie || 'particulier') : null;
+    const secteur = type==='employeur' ? (employeur_secteur || null) : null;
+
+    const [r] = await pool.query(
+      `INSERT INTO comptes (email,password_hash,type,telephone,prenom,nom,employeur_categorie,employeur_secteur)
+       VALUES (?,?,?,?,?,?,?,?)`,
+      [email, hashPwd(password), type, telephone||null, prenom||null, nom||null, cat, secteur]
+    );
+
+    if (type === 'employeur'){
+      const empId = 'emp-' + r.insertId;
+      const autoVerifie = (cat === 'institution') ? 1 : 0;
+      const enAttente = (cat === 'particulier' || cat === 'institution') ? 0 : 1;
+      await pool.query(
+        'INSERT INTO employeurs (id,categorie,secteur,verifie,en_attente) VALUES (?,?,?,?,?)',
+        [empId, cat, secteur, autoVerifie, enAttente]
+      );
+      await pool.query('UPDATE comptes SET employeur_id=? WHERE id=?', [empId, r.insertId]);
+    }
+
+    const token = genToken();
+    await pool.query('INSERT INTO sessions (token,compte_id) VALUES (?,?)', [token, r.insertId]);
+    res.json({ ok:true, token, compte_id:r.insertId, type, employeur_categorie:cat });
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/auth/connexion', async (req,res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error:'Champs requis' });
+    const [r] = await pool.query('SELECT * FROM comptes WHERE email=?', [email]);
+    if (!r.length || r[0].password_hash !== hashPwd(password))
+      return res.status(401).json({ error:'Email ou mot de passe incorrect' });
+    const c = r[0];
+    const token = genToken();
+    await pool.query('INSERT INTO sessions (token,compte_id) VALUES (?,?)', [token, c.id]);
+    res.json({
+      ok:true, token, compte_id:c.id, type:c.type,
+      profil_id:c.profil_id, employeur_id:c.employeur_id,
+      employeur_categorie:c.employeur_categorie
+    });
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/auth/sms/envoyer', async (req,res) => {
+  try {
+    const { telephone } = req.body;
+    if (!telephone) return res.status(400).json({ error:'Numéro requis' });
+    const [r] = await pool.query('SELECT id FROM comptes WHERE telephone=?', [telephone]);
+    if (!r.length) return res.status(404).json({ error:'Aucun compte lié à ce numéro' });
+    const code = genCode6();
+    const exp = new Date(Date.now() + 10*60*1000);
+    await pool.query('UPDATE comptes SET code_sms=?, code_sms_expire=? WHERE id=?', [code, exp, r[0].id]);
+    console.log(`[SMS] ${telephone} → code ${code}`);
+    res.json({ ok:true, message:'Code envoyé', demo_code: code });
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.post('/api/auth/deconnexion', auth, async (req,res) => {
+  const t = req.headers['x-auth-token'];
+  await pool.query('DELETE FROM sessions WHERE token=?', [t]);
+  res.json({ ok:true });
+});
+
+app.get('/api/auth/moi', auth, async (req,res) => {
+  const c = req.compte;
+  res.json({
+    id:c.id, email:c.email, type:c.type,
+    prenom:c.prenom, nom:c.nom, telephone:c.telephone,
+    profil_id:c.profil_id, employeur_id:c.employeur_id,
+    employeur_categorie:c.employeur_categorie, employeur_secteur:c.employeur_secteur
+  });
+});
+
+app.post('/api/auth/recover', async (req,res) => {
+  res.json({ ok:true, message:'Si un compte existe, un lien a été envoyé.' });
+});
+
+/* ============================================================
+   PROFILS
+============================================================ */
+app.get('/api/profils', async (req,res) => {
+  try {
+    const { metier, commune } = req.query;
+    let sql = `
+      SELECT p.*, COALESCE(AVG(a.note),0) AS moyenne, COUNT(a.id) AS nb_avis
+      FROM profils p LEFT JOIN avis a ON a.profil_id = p.id AND a.signale = 0
+      WHERE p.signale = 0
+    `;
+    const params = [];
+    if (metier) { sql += ' AND p.metier LIKE ?'; params.push(`%${metier}%`); }
+    if (commune){ sql += ' AND p.commune LIKE ?'; params.push(`%${commune}%`); }
+    sql += ' GROUP BY p.id ORDER BY FIELD(p.badge,"or","argent","bronze"), moyenne DESC, nb_avis DESC';
+    const [rows] = await pool.query(sql, params);
+    res.json(rows);
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/profils/:id', async (req,res) => {
+  try {
+    const [p] = await pool.query('SELECT * FROM profils WHERE id=?', [req.params.id]);
+    if (!p.length) return res.status(404).json({ error:'Profil introuvable' });
+    const pChecked = await checkVitrineExpire(p[0]);
+    const [a] = await pool.query(
+      'SELECT id,note,commentaire,reponse,employeur_id,cree_le FROM avis WHERE profil_id=? AND signale=0 ORDER BY cree_le DESC',
+      [req.params.id]
+    );
+    res.json({ ...pChecked, avis:a });
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/public/profil/:id', async (req,res) => {
+  try {
+    const [p] = await pool.query(
+      'SELECT id,nom,metier,commune,description,contact,badge,vitrine_premium,preuve_url,preuve_lien FROM profils WHERE id=? AND signale=0',
+      [req.params.id]
+    );
+    if (!p.length) return res.status(404).json({ error:'Profil introuvable' });
+    const pChecked = await checkVitrineExpire(p[0]);
+    const [a] = await pool.query(
+      'SELECT note,commentaire,reponse FROM avis WHERE profil_id=? AND signale=0 ORDER BY cree_le DESC',
+      [req.params.id]
+    );
+    res.json({ ...pChecked, avis:a });
+  } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
 app.post('/api/profils', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune') return res.status(403).json({ error:'Réservé aux jeunes' });
