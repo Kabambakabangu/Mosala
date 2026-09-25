@@ -1,5 +1,5 @@
 /* ============================================================
-   ZUA MOSALA — Backend
+   ZUA MOSALA — Backend complet
    Règles métier annotées // RG-XX
 ============================================================ */
 
@@ -29,7 +29,9 @@ const genCode6 = () => Math.floor(100000 + Math.random() * 900000).toString();
 ============================================================ */
 async function initDB(){
   try {
+    /* === MIGRATIONS SAFE (ajout de colonnes manquantes) === */
     const migrations = [
+      // Table comptes
       `ALTER TABLE comptes ADD COLUMN telephone VARCHAR(30) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN prenom VARCHAR(80) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN nom VARCHAR(80) DEFAULT NULL`,
@@ -39,6 +41,7 @@ async function initDB(){
       `ALTER TABLE comptes ADD COLUMN employeur_id VARCHAR(60) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN code_sms VARCHAR(10) DEFAULT NULL`,
       `ALTER TABLE comptes ADD COLUMN code_sms_expire DATETIME DEFAULT NULL`,
+      // Table profils
       `ALTER TABLE profils ADD COLUMN vitrine_premium TINYINT(1) DEFAULT 0`,
       `ALTER TABLE profils ADD COLUMN vitrine_expire DATETIME DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN preuve_type VARCHAR(20) DEFAULT NULL`,
@@ -46,6 +49,15 @@ async function initDB(){
       `ALTER TABLE profils ADD COLUMN preuve_referent VARCHAR(120) DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN preuve_hash VARCHAR(80) DEFAULT NULL`,
       `ALTER TABLE profils ADD COLUMN signale TINYINT(1) DEFAULT 0`,
+      // Table avis
+      `ALTER TABLE avis ADD COLUMN mission_id INT DEFAULT NULL`,
+      `ALTER TABLE avis ADD COLUMN signale TINYINT(1) DEFAULT 0`,
+      // Table missions
+      `ALTER TABLE missions ADD COLUMN duree ENUM('courte','longue') DEFAULT 'courte'`,
+      `ALTER TABLE missions ADD COLUMN type_contrat VARCHAR(40) DEFAULT 'mission'`,
+      `ALTER TABLE missions ADD COLUMN contact VARCHAR(60) DEFAULT ''`,
+      `ALTER TABLE missions ADD COLUMN profil_id INT DEFAULT NULL`,
+      // Table candidatures
       `ALTER TABLE candidatures ADD COLUMN statut2 ENUM('Postulee','Acceptee','Refusee','EnCours','Terminee','ConfirmeeJeune','Confirmee','Avisee','Annulee') DEFAULT 'Postulee'`,
       `ALTER TABLE candidatures ADD COLUMN motif_annulation VARCHAR(200) DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_acceptee DATETIME DEFAULT NULL`,
@@ -53,11 +65,16 @@ async function initDB(){
       `ALTER TABLE candidatures ADD COLUMN date_terminee DATETIME DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_confirmee DATETIME DEFAULT NULL`,
       `ALTER TABLE candidatures ADD COLUMN date_avisee DATETIME DEFAULT NULL`,
+      // Table employeurs
       `ALTER TABLE employeurs ADD COLUMN commune VARCHAR(120) DEFAULT NULL`,
-      `ALTER TABLE employeurs ADD COLUMN contact VARCHAR(60) DEFAULT NULL`
+      `ALTER TABLE employeurs ADD COLUMN contact VARCHAR(60) DEFAULT NULL`,
+      `ALTER TABLE employeurs ADD COLUMN secteur VARCHAR(80) DEFAULT NULL`
     ];
-    for (const sql of migrations) { try { await pool.query(sql); } catch(e){} }
+    for (const sql of migrations) {
+      try { await pool.query(sql); } catch(e){ /* colonne existe déjà */ }
+    }
 
+    /* === CRÉATION DES TABLES === */
     await pool.query(`CREATE TABLE IF NOT EXISTS profils (
       id INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(120) NOT NULL,
       metier VARCHAR(120) NOT NULL, commune VARCHAR(120) NOT NULL,
@@ -76,7 +93,7 @@ async function initDB(){
       note TINYINT NOT NULL, commentaire VARCHAR(180), reponse VARCHAR(180),
       signale TINYINT(1) DEFAULT 0,
       cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE KEY uniq_avis_employeur (profil_id, employeur_id)  /* RG-08 */
+      UNIQUE KEY uniq_avis_employeur (profil_id, employeur_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
     await pool.query(`CREATE TABLE IF NOT EXISTS employeurs (
@@ -159,11 +176,10 @@ async function initDB(){
 }
 
 /* ============================================================
-   RÈGLES MÉTIER — fonctions pures
+   RÈGLES MÉTIER
 ============================================================ */
 function badgeRank(b){ return {bronze:0,argent:1,or:2}[b] || 0; }
 
-/* RG-03 : calcul éligibilité */
 function computeEligible(avis){
   const n = avis.length;
   const a = n ? avis.reduce((s,x)=>s+x.note,0)/n : 0;
@@ -172,7 +188,6 @@ function computeEligible(avis){
   return 'bronze';
 }
 
-/* RG-04 : non-régression */
 function mergeBadge(actuel, eligible){
   return badgeRank(eligible) > badgeRank(actuel) ? eligible : actuel;
 }
@@ -193,14 +208,13 @@ async function auth(req,res,next){
   if (!t) return res.status(401).json({ error:'Non authentifié' });
   try {
     const [r] = await pool.query(
-      `SELECT c.* FROM sessions s JOIN comptes c ON c.id=s.compte_id WHERE s.token=?`, [t]
+      'SELECT c.* FROM sessions s JOIN comptes c ON c.id=s.compte_id WHERE s.token=?', [t]
     );
     if (!r.length) return res.status(401).json({ error:'Session expirée' });
     req.compte = r[0]; next();
   } catch(e){ res.status(500).json({ error:e.message }); }
 }
 
-/* RG-14 : employeur vérifié obligatoire */
 async function requireVerifiedEmployeur(req,res,next){
   if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé aux employeurs' });
   const empId = req.compte.employeur_id || ('emp-' + req.compte.id);
@@ -219,7 +233,6 @@ async function notifier(compteId, type, titre, message, lien){
   } catch(e){}
 }
 
-/* RG-20 : expiration auto vitrine */
 async function checkVitrineExpire(profil){
   if (profil.vitrine_premium && profil.vitrine_expire && new Date(profil.vitrine_expire) < new Date()){
     await pool.query('UPDATE profils SET vitrine_premium=0, vitrine_expire=NULL WHERE id=?', [profil.id]);
@@ -239,6 +252,7 @@ app.post('/api/auth/inscription', async (req,res) => {
     if (!email || !password) return res.status(400).json({ error:'Email et mot de passe requis' });
     if (password.length < 6) return res.status(400).json({ error:'Mot de passe : 6 caractères minimum' });
     if (!['jeune','employeur'].includes(type)) return res.status(400).json({ error:'Type invalide' });
+
     const [e] = await pool.query('SELECT id FROM comptes WHERE email=?', [email]);
     if (e.length) return res.status(409).json({ error:'Cet email est déjà utilisé' });
 
@@ -251,13 +265,12 @@ app.post('/api/auth/inscription', async (req,res) => {
       [email, hashPwd(password), type, telephone||null, prenom||null, nom||null, cat, secteur]
     );
 
-    /* RG-14 : Institution auto-vérifiée */
     if (type === 'employeur'){
       const empId = 'emp-' + r.insertId;
       const autoVerifie = (cat === 'institution') ? 1 : 0;
       const enAttente = (cat === 'particulier' || cat === 'institution') ? 0 : 1;
       await pool.query(
-        `INSERT INTO employeurs (id,categorie,secteur,verifie,en_attente) VALUES (?,?,?,?,?)`,
+        'INSERT INTO employeurs (id,categorie,secteur,verifie,en_attente) VALUES (?,?,?,?,?)',
         [empId, cat, secteur, autoVerifie, enAttente]
       );
       await pool.query('UPDATE comptes SET employeur_id=? WHERE id=?', [empId, r.insertId]);
@@ -279,7 +292,11 @@ app.post('/api/auth/connexion', async (req,res) => {
     const c = r[0];
     const token = genToken();
     await pool.query('INSERT INTO sessions (token,compte_id) VALUES (?,?)', [token, c.id]);
-    res.json({ ok:true, token, compte_id:c.id, type:c.type, profil_id:c.profil_id, employeur_id:c.employeur_id, employeur_categorie:c.employeur_categorie });
+    res.json({
+      ok:true, token, compte_id:c.id, type:c.type,
+      profil_id:c.profil_id, employeur_id:c.employeur_id,
+      employeur_categorie:c.employeur_categorie
+    });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
@@ -325,7 +342,7 @@ app.get('/api/profils', async (req,res) => {
     const { metier, commune } = req.query;
     let sql = `
       SELECT p.*, COALESCE(AVG(a.note),0) AS moyenne, COUNT(a.id) AS nb_avis
-      FROM profils p LEFT JOIN avis a ON a.profil_id = p.id
+      FROM profils p LEFT JOIN avis a ON a.profil_id = p.id AND a.signale = 0
       WHERE p.signale = 0
     `;
     const params = [];
@@ -372,7 +389,7 @@ app.post('/api/profils', auth, async (req,res) => {
     if (req.compte.profil_id) return res.status(409).json({ error:'Tu as déjà un profil' });
     const { nom, metier, commune, description, contact, consentement } = req.body;
     if (!nom) return res.status(400).json({ error:'Nom requis' });
-    if (!consentement) return res.status(400).json({ error:'Consentement obligatoire (RG-22)' });
+    if (!consentement) return res.status(400).json({ error:'Consentement obligatoire' });
     const [r] = await pool.query(
       'INSERT INTO profils (nom,metier,commune,description,contact,consentement) VALUES (?,?,?,?,?,1)',
       [nom, metier||'—', commune||'—', description||'', contact||'—']
@@ -393,7 +410,6 @@ app.put('/api/profils/:id', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* RG-23 : preuve avec hash */
 app.put('/api/profils/:id/preuve', auth, async (req,res) => {
   try {
     if (!req.compte.profil_id || String(req.compte.profil_id) !== String(req.params.id))
@@ -408,7 +424,6 @@ app.put('/api/profils/:id/preuve', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* RG-18 / RG-20 : vitrine 30 jours */
 app.put('/api/profils/:id/premium', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune') return res.status(403).json({ error:'Réservé aux jeunes' });
@@ -421,7 +436,7 @@ app.put('/api/profils/:id/premium', auth, async (req,res) => {
 });
 
 /* ============================================================
-   AVIS  (RG-07, RG-08)
+   AVIS
 ============================================================ */
 app.post('/api/avis', auth, async (req,res) => {
   try {
@@ -431,33 +446,28 @@ app.post('/api/avis', auth, async (req,res) => {
     if (!profil_id || !note) return res.status(400).json({ error:'Champs manquants' });
     if (note < 1 || note > 5) return res.status(400).json({ error:'Note entre 1 et 5' });
 
-    /* RG-07 : mission confirmée obligatoire */
     if (mission_id){
       const [m] = await pool.query('SELECT statut2 FROM candidatures WHERE id=? AND profil_id=?', [mission_id, profil_id]);
       if (!m.length) return res.status(404).json({ error:'Mission introuvable' });
-      if (m[0].statut2 !== 'Confirmee') return res.status(403).json({ error:'La mission doit être confirmée des deux côtés (RG-07)' });
+      if (m[0].statut2 !== 'Confirmee') return res.status(403).json({ error:'La mission doit être confirmée des deux côtés' });
     }
 
-    /* RG-08 : un seul avis par couple */
     const [ex] = await pool.query('SELECT id FROM avis WHERE profil_id=? AND employeur_id=?', [profil_id, req.compte.employeur_id]);
-    if (ex.length) return res.status(409).json({ error:'Un seul avis par employeur (RG-08)' });
+    if (ex.length) return res.status(409).json({ error:'Un seul avis par employeur' });
 
     await pool.query(
       'INSERT INTO avis (profil_id,employeur_id,mission_id,note,commentaire) VALUES (?,?,?,?,?)',
       [profil_id, req.compte.employeur_id, mission_id||null, note, cleanComment(commentaire)]
     );
 
-    /* RG-02/03/04 : recalcul badge */
     const [av] = await pool.query('SELECT note FROM avis WHERE profil_id=? AND signale=0', [profil_id]);
     const eligible = computeEligible(av);
     const [p] = await pool.query('SELECT badge FROM profils WHERE id=?', [profil_id]);
-    const nouveau = mergeBadge(p[0].badge, eligible); /* RG-04 */
+    const nouveau = mergeBadge(p[0].badge, eligible);
     await pool.query('UPDATE profils SET badge=? WHERE id=?', [nouveau, profil_id]);
 
-    /* Marquer mission Avisee */
     if (mission_id) await pool.query('UPDATE candidatures SET statut2="Avisee",date_avisee=NOW() WHERE id=?', [mission_id]);
 
-    /* Notif jeune */
     const [pj] = await pool.query('SELECT id AS compte_id FROM comptes WHERE profil_id=?', [profil_id]);
     if (pj.length) await notifier(pj[0].compte_id, 'avis', 'Nouvel avis reçu', `Tu as reçu ${note} étoile(s). Badge : ${nouveau}.`, '/jeune/profil');
 
@@ -477,7 +487,7 @@ app.put('/api/avis/:id/reponse', auth, async (req,res) => {
 });
 
 /* ============================================================
-   EMPLOYEURS  (RG-15, RG-16, RG-17)
+   EMPLOYEURS
 ============================================================ */
 app.post('/api/employeurs/verifier', auth, async (req,res) => {
   try {
@@ -487,7 +497,6 @@ app.post('/api/employeurs/verifier', auth, async (req,res) => {
     if (!reference) return res.status(400).json({ error:'Référence requise' });
     const empId = req.compte.employeur_id || ('emp-' + req.compte.id);
 
-    /* RG-15 : particulier vérifié direct par SMS ; RG-16 : entreprise en attente RCCM */
     const isVerified = (cat === 'particulier' || cat === 'institution') ? 1 : 0;
     const enAttente = (cat === 'entreprise' || cat === 'soustraitance') ? 1 : 0;
 
@@ -534,7 +543,6 @@ app.post('/api/missions', auth, requireVerifiedEmployeur, async (req,res) => {
     const { titre, description, commune, budget, nombre_personnes, duree, type_contrat, contact } = req.body;
     if (!titre) return res.status(400).json({ error:'Titre requis' });
     const cat = req.compte.employeur_categorie || 'particulier';
-    /* RG-16 : offres longues réservées entreprises vérifiées */
     if (duree === 'longue' && cat === 'particulier')
       return res.status(403).json({ error:'Les particuliers ne peuvent publier que des missions courtes' });
     const [r] = await pool.query(
@@ -548,10 +556,8 @@ app.post('/api/missions', auth, requireVerifiedEmployeur, async (req,res) => {
 });
 
 /* ============================================================
-   CANDIDATURES — WORKFLOW COMPLET
+   CANDIDATURES — WORKFLOW
 ============================================================ */
-
-/* Le jeune postule */
 app.post('/api/missions/:id/postuler', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune') return res.status(403).json({ error:'Réservé aux jeunes' });
@@ -573,13 +579,13 @@ app.post('/api/missions/:id/postuler', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Employeur voit ses candidatures (filtrées) */
 app.get('/api/employeurs/candidatures', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé' });
     const empId = req.compte.employeur_id || ('emp-'+req.compte.id);
     const [r] = await pool.query(
       `SELECT c.*, m.titre AS mission_titre, m.commune AS mission_commune,
+              m.contact AS mission_contact,
               p.nom AS profil_nom, p.metier AS profil_metier,
               p.commune AS profil_commune, p.contact AS profil_contact,
               p.badge AS profil_badge
@@ -593,12 +599,11 @@ app.get('/api/employeurs/candidatures', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Jeune voit ses candidatures */
 app.get('/api/jeune/candidatures', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune' || !req.compte.profil_id) return res.json([]);
     const [r] = await pool.query(
-      `SELECT c.*, m.titre AS mission_titre, m.commune AS mission_commune, m.budget,
+      `SELECT c.*, m.titre AS mission_titre, m.commune AS mission_commune, m.budget AS mission_budget,
               m.contact AS mission_contact
        FROM candidatures c
        LEFT JOIN missions m ON m.id=c.mission_id
@@ -609,7 +614,6 @@ app.get('/api/jeune/candidatures', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Étape 2 : employeur accepte */
 app.post('/api/candidatures/:id/accepter', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé' });
@@ -619,17 +623,13 @@ app.post('/api/candidatures/:id/accepter', auth, async (req,res) => {
       return res.status(403).json({ error:'Non autorisé' });
     if (c[0].statut2 !== 'Postulee') return res.status(400).json({ error:'Statut invalide' });
 
-    await pool.query(
-      'UPDATE candidatures SET statut2="Acceptee", statut="acceptee", date_acceptee=NOW() WHERE id=?',
-      [req.params.id]
-    );
+    await pool.query('UPDATE candidatures SET statut2="Acceptee", statut="acceptee", date_acceptee=NOW() WHERE id=?', [req.params.id]);
     const [pj] = await pool.query('SELECT id FROM comptes WHERE profil_id=?', [c[0].profil_id]);
     if (pj.length) await notifier(pj[0].id, 'candidature', 'Candidature acceptée', 'Contacte l\'employeur pour organiser.', '/jeune/profil');
     res.json({ ok:true });
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Étape 2b : employeur refuse */
 app.post('/api/candidatures/:id/refuser', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé' });
@@ -642,7 +642,6 @@ app.post('/api/candidatures/:id/refuser', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Étape 3 : employeur démarre */
 app.post('/api/candidatures/:id/demarrer', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé' });
@@ -656,7 +655,6 @@ app.post('/api/candidatures/:id/demarrer', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Étape 5 : employeur marque terminée */
 app.post('/api/candidatures/:id/terminer', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'employeur') return res.status(403).json({ error:'Réservé' });
@@ -670,7 +668,6 @@ app.post('/api/candidatures/:id/terminer', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Étape 6 : jeune confirme (double confirmation RG-06) */
 app.post('/api/candidatures/:id/confirmer', auth, async (req,res) => {
   try {
     if (req.compte.type !== 'jeune') return res.status(403).json({ error:'Réservé au jeune' });
@@ -686,7 +683,6 @@ app.post('/api/candidatures/:id/confirmer', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Annulation (Scénario A, B, F) */
 app.post('/api/candidatures/:id/annuler', auth, async (req,res) => {
   try {
     const { motif } = req.body;
@@ -700,7 +696,6 @@ app.post('/api/candidatures/:id/annuler', auth, async (req,res) => {
   } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
-/* Litiges (Scénario B) */
 app.post('/api/candidatures/:id/litige', auth, async (req,res) => {
   try {
     const { motif } = req.body;
